@@ -11,11 +11,17 @@ function ScheduleItem(props: ScheduleItemProps) {
   const { title, time, id, handleRemove } = props;
 
   return (
-    <li key={id} className="flex gap-2">
+    <li
+      key={id}
+      className="flex gap-2 justify-between px-4 items-center bg-white py-2 shadow-arround rounded-xl transition duration-200 hover:bg-gray-100"
+    >
       <div>
         <span className="font-bold">{time}</span> – {title}
       </div>
-      <button onClick={() => handleRemove(id)} className="text-red-500">
+      <button
+        onClick={() => handleRemove(id)}
+        className="text-sm md:text-base text-red-600 bg-gray-100 shadow-arround hover:bg-red-500 hover:text-white bg-opacity-50 hover:bg-opacity-85 transition duration-200 px-4 py-2 rounded-xl"
+      >
         Usuń
       </button>
     </li>

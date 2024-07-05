@@ -1,4 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as jose from "jose";
+import prisma from "@/app/lib/prisma";
+
+const jwtConfig = {
+  secret: new TextEncoder().encode(process.env.JWT_SECRET),
+};
 
 export const middleware = async (request: NextRequest) => {
   const path = request.nextUrl.pathname;
@@ -7,7 +13,23 @@ export const middleware = async (request: NextRequest) => {
     return;
   }
 
-  const loggedIn = false; // Check if the user is logged in
+  const token = request.cookies.get("token")?.value; // Get the token from the cookies
+
+  let loggedIn = false;
+
+  if (token) {
+    const res = await fetch("http://localhost:3000/api/auth/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    });
+
+    if (res.ok) {
+      loggedIn = true;
+    }
+  }
 
   if (loggedIn && path === "/admin/login") {
     // @ts-ignore

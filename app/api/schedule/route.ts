@@ -21,6 +21,24 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const token = req.cookies.get("token");
+
+  if (!token) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  const r = await fetch("http://localhost:3000/api/auth/verify", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token }),
+  });
+
+  if (!r.ok) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   const schedule = await prisma.schedule.create({
     data: {
       title,

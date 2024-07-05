@@ -28,16 +28,16 @@ function Schedule({ schedule }: { schedule: TSchedule[] }) {
         <h2 className="text-3xl sm:text-4xl xl:text-5xl uppercase text-center md:text-left">
           plan tygodnia
         </h2>
-        <div className="flex flex-col md:flex-row flex-wrap mt-8 gap-8">
+        <div className="flex flex-col md:flex-row flex-wrap mt-8 lg:mt-10 xl:mt-12 2xl:mt-14 gap-8  justify-around">
           {days &&
             daysOrder.map(
               (day) =>
                 days[day] && (
                   <div
                     key={day}
-                    className="flex-grow w-full md:w-5/12 relative border border-black rounded-3xl py-3 px-4 md:py-5 xl:py-6"
+                    className="w-full md:w-[45%] lg:w-[48%] relative border border-black rounded-3xl py-3 px-4 md:py-5 xl:py-6 flex-grow-0"
                   >
-                    <h3 className="text-lg md:text-xl absolute bg-white -top-4 px-2 left-6">
+                    <h3 className="text-lg md:text-xl absolute bg-white -top-4 px-2 left-6 ">
                       {day}
                     </h3>
                     <ul className="text-lg md:text-xl">

@@ -97,19 +97,19 @@ function Schedule(props: ScheduleProps) {
   };
 
   return (
-    <div>
+    <div className="bg-white px-4 sm:px-16 py-8 rounded-3xl">
       <h2 className="text-4xl text-center">Plan tygodnia</h2>
-      <div className="flex flex-col mt-8 gap-8">
+      <div className="flex flex-wrap mt-8 gap-8 justify-around">
         {days &&
           days.map((day) => (
             <div
               key={day}
-              className="flex-grow w-full relative border border-black rounded-3xl py-3 px-4"
+              className="flex-grow w-full sm:w-[48%] relative border border-black rounded-3xl py-3 pt-6 px-4 last-of-type:flex-grow-0 flex flex-col justify-between"
             >
               <h3 className="text-lg absolute bg-white -top-4 px-2 left-6">
                 {day}
               </h3>
-              <ul className="text-lg">
+              <ul className="text-lg pb-4 flex-col flex gap-4 cursor-pointer">
                 {clientSchedule[day] &&
                   clientSchedule[day].map(({ title, time, id }) => (
                     <ScheduleItem
@@ -121,10 +121,29 @@ function Schedule(props: ScheduleProps) {
                     />
                   ))}
               </ul>
-              <form onSubmit={(e) => handleAdd(e, day)}>
-                <Input label="Godzina" name="time" type="time" required />
-                <Input label="Tytuł" name="title" type="text" required />
-                <button type="submit">Dodaj</button>
+              <form
+                onSubmit={(e) => handleAdd(e, day)}
+                className="flex flex-col sm:flex-row gap-4 shadow-arround px-4 py-3 rounded-2xl items-center"
+              >
+                <input
+                  type="time"
+                  name="time"
+                  id=""
+                  className="px-4 py-2 rounded-lg shadow-arround flex-shrink-0 focus:outline-none focus:bg-gray-100 transition duration-200  w-full sm:w-auto"
+                  defaultValue={"12:00"}
+                />
+                <input
+                  type="text"
+                  name="title"
+                  className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg"
+                  placeholder="Tytuł"
+                />
+                <button
+                  type="submit"
+                  className="bg-white shadow-arround px-4 py-2 rounded-xl hover:bg-gray-100 transition duration-200 flex-shrink-0 w-full sm:w-auto"
+                >
+                  Dodaj
+                </button>
               </form>
             </div>
           ))}

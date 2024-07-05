@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Markdown from "react-markdown";
 
+import { GoogleAnalytics } from "@next/third-parties/google";
+
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 
@@ -87,6 +89,7 @@ export default function Page() {
           className="w-full -mt-px"
         />
       </div>
+      <GoogleAnalytics gaId="G-X396CLQTK4" />
     </>
   );
 }
