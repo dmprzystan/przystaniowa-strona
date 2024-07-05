@@ -1,7 +1,25 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const middleware = async (request: NextRequest) => {
-    
+  const path = request.nextUrl.pathname;
+
+  if (!path.startsWith("/admin")) {
+    return;
+  }
+
+  const loggedIn = false; // Check if the user is logged in
+
+  if (loggedIn && path === "/admin/login") {
+    // @ts-ignore
+    const url = new URL("/admin", request.nextUrl);
+    return NextResponse.redirect(url);
+  }
+
+  if (!loggedIn && path !== "/admin/login") {
+    // @ts-ignore
+    const url = new URL("/admin/login", request.nextUrl);
+    return NextResponse.redirect(url);
+  }
 };
 
 export const config = {
