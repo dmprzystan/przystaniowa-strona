@@ -1,9 +1,9 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import * as fs from "fs";
 import path from "path";
 import * as oci from "oci-sdk";
+import { ObjectStorageClient, getNamespace } from "@/app/lib/oci";
 
 const months = [
   "Styczeń",
@@ -41,20 +41,8 @@ export async function POST(req: NextRequest) {
 
   const name = `Gazetka 19tka ${title} (${dateStr}).pdf`;
 
-  // Save file to oci bucket
-  const ociConfigPath = path.join(process.cwd(), ".oci", "config");
-  const provider = new oci.common.ConfigFileAuthenticationDetailsProvider(
-    ociConfigPath
-  );
-
-  // Initialize the Object Storage Client
-  const ObjectStorageClient = new oci.objectstorage.ObjectStorageClient({
-    authenticationDetailsProvider: provider,
-  });
-
   // Get the namespace
-  const namespaceResponse = await ObjectStorageClient.getNamespace({});
-  const namespaceName = namespaceResponse.value;
+  const namespaceName = await getNamespace();
 
   // Upload the file
   const putObjectRequest: oci.objectstorage.requests.PutObjectRequest = {

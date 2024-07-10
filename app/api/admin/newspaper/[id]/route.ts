@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import * as fs from "fs";
+import { ObjectStorageClient, getNamespace } from "@/app/lib/oci";
 import path from "path";
 
 const months = [
@@ -31,10 +31,16 @@ export async function DELETE(
     },
   });
 
-  const filePath = path.join(process.cwd(), "public", "gazetka", gazetka.url);
+  const namespaceName = await getNamespace();
 
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+  try {
+    await ObjectStorageClient.deleteObject({
+      bucketName: "przystaniowa-strona",
+      namespaceName,
+      objectName: gazetka.url,
+    });
+  } catch (error) {
+    console.error(error);
   }
 
   revalidatePath("/gazetka");
