@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
-    "build": "next build && node ./scripts/postbuild.js",
-    "postbuild": "node ./scripts/postbuild.js",
+    "build": "node ./scripts/postbuild.js && next build",
+    "prebuild": "node ./scripts/postbuild.js",
     "start": "next start",
     "lint": "next lint"
   },
