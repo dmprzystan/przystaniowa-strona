@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 const url = process.env.VERCEL_URL || "http://localhost:3000";
 
 export const middleware = async (request: NextRequest) => {
+  console.log(url);
   const path = request.nextUrl.pathname;
 
   const token = request.cookies.get("token")?.value; // Get the token from the cookies
