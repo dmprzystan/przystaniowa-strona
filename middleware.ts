@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const middleware = async (request: NextRequest) => {
+  console.log("Cought by middleware");
+
   const path = request.nextUrl.pathname;
 
   if (!path.startsWith("/admin") && !path.startsWith("/api/admin")) {
     return;
   }
+
+  console.log("Protected route");
 
   const token = request.cookies.get("token")?.value; // Get the token from the cookies
 
@@ -25,23 +29,26 @@ export const middleware = async (request: NextRequest) => {
     }
   }
 
+  console.log("Logged in", loggedIn);
+
   const api = path.startsWith("/api/admin");
 
   if (api) {
+    console.log("API route");
     if (!loggedIn) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   } else {
+    console.log("Page route");
     if (loggedIn && path === "/admin/login") {
-      // @ts-ignore
-      const url = new URL("/admin", request.nextUrl);
-      return NextResponse.redirect(url);
+      const url = new URL("/admin", request.url);
+      return NextResponse.redirect(url, { status: 302 });
     }
 
     if (!loggedIn && path !== "/admin/login") {
       // @ts-ignore
-      const url = new URL("/admin/login", request.nextUrl);
-      return NextResponse.redirect(url);
+      const url = new URL("/admin/login", request.url);
+      return NextResponse.redirect(url, { status: 302 });
     }
   }
 };
