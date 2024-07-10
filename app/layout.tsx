@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 import { Inika } from "next/font/google";
 import "./globals.css";
 
@@ -18,6 +20,8 @@ export default function RootLayout({
   return (
     <html lang="pl" className="bg-[#F2F2F2]">
       <body className={`${inika.className} bg-[#F2F2F2]`}>{children}</body>
+      <SpeedInsights />
+      <Analytics />
     </html>
   );
 }
