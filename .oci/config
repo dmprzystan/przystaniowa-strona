@@ -1,0 +1,6 @@
+[DEFAULT]
+user=ocid1.user.oc1..aaaaaaaazlnvw72gyn6f6hhwrzg3lcapvsprx5q3ophleov5z6wml4b3vooq
+fingerprint=c0:d6:a4:28:f9:03:eb:54:8f:d9:a5:1e:53:23:72:76
+tenancy=ocid1.tenancy.oc1..aaaaaaaa74m533dda6sgaelp7c4e3x7gir2qs2zpjagordnbreikzz3o22ca
+region=eu-frankfurt-1
+key_file=/Users/dkomeza/Github/przystaniowa-strona/.oci/oci_api_key.pem
