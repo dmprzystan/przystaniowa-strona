@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as jose from "jose";
-import prisma from "@/app/lib/prisma";
-
-const jwtConfig = {
-  secret: new TextEncoder().encode(process.env.JWT_SECRET),
-};
 
 export const middleware = async (request: NextRequest) => {
   const path = request.nextUrl.pathname;
 
-  if (!path.startsWith("/admin")) {
+  if (!path.startsWith("/admin") && !path.startsWith("/api/admin")) {
     return;
   }
 
@@ -31,16 +25,24 @@ export const middleware = async (request: NextRequest) => {
     }
   }
 
-  if (loggedIn && path === "/admin/login") {
-    // @ts-ignore
-    const url = new URL("/admin", request.nextUrl);
-    return NextResponse.redirect(url);
-  }
+  const api = path.startsWith("/api/admin");
 
-  if (!loggedIn && path !== "/admin/login") {
-    // @ts-ignore
-    const url = new URL("/admin/login", request.nextUrl);
-    return NextResponse.redirect(url);
+  if (api) {
+    if (!loggedIn) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  } else {
+    if (loggedIn && path === "/admin/login") {
+      // @ts-ignore
+      const url = new URL("/admin", request.nextUrl);
+      return NextResponse.redirect(url);
+    }
+
+    if (!loggedIn && path !== "/admin/login") {
+      // @ts-ignore
+      const url = new URL("/admin/login", request.nextUrl);
+      return NextResponse.redirect(url);
+    }
   }
 };
 
@@ -53,6 +55,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
