@@ -47,7 +47,7 @@ async function page() {
             <a
               key={newspaper.id}
               className="bg-[#A9C3AC] flex flex-col px-16 py-28 rounded-3xl shadow-2xl"
-              href={`gazetka/${newspaper.url}`}
+              href={`/gazetka/${newspaper.url}`}
               download
               target="_blank"
             >
