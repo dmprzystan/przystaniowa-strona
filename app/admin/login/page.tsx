@@ -31,7 +31,7 @@ function page() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center w-full">
       <div className="bg-white shadow-arround px-8 py-8 rounded-2xl">
         <h1 className="text-3xl text-center uppercase">Zaloguj się</h1>
         <form className="flex flex-col gap-2 mt-10" onSubmit={handleSubmit}>
