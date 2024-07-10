@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const url = process.env.VERCEL_URL || "http://localhost:3000";
+const url = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
 
 export const middleware = async (request: NextRequest) => {
   console.log(url);
