@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import * as fs from "fs";
 import path from "path";
+import * as oci from "oci-sdk";
 
 const months = [
   "Styczeń",
@@ -20,11 +21,6 @@ const months = [
 ];
 
 export async function POST(req: NextRequest) {
-  const uploadPath = path.join(process.cwd(), "public", "gazetka");
-  if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath);
-  }
-
   const data = await req.formData();
   const title = data.get("title") as string;
   const date = data.get("date") as string;
@@ -45,9 +41,30 @@ export async function POST(req: NextRequest) {
 
   const name = `Gazetka 19tka ${title} (${dateStr}).pdf`;
 
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
-  const filePath = path.join(uploadPath, name);
-  fs.writeFileSync(filePath, fileBuffer);
+  // Save file to oci bucket
+  const ociConfigPath = path.join(process.cwd(), ".oci", "config");
+  const provider = new oci.common.ConfigFileAuthenticationDetailsProvider(
+    ociConfigPath
+  );
+
+  // Initialize the Object Storage Client
+  const ObjectStorageClient = new oci.objectstorage.ObjectStorageClient({
+    authenticationDetailsProvider: provider,
+  });
+
+  // Get the namespace
+  const namespaceResponse = await ObjectStorageClient.getNamespace({});
+  const namespaceName = namespaceResponse.value;
+
+  // Upload the file
+  const putObjectRequest: oci.objectstorage.requests.PutObjectRequest = {
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespaceName,
+    objectName: name,
+    putObjectBody: file.stream(),
+  };
+
+  await ObjectStorageClient.putObject(putObjectRequest);
 
   await prisma.newspaper.create({
     data: {
