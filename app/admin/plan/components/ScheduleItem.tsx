@@ -13,7 +13,7 @@ function ScheduleItem(props: ScheduleItemProps) {
   return (
     <li
       key={id}
-      className="flex gap-2 justify-between px-4 items-center bg-white py-2 shadow-arround rounded-xl transition duration-200 hover:bg-gray-100"
+      className="flex gap-2 justify-between px-4 items-center bg-gray-100 py-2 shadow-arround rounded-xl transition duration-200 hover:bg-gray-200"
     >
       <div>
         <span className="font-bold">{time}</span> – {title}

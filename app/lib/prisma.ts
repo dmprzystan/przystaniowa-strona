@@ -17,6 +17,15 @@ export type Schedule = Prisma.ScheduleGetPayload<{
   };
 }>;
 
+export type Newspaper = Prisma.NewspaperGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    date: true;
+    url: true;
+  };
+}>;
+
 if (process.env.NODE_ENV === "production") {
   prisma = new PrismaClient();
 } else {
@@ -29,6 +38,13 @@ if (process.env.NODE_ENV === "production") {
 export const getSchedule = cache(async () => {
   const schedule = await prisma.schedule.findMany();
   return schedule;
+});
+
+export const getNewspapers = cache(async () => {
+  const newspapers = (await prisma.newspaper.findMany()).sort(
+    (a, b) => b.date.valueOf() - a.date.valueOf()
+  );
+  return newspapers;
 });
 
 export default prisma;
