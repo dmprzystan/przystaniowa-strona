@@ -82,33 +82,26 @@ export async function PUT(
 
   const name = `Gazetka 19tka ${title} (${dateStr}).pdf`;
 
+  const namespaceName = await getNamespace();
+
   if (file.size > 0) {
-    const filePath = path.join(
-      process.cwd(),
-      "public",
-      "gazetka",
-      oldGazetka.url
-    );
+    const putObjectRequest = {
+      bucketName: "przystaniowa-strona",
+      namespaceName,
+      objectName: name,
+      putObjectBody: file.stream(),
+    };
 
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const newFilePath = path.join(process.cwd(), "public", "gazetka", name);
-    fs.writeFileSync(newFilePath, fileBuffer);
+    await ObjectStorageClient.putObject(putObjectRequest);
   } else {
-    const filePath = path.join(
-      process.cwd(),
-      "public",
-      "gazetka",
-      oldGazetka.url
-    );
-    const newFilePath = path.join(process.cwd(), "public", "gazetka", name);
-
-    if (filePath !== newFilePath) {
-      fs.renameSync(filePath, newFilePath);
-    }
+    await ObjectStorageClient.renameObject({
+      bucketName: "przystaniowa-strona",
+      namespaceName,
+      renameObjectDetails: {
+        sourceName: oldGazetka.url,
+        newName: name,
+      },
+    });
   }
 
   await prisma.newspaper.update({
