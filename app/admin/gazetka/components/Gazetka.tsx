@@ -8,6 +8,8 @@ type GazetkaProps = {
   newspapers: Newspaper[];
 };
 
+const APILink = "/api/admin/newspaper";
+
 function Gazetka(props: GazetkaProps) {
   const [clientNewspapers, setClientNewspapers] = useState(props.newspapers);
 
@@ -19,7 +21,7 @@ function Gazetka(props: GazetkaProps) {
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    const res = await fetch("/api/gazetka", {
+    const res = await fetch(APILink, {
       method: "POST",
       body: data,
     });
@@ -34,7 +36,7 @@ function Gazetka(props: GazetkaProps) {
   const handleDelete = async (id: string) => {
     setClientNewspapers((prev) => prev.filter((item) => item.id !== id));
 
-    await fetch(`/api/gazetka/${id}`, {
+    await fetch(`${APILink}/${id}`, {
       method: "DELETE",
     });
 
@@ -63,7 +65,7 @@ function Gazetka(props: GazetkaProps) {
       })
     );
 
-    await fetch(`/api/gazetka/${id}`, {
+    await fetch(`${APILink}/${id}`, {
       method: "PUT",
       body: data,
     });
@@ -72,7 +74,7 @@ function Gazetka(props: GazetkaProps) {
   };
 
   const getNewspapers = async () => {
-    const res = await fetch("/api/gazetka");
+    const res = await fetch(APILink);
     const data = (await res.json()) as {
       id: string;
       title: string;
