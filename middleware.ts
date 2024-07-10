@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const url = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
-
 export const middleware = async (request: NextRequest) => {
-  console.log(url);
   const path = request.nextUrl.pathname;
+  const url = request.nextUrl.origin;
 
   const token = request.cookies.get("token")?.value; // Get the token from the cookies
 
