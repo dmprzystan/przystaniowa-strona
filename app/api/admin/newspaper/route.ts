@@ -1,8 +1,9 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import * as fs from "fs";
 import path from "path";
+import * as oci from "oci-sdk";
+import { ObjectStorageClient, getNamespace } from "@/app/lib/oci";
 
 const months = [
   "Styczeń",
@@ -20,11 +21,6 @@ const months = [
 ];
 
 export async function POST(req: NextRequest) {
-  const uploadPath = path.join(process.cwd(), "public", "gazetka");
-  if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath);
-  }
-
   const data = await req.formData();
   const title = data.get("title") as string;
   const date = data.get("date") as string;
@@ -45,9 +41,18 @@ export async function POST(req: NextRequest) {
 
   const name = `Gazetka 19tka ${title} (${dateStr}).pdf`;
 
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
-  const filePath = path.join(uploadPath, name);
-  fs.writeFileSync(filePath, fileBuffer);
+  // Get the namespace
+  const namespaceName = await getNamespace();
+
+  // Upload the file
+  const putObjectRequest: oci.objectstorage.requests.PutObjectRequest = {
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespaceName,
+    objectName: name,
+    putObjectBody: file.stream(),
+  };
+
+  await ObjectStorageClient.putObject(putObjectRequest);
 
   await prisma.newspaper.create({
     data: {

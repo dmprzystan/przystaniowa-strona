@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import * as fs from "fs";
+import { ObjectStorageClient, getNamespace } from "@/app/lib/oci";
 import path from "path";
 
 const months = [
@@ -31,10 +31,16 @@ export async function DELETE(
     },
   });
 
-  const filePath = path.join(process.cwd(), "public", "gazetka", gazetka.url);
+  const namespaceName = await getNamespace();
 
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+  try {
+    await ObjectStorageClient.deleteObject({
+      bucketName: "przystaniowa-strona",
+      namespaceName,
+      objectName: gazetka.url,
+    });
+  } catch (error) {
+    console.error(error);
   }
 
   revalidatePath("/gazetka");
@@ -76,33 +82,26 @@ export async function PUT(
 
   const name = `Gazetka 19tka ${title} (${dateStr}).pdf`;
 
+  const namespaceName = await getNamespace();
+
   if (file.size > 0) {
-    const filePath = path.join(
-      process.cwd(),
-      "public",
-      "gazetka",
-      oldGazetka.url
-    );
+    const putObjectRequest = {
+      bucketName: "przystaniowa-strona",
+      namespaceName,
+      objectName: name,
+      putObjectBody: file.stream(),
+    };
 
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const newFilePath = path.join(process.cwd(), "public", "gazetka", name);
-    fs.writeFileSync(newFilePath, fileBuffer);
+    await ObjectStorageClient.putObject(putObjectRequest);
   } else {
-    const filePath = path.join(
-      process.cwd(),
-      "public",
-      "gazetka",
-      oldGazetka.url
-    );
-    const newFilePath = path.join(process.cwd(), "public", "gazetka", name);
-
-    if (filePath !== newFilePath) {
-      fs.renameSync(filePath, newFilePath);
-    }
+    await ObjectStorageClient.renameObject({
+      bucketName: "przystaniowa-strona",
+      namespaceName,
+      renameObjectDetails: {
+        sourceName: oldGazetka.url,
+        newName: name,
+      },
+    });
   }
 
   await prisma.newspaper.update({
