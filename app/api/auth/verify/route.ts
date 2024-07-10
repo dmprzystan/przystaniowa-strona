@@ -13,15 +13,15 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: decoded.id,
-    },
-  });
+  // const user = await prisma.user.findUnique({
+  //   where: {
+  //     id: decoded.id,
+  //   },
+  // });
 
-  if (!user) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-  }
+  // if (!user) {
+  //   return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  // }
 
   return NextResponse.json({ status: "ok" });
 };

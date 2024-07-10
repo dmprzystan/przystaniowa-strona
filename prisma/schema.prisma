@@ -25,3 +25,10 @@ model Schedule {
   time  String
   day   String
 }
+
+model Newspaper {
+  id    String   @id @default(cuid())
+  title String
+  date  DateTime
+  url   String
+}

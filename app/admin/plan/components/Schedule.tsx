@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Input from "@/app/components/Input";
 import ScheduleItem from "./ScheduleItem";
 
 type ScheduleProps = {
@@ -10,6 +9,8 @@ type ScheduleProps = {
     { title: string; time: string; id: string; day: string }[]
   >;
 };
+
+const APILink = "/api/admin/schedule";
 
 function Schedule(props: ScheduleProps) {
   const [clientSchedule, setClientSchedule] = useState(props.scheduledDays);
@@ -33,7 +34,7 @@ function Schedule(props: ScheduleProps) {
       return newSchedule;
     });
 
-    await fetch(`/api/schedule/${id}`, {
+    await fetch(`${APILink}/${id}`, {
       method: "DELETE",
     });
 
@@ -67,7 +68,7 @@ function Schedule(props: ScheduleProps) {
       return newSchedule;
     });
 
-    await fetch("/api/schedule", {
+    await fetch(APILink, {
       method: "POST",
       body: JSON.stringify({ title, time, day }),
     });
@@ -78,7 +79,7 @@ function Schedule(props: ScheduleProps) {
   };
 
   const getNewSchedule = async () => {
-    const res = await fetch("/api/schedule");
+    const res = await fetch(APILink);
     const data = (await res.json()) as {
       day: string;
       title: string;
@@ -97,8 +98,8 @@ function Schedule(props: ScheduleProps) {
   };
 
   return (
-    <div className="bg-white px-4 sm:px-16 py-8 rounded-3xl">
-      <h2 className="text-4xl text-center">Plan tygodnia</h2>
+    <div className="px-4 sm:px-16 rounded-3xl">
+      <h2 className="text-4xl text-left">Plan tygodnia</h2>
       <div className="flex flex-wrap mt-8 gap-8 justify-around">
         {days &&
           days.map((day) => (
@@ -106,7 +107,7 @@ function Schedule(props: ScheduleProps) {
               key={day}
               className="flex-grow w-full sm:w-[48%] relative border border-black rounded-3xl py-3 pt-6 px-4 last-of-type:flex-grow-0 flex flex-col justify-between"
             >
-              <h3 className="text-lg absolute bg-white -top-4 px-2 left-6">
+              <h3 className="text-lg absolute bg-[#F2F2F2] -top-4 px-2 left-6">
                 {day}
               </h3>
               <ul className="text-lg pb-4 flex-col flex gap-4 cursor-pointer">
