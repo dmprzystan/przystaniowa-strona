@@ -10,6 +10,8 @@ type ScheduleProps = {
   >;
 };
 
+const APILink = "/api/admin/schedule";
+
 function Schedule(props: ScheduleProps) {
   const [clientSchedule, setClientSchedule] = useState(props.scheduledDays);
 
@@ -32,7 +34,7 @@ function Schedule(props: ScheduleProps) {
       return newSchedule;
     });
 
-    await fetch(`/api/schedule/${id}`, {
+    await fetch(`${APILink}/${id}`, {
       method: "DELETE",
     });
 
@@ -66,7 +68,7 @@ function Schedule(props: ScheduleProps) {
       return newSchedule;
     });
 
-    await fetch("/api/schedule", {
+    await fetch(APILink, {
       method: "POST",
       body: JSON.stringify({ title, time, day }),
     });
@@ -77,7 +79,7 @@ function Schedule(props: ScheduleProps) {
   };
 
   const getNewSchedule = async () => {
-    const res = await fetch("/api/schedule");
+    const res = await fetch(APILink);
     const data = (await res.json()) as {
       day: string;
       title: string;
