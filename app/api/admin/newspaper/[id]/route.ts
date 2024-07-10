@@ -25,24 +25,6 @@ export async function DELETE(
 ) {
   const { id } = params;
 
-  const token = req.cookies.get("token")?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  const r = await fetch("http://localhost:3000/api/auth/verify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ token }),
-  });
-
-  if (!r.ok) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
   const gazetka = await prisma.newspaper.delete({
     where: {
       id: id as string,
@@ -65,24 +47,6 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-
-  const token = req.cookies.get("token")?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  const r = await fetch("http://localhost:3000/api/auth/verify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ token }),
-  });
-
-  if (!r.ok) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
 
   const data = await req.formData();
 

@@ -14,24 +14,6 @@ export async function DELETE(
     return NextResponse.json({ message: "Missing id" }, { status: 400 });
   }
 
-  const token = req.cookies.get("token")?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  const r = await fetch("http://localhost:3000/api/auth/verify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ token }),
-  });
-
-  if (!r.ok) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
   await prisma.schedule.delete({
     where: {
       id,

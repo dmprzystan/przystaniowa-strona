@@ -20,24 +20,6 @@ const months = [
 ];
 
 export async function POST(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
-
-  if (!token) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
-  const r = await fetch("http://localhost:3000/api/auth/verify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ token }),
-  });
-
-  if (!r.ok) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
   const uploadPath = path.join(process.cwd(), "public", "gazetka");
   if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath);
