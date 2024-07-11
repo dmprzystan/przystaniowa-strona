@@ -2,7 +2,7 @@ import { config } from "dotenv"
 import { mkdirSync, writeFileSync } from "fs"
 import { join } from "path"
 
-config({path: `.env.local`})
+config({path: `.env`})
 
 const oci_key = process.env.OCI_PRIVATE_KEY
 const oci_key_file = process.env.OCI_PRIVATE_KEY_FILE
