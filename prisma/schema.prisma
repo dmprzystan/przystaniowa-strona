@@ -32,3 +32,13 @@ model Newspaper {
   date  DateTime
   url   String
 }
+
+model Trip {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Int
+  dateStart   DateTime
+  dateEnd     DateTime
+  coverUrl    String
+}
