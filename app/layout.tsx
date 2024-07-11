@@ -19,8 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pl" className="bg-[#F2F2F2]">
-      <body className={`${inika.className} bg-[#F2F2F2]`}>{children}</body>
-      <SpeedInsights />
+      <body className={`${inika.className} bg-[#F2F2F2]`}>
+        {children}
+        <SpeedInsights />
+      </body>
       <Analytics />
     </html>
   );
