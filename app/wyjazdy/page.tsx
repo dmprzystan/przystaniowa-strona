@@ -3,6 +3,7 @@ import Link from "next/link";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import { Inter } from "next/font/google";
+import { getTrips } from "../lib/prisma";
 
 const inter = Inter({
   weight: ["400", "800"],
@@ -10,6 +11,8 @@ const inter = Inter({
 });
 
 async function page() {
+  const trips = await getTrips();
+
   return (
     <>
       <Link href="/" className="focus:outline-none">
