@@ -1,4 +1,7 @@
 import Image from "next/image";
+import { Inika } from "next/font/google";
+
+const inika = Inika({ weight: ["400"], subsets: ["latin", "latin-ext"] });
 
 function Header() {
   return (
@@ -11,7 +14,9 @@ function Header() {
         className="w-auto h-32 sm:h-36 md:h-44 lg:h-52"
       />
       <div className="flex flex-col items-center sm:items-start gap-3">
-        <h1 className="text-5xl md:text-6xl lg:text-[80px] sm:ml-12 font-normal">
+        <h1
+          className={`text-5xl md:text-6xl lg:text-[80px] sm:ml-12 font-normal ${inika.className}`}
+        >
           Przystań
         </h1>
         <p className="text-base md:text-lg lg:text-xl text-center uppercase">

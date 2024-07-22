@@ -26,6 +26,33 @@ export type Newspaper = Prisma.NewspaperGetPayload<{
   };
 }>;
 
+export type Trip = Prisma.TripGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    dateStart: true;
+    dateEnd: true;
+    description: true;
+    TripPhoto: {
+      select: {
+        url: true;
+      };
+    };
+    TripLink: {
+      select: {
+        url: true;
+        name: true;
+      };
+    };
+    TripAttachment: {
+      select: {
+        url: true;
+        name: true;
+      };
+    };
+  };
+}>;
+
 if (process.env.NODE_ENV === "production") {
   prisma = new PrismaClient();
 } else {
@@ -45,6 +72,39 @@ export const getNewspapers = cache(async () => {
     (a, b) => b.date.valueOf() - a.date.valueOf()
   );
   return newspapers;
+});
+
+export const getTrips = cache(async () => {
+  const trips = await prisma.trip.findMany({
+    select: {
+      id: true,
+      title: true,
+      dateStart: true,
+      dateEnd: true,
+      description: true,
+      TripPhoto: {
+        select: {
+          url: true,
+        },
+      },
+      TripLink: {
+        select: {
+          url: true,
+          name: true,
+        },
+      },
+      TripAttachment: {
+        select: {
+          url: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  trips.sort((a, b) => b.dateStart.valueOf() - a.dateStart.valueOf());
+
+  return trips;
 });
 
 export default prisma;

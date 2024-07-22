@@ -1,7 +1,6 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import path from "path";
 import * as oci from "oci-sdk";
 import { ObjectStorageClient, getNamespace } from "@/app/lib/oci";
 

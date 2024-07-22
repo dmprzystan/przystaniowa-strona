@@ -1,6 +1,6 @@
-import { config } from "dotenv"
-import { mkdirSync, writeFileSync } from "fs"
-import { join } from "path"
+const { config } = require("dotenv")
+const { writeFileSync, mkdirSync } = require("fs")
+const { join } = require("path")
 
 config({path: `.env`})
 
@@ -11,8 +11,8 @@ if (!oci_key || !oci_key_file) {
   throw new Error("OCI_PRIVATE_KEY and OCI_PRIVATE_KEY_FILE must be defined")
 }
 
-const key_path = join(import.meta.dirname, "..", oci_key_file)
-const key_dir = join(import.meta.dirname, "..", oci_key_file.split("/").slice(0, -1).join("/"))
+const key_path = join(__dirname, "..", oci_key_file)
+const key_dir = join(__dirname, "..", oci_key_file.split("/").slice(0, -1).join("/"))
 
 mkdirSync(key_dir, {recursive: true})
 writeFileSync(key_path, oci_key, {encoding: "utf-8"})
@@ -29,7 +29,7 @@ if (!oci_config.user || !oci_config.fingerprint || !oci_config.tenancy || !oci_c
   throw new Error("OCI_USER, OCI_FINGERPRINT, OCI_TENANCY, and OCI_REGION must be defined")
 }
 
-const config_path = join(import.meta.dirname, "..", ".oci", "config")
+const config_path = join(__dirname, "..", ".oci", "config")
 
 writeFileSync(config_path, `[DEFAULT]\n`)
 

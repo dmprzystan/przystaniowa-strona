@@ -27,6 +27,12 @@ const config: Config = {
       },
     },
   },
+  plugins: [require("@tailwindcss/typography")],
+  variants: {
+    extend: {
+      display: ["last"],
+    },
+  },
 };
 
 export default config;
