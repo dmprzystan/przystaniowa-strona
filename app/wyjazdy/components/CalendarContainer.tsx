@@ -21,6 +21,23 @@ function CalendarContainer(props: {
   const [year, setYear] = React.useState(props.year ?? 0);
   const [dragStart, setDragStart] = React.useState(-1);
   const [currentDrag, setCurrentDrag] = React.useState(0);
+  const [enableDrag, setEnableDrag] = React.useState<"x" | false>(false);
+
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      if (window.innerWidth < 550) {
+        setEnableDrag("x");
+      } else {
+        setEnableDrag(false);
+      }
+    });
+
+    if (window.innerWidth < 550) {
+      setEnableDrag("x");
+    } else {
+      setEnableDrag(false);
+    }
+  }, []);
 
   const date = (year: number, month: number) => {
     if (month < 0) {
@@ -34,12 +51,12 @@ function CalendarContainer(props: {
 
   return (
     <div className="flex items-center gap-8">
-      <div className="hidden">
+      <div className="hidden lg:block">
         <Calendar date={date(year, month - 1)} trips={props.trips} isSmaller />
       </div>
       <motion.div
-        className="relative"
-        drag="x"
+        className="relative lg:flex"
+        drag={enableDrag}
         dragSnapToOrigin
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.4}
@@ -72,7 +89,7 @@ function CalendarContainer(props: {
         }}
       >
         <button
-          className={`focus:outline-none absolute -left-24 top-1/2 transform -translate-y-1/2`}
+          className={`focus:outline-none absolute -left-24 top-1/2 transform -translate-y-1/2 lg:relative lg:-left-0 lg:top-auto lg:transform-none`}
           onClick={() => {
             if (month === 1) {
               setYear(year - 1);
@@ -83,14 +100,14 @@ function CalendarContainer(props: {
           }}
         >
           <ArrowBackIosRounded
-            className={`h-20 w-auto transition-all  duration-300 ${
+            className={`h-20 w-auto transition-colors  duration-300 ${
               currentDrag > dragThreshold ? "text-dimmedBlue" : "text-[#DADADA]"
             }`}
           />
         </button>
         <Calendar date={date(year, month)} trips={props.trips} />
         <button
-          className={`focus:outline-none absolute -right-24 top-1/2 transform -translate-y-1/2`}
+          className={`focus:outline-none absolute -right-24 top-1/2 transform -translate-y-1/2 lg:relative lg:-right-0 lg:top-auto lg:transform-none`}
           onClick={() => {
             if (month === 12) {
               setYear(year + 1);
@@ -101,13 +118,13 @@ function CalendarContainer(props: {
           }}
         >
           <ArrowForwardIosRounded
-            className={`h-20 w-auto transition-all duration-300 ${
+            className={`h-20 w-auto transition-colors duration-300 ${
               currentDrag > dragThreshold ? "text-dimmedBlue" : "text-[#DADADA]"
             }`}
           />
         </button>
       </motion.div>
-      <div className="hidden">
+      <div className="hidden lg:block">
         <Calendar date={date(year, month + 1)} trips={props.trips} isSmaller />
       </div>
     </div>
