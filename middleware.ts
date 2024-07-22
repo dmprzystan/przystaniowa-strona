@@ -14,11 +14,6 @@ export const middleware = async (request: NextRequest) => {
     return NextResponse.rewrite(`${process.env.TRIPS_ENDPOINT}/${url}`);
   }
 
-  if (path.startsWith("/wyjazdy")) {
-    const url = path.split("/").slice(2).join("/");
-    return NextResponse.rewrite(`${process.env.PUBLIC_TRIPS_ENDPOINT}/${url}`);
-  }
-
   const token = request.cookies.get("token")?.value; // Get the token from the cookies
 
   let loggedIn = false;
