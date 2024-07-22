@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import { Inter } from "next/font/google";
 import { getTrips } from "../lib/prisma";
 import CalendarContainer from "./components/CalendarContainer";
+import Image from "next/image";
 
 const inter = Inter({
   weight: ["400", "800"],
@@ -93,11 +94,14 @@ async function page() {
                     className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl mt-4"
                     dangerouslySetInnerHTML={{ __html: trip.description }}
                   />
-                  <div className="mt-4">
-                    <img
-                      className="rounded-[3rem] shadow-lg max-w-4xl min-w-[300px] w-full"
+                  <div className="mt-4 w-full">
+                    <Image
                       src={`/wyjazdy/${trip.TripPhoto[0].url}`}
                       alt=""
+                      width={800}
+                      height={500}
+                      
+                      className="max-w-4xl w-full min-w-[300px] rounded-[3rem] shadow-lg h-auto"
                     />
                   </div>
                   <div className="flex flex-wrap mt-4">
