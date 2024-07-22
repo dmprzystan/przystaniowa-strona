@@ -101,6 +101,9 @@ export const getTrips = cache(async () => {
       },
     },
   });
+
+  trips.sort((a, b) => b.dateStart.valueOf() - a.dateStart.valueOf());
+
   return trips;
 });
 
