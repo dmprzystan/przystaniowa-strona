@@ -6,9 +6,12 @@ export const middleware = async (request: NextRequest) => {
 
   if (path.startsWith("/gazetka")) {
     const url = path.split("/").slice(2).join("/");
-    return NextResponse.rewrite(
-      `${process.env.PUBLIC_NEWSPAPER_ENDPOINT}/${url}`
-    );
+    return NextResponse.rewrite(`${process.env.NEWSPAPER_ENDPOINT}/${url}`);
+  }
+
+  if (path.startsWith("/wyjazdy")) {
+    const url = path.split("/").slice(2).join("/");
+    return NextResponse.rewrite(`${process.env.TRIPS_ENDPOINT}/${url}`);
   }
 
   if (path.startsWith("/wyjazdy")) {
