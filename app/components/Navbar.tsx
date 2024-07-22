@@ -9,7 +9,7 @@ function Navbar() {
   const [isInTransition, setIsInTransition] = React.useState(false);
 
   const links = [
-    { href: "/o-nas", label: "o nas" },
+    { href: "/", label: "o nas" },
     { href: "/bierzmowanie", label: "bierzmowanie" },
     { href: "/gazetka", label: "gazetka" },
     { href: "/wyjazdy", label: "wyjazdy" },
