@@ -4,14 +4,62 @@ import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import { Inter } from "next/font/google";
 import { getTrips } from "../lib/prisma";
+import CalendarContainer from "./components/CalendarContainer";
 
 const inter = Inter({
   weight: ["400", "800"],
   subsets: ["latin", "latin-ext"],
 });
 
+const months = [
+  "Styczeń",
+  "Luty",
+  "Marzec",
+  "Kwiecień",
+  "Maj",
+  "Czerwiec",
+  "Lipiec",
+  "Sierpień",
+  "Wrzesień",
+  "Październik",
+  "Listopad",
+  "Grudzień",
+];
+
 async function page() {
   const trips = await getTrips();
+
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+
+  const displayDate = (dateStart: Date, dateEnd: Date) => {
+    const sameYear = dateStart.getFullYear() === dateEnd.getFullYear();
+    const sameMonth = dateStart.getMonth() === dateEnd.getMonth();
+    const sameDay = dateStart.getDate() === dateEnd.getDate();
+
+    if (sameYear && sameMonth && sameDay) {
+      return `${dateStart.getDate()} ${
+        months[dateStart.getMonth()]
+      } ${dateStart.getFullYear()}`;
+    } else if (sameYear && sameMonth) {
+      return `${dateStart.getDate()} - ${dateEnd.getDate()} ${
+        months[dateStart.getMonth()]
+      } ${dateStart.getFullYear()}`;
+    } else if (sameYear) {
+      return `${dateStart.getDate()} ${
+        months[dateStart.getMonth()]
+      } - ${dateEnd.getDate()} ${
+        months[dateEnd.getMonth()]
+      } ${dateStart.getFullYear()}`;
+    } else {
+      return `${dateStart.getDate()} ${
+        months[dateStart.getMonth()]
+      } ${dateStart.getFullYear()} - ${dateEnd.getDate()} ${
+        months[dateEnd.getMonth()]
+      } ${dateEnd.getFullYear()}`;
+    }
+  };
 
   return (
     <>
@@ -19,13 +67,57 @@ async function page() {
         <Header />
       </Link>
       <Navbar />
-      <div className="container mx-auto pb-8 pt-4 md:pt-6 lg:pt-8 xl:pt-12 mt-8 sm:mt-4">
+      <div className="pb-8 pt-4 md:pt-6 lg:pt-8 xl:pt-12 mt-8 sm:mt-4">
         <h2 className="text-3xl sm:text-4xl xl:text-5xl text-center">
           WYJAZDY
         </h2>
-        <div
-          className={`px-8 md:px-16 xl:px-32 flex flex-col sm:flex-row items-center sm:flex-wrap justify-between gap-12 lg:gap-y-16 mt-16 ${inter.className}`}
-        ></div>
+        <div className={`sm:mt-12 md:mt-16 mt-8 ${inter.className}`}>
+          <div className="w-full flex justify-center relative bg-dimmedBlue">
+            <div className="relative z-10 bg-[#F2F2F2] w-full rounded-bl-3xl sm:rounded-bl-[3rem] md:rounded-bl-[4rem] flex justify-center pb-8 overflow-hidden">
+              <CalendarContainer month={month} year={year} trips={trips} />
+            </div>
+          </div>
+          <div className="bg-dimmedBlue w-full rounded-tr-3xl sm:rounded-tr-[3rem] md:rounded-tr-[4rem] md:pt-2">
+            <div className="container mx-auto flex flex-col items-center gap-12 md:gap-16 py-8 sm:py-12">
+              {trips.map((trip) => (
+                <div
+                  className="w-full md:w-auto bg-white rounded-xl sm:rounded-3xl px-8 sm:px-16 py-8 sm:py-14 flex flex-col items-center gap-2"
+                  key={trip.id}
+                  id={trip.id}
+                >
+                  <h2 className="text-center text-2xl">{trip.title}</h2>
+                  <p className="text-center text-lg">
+                    {displayDate(trip.dateStart, trip.dateEnd)}
+                  </p>
+                  <div
+                    className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl mt-4"
+                    dangerouslySetInnerHTML={{ __html: trip.description }}
+                  />
+                  <div className="mt-4">
+                    <img
+                      className="rounded-[3rem] shadow-lg max-w-4xl min-w-[300px] w-full"
+                      src={`/wyjazdy/${trip.TripPhoto[0].url}`}
+                      alt=""
+                    />
+                  </div>
+                  <div className="flex flex-wrap mt-4">
+                    {trip.TripLink.map((link) => (
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="bg-dimmedBlue text-white block px-8 sm:px-16 py-4 sm:py-6 rounded-full cursor-pointer text-sm sm:text-base"
+                        key={link.url}
+                      >
+                        {link.name}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

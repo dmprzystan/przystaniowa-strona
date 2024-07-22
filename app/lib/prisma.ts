@@ -30,11 +30,26 @@ export type Trip = Prisma.TripGetPayload<{
   select: {
     id: true;
     title: true;
-    description: true;
-    price: true;
     dateStart: true;
     dateEnd: true;
-    coverUrl: true;
+    description: true;
+    TripPhoto: {
+      select: {
+        url: true;
+      };
+    };
+    TripLink: {
+      select: {
+        url: true;
+        name: true;
+      };
+    };
+    TripAttachment: {
+      select: {
+        url: true;
+        name: true;
+      };
+    };
   };
 }>;
 
@@ -60,7 +75,32 @@ export const getNewspapers = cache(async () => {
 });
 
 export const getTrips = cache(async () => {
-  const trips = await prisma.trip.findMany();
+  const trips = await prisma.trip.findMany({
+    select: {
+      id: true,
+      title: true,
+      dateStart: true,
+      dateEnd: true,
+      description: true,
+      TripPhoto: {
+        select: {
+          url: true,
+        },
+      },
+      TripLink: {
+        select: {
+          url: true,
+          name: true,
+        },
+      },
+      TripAttachment: {
+        select: {
+          url: true,
+          name: true,
+        },
+      },
+    },
+  });
   return trips;
 });
 
