@@ -61,7 +61,7 @@ export default function Page() {
                   )}
                 </div>
                 <div className="mb-4 md:mb-6 lg:mb-8 xl:mb-12 md:text-lg lg:text-xl xl:text-2xl *:leading-normal">
-                  <Markdown className="[&_ul]:list-disc [&_ul]:pl-6">
+                  <Markdown className="[&_ul]:list-disc [&_ul]:pl-6 *:text-pretty">
                     {step}
                   </Markdown>
                 </div>
