@@ -24,27 +24,76 @@ export async function DELETE(
 ) {
   const { id } = params;
 
-  const gazetka = await prisma.newspaper.delete({
+  const trip = await prisma.trip.findUnique({
     where: {
       id: id as string,
     },
+    include: {
+      TripPhoto: true,
+      TripAttachment: true,
+      TripLink: true,
+    },
   });
+
+  if (!trip) {
+    return NextResponse.json({ message: "Not found" }, { status: 404 });
+  }
+
+  await prisma.$transaction([
+    prisma.tripPhoto.deleteMany({
+      where: {
+        tripId: id as string,
+      },
+    }),
+    prisma.tripAttachment.deleteMany({
+      where: {
+        tripId: id as string,
+      },
+    }),
+    prisma.tripLink.deleteMany({
+      where: {
+        tripId: id as string,
+      },
+    }),
+    prisma.trip.delete({
+      where: {
+        id: id as string,
+      },
+    }),
+  ]);
 
   const namespaceName = await getNamespace();
 
   try {
-    await ObjectStorageClient.deleteObject({
-      bucketName: "przystaniowa-strona",
-      namespaceName,
-      objectName: gazetka.url,
-    });
+    const promises = [];
+    for (const photo of trip.TripPhoto) {
+      promises.push(
+        ObjectStorageClient.deleteObject({
+          bucketName: "przystaniowa-strona",
+          namespaceName,
+          objectName: photo.url,
+        })
+      );
+    }
+
+    for (const attachment of trip.TripAttachment) {
+      promises.push(
+        ObjectStorageClient.deleteObject({
+          bucketName: "przystaniowa-strona",
+          namespaceName,
+          objectName: attachment.url,
+        })
+      );
+    }
+
+    await Promise.all(promises);
   } catch (error) {
     console.error(error);
   }
 
-  revalidatePath("/gazetka");
+  revalidatePath("/wyjazdy");
 
-  return NextResponse.json(gazetka);
+  return NextResponse.json(trip);
 }
 
 export async function PUT(

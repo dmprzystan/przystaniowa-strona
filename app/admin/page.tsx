@@ -1,5 +1,3 @@
-import Schedule from "./plan/components/Schedule";
-import { getSchedule } from "../lib/prisma";
 import Navbar from "./components/Navbar";
 
 export default async function Admin() {

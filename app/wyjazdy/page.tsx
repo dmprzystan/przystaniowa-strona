@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import { getTrips } from "../lib/prisma";
 import CalendarContainer from "./components/CalendarContainer";
 import Image from "next/image";
+import { InsertDriveFile } from "@mui/icons-material";
 
 const inter = Inter({
   weight: ["400", "800"],
@@ -100,23 +101,41 @@ async function page() {
                       alt=""
                       width={800}
                       height={500}
-                      
                       className="max-w-4xl w-full min-w-[300px] rounded-[3rem] shadow-lg h-auto"
                     />
                   </div>
-                  <div className="flex flex-wrap mt-4">
-                    {trip.TripLink.map((link) => (
-                      <a
-                        href={link.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="bg-dimmedBlue text-white block px-8 sm:px-16 py-4 sm:py-6 rounded-full cursor-pointer text-sm sm:text-base"
-                        key={link.url}
-                      >
-                        {link.name}
-                      </a>
-                    ))}
-                  </div>
+                  {trip.TripAttachment.length > 0 && (
+                    <div className="mt-4 w-full flex flex-col items-center sm:flex-row flex-wrap gap-4">
+                      {trip.TripAttachment.map((attachment) => (
+                        <a
+                          key={attachment.name}
+                          href={`/wyjazdy/${attachment.url}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          download
+                          className="bg-gray-500 text-white px-4 sm:px-8 py-4 sm:py-4 rounded-2xl cursor-pointer text-sm sm:text-base shadow-bottom transition-all duration-300 hover:bg-gray-600 w-full flex justify-center sm:w-auto"
+                        >
+                          <InsertDriveFile />
+                          <span className="ml-2 mt-0.5">{attachment.name}</span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  {trip.TripLink.length > 0 && (
+                    <div className="flex flex-wrap mt-4 gap-4">
+                      {trip.TripLink.map((link) => (
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="bg-dimmedBlue text-white block px-8 sm:px-16 py-4 sm:py-6 rounded-full cursor-pointer text-sm sm:text-base"
+                          key={link.url}
+                        >
+                          {link.name}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

@@ -415,12 +415,18 @@ export default function Page() {
                   type="text"
                   name=""
                   id="file-name"
-                  defaultValue={attachmentsToAdd[0].name.split(".")[0]}
+                  defaultValue={attachmentsToAdd[0].name
+                    .split(".")
+                    .slice(0, -1)
+                    .join(".")}
                   className="border-0 outline-none bg-gray-200 px-2 py-1 rounded-lg shadow-sm focus:bg-gray-300 transition-all min-w-64"
                   onChange={(e) => {
                     const name = e.target.value;
-                    const extension =
-                      attachmentsToAdd[0].file.name.split(".")[1];
+                    const extension = attachmentsToAdd[0].name
+                      .split(".")
+                      .slice(-1)[0];
+
+                    console.log(name, extension);
 
                     const newName = `${name}.${extension}`;
                     setAttachmentsToAdd([
