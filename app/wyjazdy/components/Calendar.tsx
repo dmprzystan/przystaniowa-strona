@@ -67,12 +67,31 @@ function Calendar({
       const tripStartDate = new Date(trip.dateStart);
       const tripEndDate = new Date(trip.dateEnd);
 
-      return {
-        start: tripStartDate.getDate(),
-        end: tripEndDate.getDate(),
-        id: trip.id,
-      };
+      const startMonth = tripStartDate.getMonth();
+      const endMonth = tripEndDate.getMonth();
+
+      if (startMonth !== month) {
+        return {
+          start: 0,
+          end: tripEndDate.getDate(),
+          id: trip.id,
+        };
+      } else if (endMonth !== month) {
+        return {
+          start: tripStartDate.getDate(),
+          end: daysInMonth + 1,
+          id: trip.id,
+        };
+      } else {
+        return {
+          start: tripStartDate.getDate(),
+          end: tripEndDate.getDate(),
+          id: trip.id,
+        };
+      }
     });
+
+    console.log(newTripDates);
 
     setTripDates(newTripDates);
   }, [tripsThisMonth]);
@@ -126,22 +145,26 @@ function Calendar({
             const isEndDay = tripDates.some(
               (trip) => trip.start !== day && trip.end === day
             );
-            const isSOL = j === 0;
-            const isEOL = j === 6;
+            const isSOL = j === 0 || day === 1;
+            const isEOL = j === 6 || day === daysInMonth;
 
             return (
               <div
                 key={`day-${year}-${month}-${day}-${j}`}
                 className={`text-center
                   ${
-                    isStartDay || isEndDay
-                      ? isStartDay
-                        ? "rounded-l-full"
-                        : "rounded-r-full"
-                      : isSOL || isEOL
-                      ? isSOL
-                        ? "rounded-l-lg"
-                        : "rounded-r-lg"
+                    isStartDay && isEOL
+                      ? "rounded-l-3xl rounded-r-lg"
+                      : isStartDay
+                      ? "rounded-l-3xl"
+                      : isEndDay && isSOL
+                      ? "rounded-r-3xl rounded-l-lg"
+                      : isEndDay
+                      ? "rounded-r-full"
+                      : isSOL
+                      ? "rounded-l-lg"
+                      : isEOL
+                      ? "rounded-r-lg"
                       : ""
                   }
 
