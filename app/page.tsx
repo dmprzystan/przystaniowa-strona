@@ -5,8 +5,6 @@ import Schedule from "./components/Schedule";
 import Contact from "./components/Contact";
 import Link from "next/link";
 
-import { GoogleAnalytics } from "@next/third-parties/google";
-
 import { getSchedule } from "./lib/prisma";
 
 export default async function Home() {
@@ -25,7 +23,6 @@ export default async function Home() {
         </div>
         <Contact />
       </main>
-      <GoogleAnalytics gaId="G-X396CLQTK4" />
     </>
   );
 }
