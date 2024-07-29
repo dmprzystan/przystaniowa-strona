@@ -66,3 +66,17 @@ model TripAttachment {
   tripId String
   trip   Trip   @relation(fields: [tripId], references: [id])
 }
+
+model Album {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  AlbumPhoto  AlbumPhoto[]
+}
+
+model AlbumPhoto {
+  id      String @id @default(cuid())
+  url     String
+  albumId String
+  album   Album  @relation(fields: [albumId], references: [id])
+}
