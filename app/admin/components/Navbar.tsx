@@ -12,9 +12,8 @@ function Navbar() {
     { name: "Strona główna", href: "/admin" },
     { name: "Plan tygodnia", href: "/admin/plan" },
     { name: "Gazetka", href: "/admin/gazetka" },
-    { name: "Ogłoszenia", href: "/admin/ogloszenia" },
     { name: "Wyjazdy", href: "/admin/wyjazdy" },
-    { name: "Wiadomości", href: "/admin/wiadomosci" },
+    { name: "Galeria", href: "/admin/galeria" },
   ];
 
   return (
