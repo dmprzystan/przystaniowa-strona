@@ -14,3 +14,35 @@ export const getNamespace = async () => {
   const namespaceResponse = await ObjectStorageClient.getNamespace({});
   return namespaceResponse.value;
 };
+
+export const getStatute = async () => {
+  const namespace = await getNamespace();
+
+  const request: oci.objectstorage.requests.GetObjectRequest = {
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespace,
+    objectName: "regulamin/regulamin.html",
+  };
+
+  try {
+    const response = await ObjectStorageClient.getObject(request);
+
+    const reader = (response.value as ReadableStream).getReader();
+
+    let result = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+
+      result += new TextDecoder().decode(value);
+    }
+
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+
+  return "";
+};
