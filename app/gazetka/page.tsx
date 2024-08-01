@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { getNewspapers } from "@/app/lib/prisma";
 
-import { GoogleAnalytics } from "@next/third-parties/google";
-
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import { Inter } from "next/font/google";
@@ -65,7 +63,6 @@ async function page() {
           ))}
         </div>
       </div>
-      <GoogleAnalytics gaId="G-X396CLQTK4" />
     </>
   );
 }
