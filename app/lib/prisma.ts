@@ -53,6 +53,30 @@ export type Trip = Prisma.TripGetPayload<{
   };
 }>;
 
+export type Album = Prisma.AlbumGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    description: true;
+    date: true;
+  };
+  include: {
+    AlbumPhoto: {
+      select: {
+        id: true;
+        url: true;
+      };
+    };
+  };
+}>;
+
+export type AlbumPhoto = Prisma.AlbumPhotoGetPayload<{
+  select: {
+    id: true;
+    url: true;
+  };
+}>;
+
 if (process.env.NODE_ENV === "production") {
   prisma = new PrismaClient();
 } else {
@@ -105,6 +129,48 @@ export const getTrips = cache(async () => {
   trips.sort((a, b) => b.dateStart.valueOf() - a.dateStart.valueOf());
 
   return trips;
+});
+
+export const getAlbums = cache(async () => {
+  const albums = await prisma.album.findMany({
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      date: true,
+      AlbumPhoto: {
+        select: {
+          id: true,
+          url: true,
+        },
+        take: 10,
+      },
+    },
+  });
+
+  albums.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+  return albums;
+});
+
+export const getAlbum = cache(async (id: string) => {
+  const album = await prisma.album.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      date: true,
+      AlbumPhoto: {
+        select: {
+          id: true,
+          url: true,
+        },
+      },
+    },
+  });
+
+  return album;
 });
 
 export default prisma;
