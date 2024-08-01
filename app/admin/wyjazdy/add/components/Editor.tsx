@@ -27,7 +27,7 @@ export default function Editor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl focus:outline-none max-w-none",
+          "prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl focus:outline-none max-w-none [h3]:text-2xl",
       },
     },
     onUpdate({ editor }) {
@@ -37,7 +37,7 @@ export default function Editor({
 
   return (
     <div>
-      <div className="mx-2 flex gap-2 bg-gray-200 rounded-full px-4 py-1 items-stretch">
+      <div className="mx-2 flex gap-2 bg-gray-200 rounded-full px-4 py-1 items-stretch sticky top-4 z-50">
         <TextSelect editor={editor} />
         <div className="my-1.5 w-0.5 bg-gray-400 rounded-full"></div>
         <div className="flex gap-1">

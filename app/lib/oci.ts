@@ -46,3 +46,16 @@ export const getStatute = async () => {
 
   return "";
 };
+
+export const putStatute = async (statute: string) => {
+  const namespace = await getNamespace();
+
+  const request: oci.objectstorage.requests.PutObjectRequest = {
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespace,
+    objectName: "regulamin/regulamin.html",
+    putObjectBody: statute,
+  };
+
+  await ObjectStorageClient.putObject(request);
+};
