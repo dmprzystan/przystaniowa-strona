@@ -16,9 +16,11 @@ import {
 export default function Editor({
   value,
   setValue,
+  classname,
 }: {
   value: string;
   setValue: (value: string) => void;
+  classname?: string;
 }) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -26,8 +28,9 @@ export default function Editor({
     content: value,
     editorProps: {
       attributes: {
-        class:
-          "prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl focus:outline-none max-w-none [h3]:text-2xl",
+        class: classname
+          ? classname + " focus:outline-none"
+          : "prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl focus:outline-none max-w-none",
       },
     },
     onUpdate({ editor }) {

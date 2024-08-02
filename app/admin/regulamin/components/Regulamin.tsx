@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Editor from "../../wyjazdy/add/components/Editor";
 
+import "@/app/regulamin/style.scss";
+
 function Regulamin(props: { statute: string }) {
   const [statute, setStatute] = useState(props.statute);
   const [lastSaved, setLastSaved] = useState(props.statute);
@@ -67,10 +69,14 @@ function Regulamin(props: { statute: string }) {
       </div>
       <div className="flex flex-col gap-8 mt-16">
         {isEditing ? (
-          <Editor value={statute} setValue={setStatute} />
+          <Editor
+            value={statute}
+            setValue={setStatute}
+            classname="regulamin !text-black"
+          />
         ) : (
           <div
-            className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl mt-4"
+            className="regulamin mt-4 !text-black"
             dangerouslySetInnerHTML={{ __html: statute }}
           />
         )}
