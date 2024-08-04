@@ -3,7 +3,7 @@
 import { CloseRounded, CloudUploadRounded } from "@mui/icons-material";
 import React from "react";
 import { motion } from "framer-motion";
-import { Album } from "@/app/lib/prisma";
+import { Album, AlbumPhotoSize } from "@/app/lib/prisma";
 
 type UploadProps = {
   album: Album;
@@ -46,7 +46,40 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
         setUploads((prev) => [...prev, upload]);
 
         const formData = new FormData();
+        const image = new Image();
+        image.src = URL.createObjectURL(file);
+        await new Promise((resolve) => {
+          image.onload = () => {
+            resolve(null);
+          };
+        });
+
+        const dimensions = {
+          width: image.width,
+          height: image.height,
+        };
+
+        image.remove();
+
+        const ar = dimensions.width / dimensions.height;
+        const delta = ar - 1.25;
+
+        console.log(dimensions, ar, delta);
+
+        let size: AlbumPhotoSize = "NORMAL";
+
+        if (delta > 0.25) {
+          size = "WIDE";
+        } else if (delta < -0.25) {
+          size = "TALL";
+        }
+
+        if (dimensions.width > 1920) {
+          size = "BIG";
+        }
+
         formData.append("file", file);
+        formData.append("size", size);
 
         fetch(`/api/admin/gallery/${album.id}`, {
           method: "POST",
