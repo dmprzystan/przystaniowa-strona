@@ -73,7 +73,7 @@ function Galeria(props: { gallery: Album[] }) {
                 <img
                   src={
                     album.AlbumPhoto[0]
-                      ? album.AlbumPhoto[0].url
+                      ? `/galeria/img/${album.AlbumPhoto[0].url}`
                       : `https://picsum.photos/600/400/?blur=6?random=${album.id}`
                   }
                   alt=""

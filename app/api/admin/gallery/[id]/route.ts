@@ -43,14 +43,15 @@ export async function POST(
   const uuid = v7();
 
   const namespaceName = await getNamespace();
-  const objectName = `gallery/${id}/galeria-${uuid}.${file.name
-    .split(".")
-    .pop()}`;
+  const objectPath = "gallery";
+  const uniqueName = `${id}/galeria-${uuid}.${file.name.split(".").pop()}`;
+
+  const objectName = `${objectPath}/${uniqueName}`;
 
   await prisma.albumPhoto.create({
     data: {
       albumId: id,
-      url: objectName,
+      url: uniqueName,
     },
   });
 

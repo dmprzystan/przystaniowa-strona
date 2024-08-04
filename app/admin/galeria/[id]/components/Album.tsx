@@ -9,6 +9,8 @@ import {
   ImageNotSupportedRounded,
 } from "@mui/icons-material";
 import Upload from "./Upload";
+import "@/app/galeria/style.scss";
+import Photo from "./Photo";
 
 type AlbumProps = {
   album: Album;
@@ -46,15 +48,9 @@ function Album(props: AlbumProps) {
           </div>
         </div>
         {album.AlbumPhoto.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {album.AlbumPhoto.map((photo) => (
-              <div key={photo.id} className="relative">
-                <img
-                  src={photo.url}
-                  alt={photo.url}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
+          <div className="mt-8 masonry">
+            {album.AlbumPhoto.map((photo, i) => (
+              <Photo photo={photo} />
             ))}
           </div>
         ) : (
