@@ -14,6 +14,7 @@ function Navbar() {
     { name: "Gazetka", href: "/admin/gazetka" },
     { name: "Wyjazdy", href: "/admin/wyjazdy" },
     { name: "Galeria", href: "/admin/galeria" },
+    { name: "Regulamin", href: "/admin/regulamin" },
   ];
 
   return (
