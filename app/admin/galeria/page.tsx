@@ -1,11 +1,14 @@
 import Navbar from "../components/Navbar";
 import Galeria from "./components/Galeria";
 
+import { getGallery } from "@/app/lib/prisma";
+
 export default async function Plan() {
+  const gallery = await getGallery();
   return (
     <>
       <Navbar />
-      <Galeria />
+      <Galeria gallery={gallery} />
     </>
   );
 }

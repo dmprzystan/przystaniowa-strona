@@ -59,8 +59,6 @@ export type Album = Prisma.AlbumGetPayload<{
     title: true;
     description: true;
     date: true;
-  };
-  include: {
     AlbumPhoto: {
       select: {
         id: true;
@@ -131,7 +129,7 @@ export const getTrips = cache(async () => {
   return trips;
 });
 
-export const getAlbums = cache(async () => {
+export const getGallery: () => Promise<Album[]> = cache(async () => {
   const albums = await prisma.album.findMany({
     select: {
       id: true,
@@ -153,24 +151,30 @@ export const getAlbums = cache(async () => {
   return albums;
 });
 
-export const getAlbum = cache(async (id: string) => {
-  const album = await prisma.album.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      date: true,
-      AlbumPhoto: {
-        select: {
-          id: true,
-          url: true,
+export const getAlbum: (id: string) => Promise<Album> = cache(
+  async (id: string) => {
+    const album = await prisma.album.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        date: true,
+        AlbumPhoto: {
+          select: {
+            id: true,
+            url: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  return album;
-});
+    if (!album) {
+      throw new Error("Album not found");
+    }
+
+    return album;
+  }
+);
 
 export default prisma;

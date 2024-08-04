@@ -28,13 +28,17 @@ export async function POST(req: NextRequest) {
   const date = new Date(data.date);
   const description = data.description;
 
-  await prisma.album.create({
-    data: {
-      title,
-      date,
-      description,
-    },
-  });
+  try {
+    await prisma.album.create({
+      data: {
+        title,
+        date,
+        description,
+      },
+    });
+  } catch (e: any) {
+    return NextResponse.json({ message: e.message }, { status: 500 });
+  }
 
   return NextResponse.json({ message: "ok" });
 }

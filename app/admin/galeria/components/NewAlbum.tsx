@@ -2,9 +2,10 @@ import React from "react";
 
 type NewAlbumProps = {
   onClose: () => void;
+  onSubmit: () => void;
 };
 
-function NewAlbum({ onClose }: NewAlbumProps) {
+function NewAlbum({ onClose, onSubmit }: NewAlbumProps) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -32,6 +33,7 @@ function NewAlbum({ onClose }: NewAlbumProps) {
 
     if (res.ok) {
       form.reset();
+      onSubmit();
       onClose();
     } else {
       alert("Wystąpił błąd");
@@ -40,7 +42,7 @@ function NewAlbum({ onClose }: NewAlbumProps) {
 
   return (
     <div
-      className="fixed w-full h-full left-0 top-0 bg-white bg-opacity-30 backdrop-blur-md flex justify-center items-center"
+      className="fixed w-full h-full left-0 top-0 bg-white bg-opacity-30 backdrop-blur-md flex justify-center items-center z-50"
       onClick={onClose}
     >
       <form
