@@ -33,7 +33,13 @@ function Navbar() {
             <li key={page.href}>
               <Link
                 className={`hover:bg-gray-50 hover:shadow-md transition-all px-4 py-2 rounded-2xl cursor-pointer block ${
-                  pathname === page.href ? "bg-gray-50 shadow-md" : ""
+                  page.href === "/admin"
+                    ? pathname === page.href
+                      ? "bg-gray-50 shadow-md"
+                      : ""
+                    : pathname.startsWith(page.href)
+                    ? "bg-gray-50 shadow-md"
+                    : ""
                 }`}
                 href={page.href}
               >
