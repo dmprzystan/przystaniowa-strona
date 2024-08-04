@@ -11,10 +11,26 @@ import {
 import Upload from "./Upload";
 import "@/app/galeria/style.scss";
 import Photo from "./Photo";
+import Edit from "./Edit";
 
 type AlbumProps = {
   album: Album;
 };
+
+const months = [
+  "Styczeń",
+  "Luty",
+  "Marzec",
+  "Kwiecień",
+  "Maj",
+  "Czerwiec",
+  "Lipiec",
+  "Sierpień",
+  "Wrzesień",
+  "Październik",
+  "Listopad",
+  "Grudzień",
+];
 
 function Album(props: AlbumProps) {
   const [album, setAlbum] = React.useState<Album>(props.album);
@@ -47,11 +63,21 @@ function Album(props: AlbumProps) {
     setAlbum(data);
   };
 
+  const date = (date: Date) => {
+    return `${months[date.getMonth()]} ${date.getFullYear()}`;
+  };
+
   return (
     <>
       <div className="px-4 sm:px-16 w-full">
         <div className="flex justify-between items-center">
-          <h2 className="text-4xl text-center font-semibold">{album.title}</h2>
+          <div className="flex gap-3 items-center">
+            <h2 className="text-4xl text-center font-semibold">
+              {album.title}
+            </h2>
+            <div className="w-2 h-2 rounded-full bg-black"></div>
+            <p className="font-light text-xl">{date(album.date)}</p>
+          </div>
           <div className="flex gap-4">
             <button
               className="bg-blue-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all flex gap-2 items-center"
@@ -73,6 +99,13 @@ function Album(props: AlbumProps) {
             </button>
           </div>
         </div>
+        {album.description && (
+          <div>
+            <hr className="my-4" />
+            <p>{album.description}</p>
+          </div>
+        )}
+
         {album.AlbumPhoto.length > 0 ? (
           <div className="mt-8 masonry">
             {album.AlbumPhoto.map((photo, i) => (
@@ -102,6 +135,13 @@ function Album(props: AlbumProps) {
         <Upload
           album={album}
           onClose={() => setUpload(false)}
+          onSubmit={getAlbum}
+        />
+      )}
+      {edit && (
+        <Edit
+          album={album}
+          onClose={() => setEdit(false)}
           onSubmit={getAlbum}
         />
       )}

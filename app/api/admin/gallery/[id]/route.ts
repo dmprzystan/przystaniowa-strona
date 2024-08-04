@@ -48,6 +48,59 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+
+  const album = await prisma.album.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      AlbumPhoto: {
+        select: {
+          id: true,
+          url: true,
+        },
+      },
+    },
+  });
+
+  if (!album) {
+    return NextResponse.json({ message: "Album not found" }, { status: 404 });
+  }
+
+  const deleteDB = prisma.albumPhoto.deleteMany({
+    where: {
+      albumId: id,
+    },
+  });
+
+  // console.log(id, album.AlbumPhoto[0].url);
+
+  const namespaceName = await getNamespace();
+
+  // Delete the album folder from the object storage
+  const deleteAlbum = album.AlbumPhoto.map((photo) => {
+    return ObjectStorageClient.deleteObject({
+      bucketName: "przystaniowa-strona",
+      namespaceName: namespaceName,
+      objectName: `gallery/${photo.url}`,
+    });
+  });
+
+  await Promise.all(deleteAlbum);
+
+  try {
+    await deleteDB;
+    await prisma.album.delete({
+      where: {
+        id,
+      },
+    });
+    revalidatePath("/galeria");
+    return NextResponse.json({ message: "ok" });
+  } catch (e) {
+    return NextResponse.json({ message: "Error" }, { status: 500 });
+  }
 }
 
 export async function POST(
