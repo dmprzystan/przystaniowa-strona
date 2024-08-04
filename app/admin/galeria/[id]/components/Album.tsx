@@ -51,7 +51,7 @@ function Album(props: AlbumProps) {
     <>
       <div className="px-4 sm:px-16 w-full">
         <div className="flex justify-between items-center">
-          <h2 className="text-4xl text-center">{album.title}</h2>
+          <h2 className="text-4xl text-center font-semibold">{album.title}</h2>
           <div className="flex gap-4">
             <button
               className="bg-blue-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all flex gap-2 items-center"
@@ -90,7 +90,9 @@ function Album(props: AlbumProps) {
             <h3 className="flex flex-col gap-2 items-center font-bold text-3xl">
               Brak zdjęć w albumie.
               <span className="font-extralight text-base">
-                Kliknij przycisk "Dodaj zdjęcie" aby dodać zdjęcie do albumu.
+                Kliknij przycisk{" "}
+                <span className="font-semibold">Dodaj zdjęcie</span> aby dodać
+                zdjęcie do albumu.
               </span>
             </h3>
           </div>

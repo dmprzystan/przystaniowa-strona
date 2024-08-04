@@ -88,7 +88,7 @@ function Photo({
               </button>
             </div>
             <button
-              className="w-10 h-10 flex items-center justify-center bg-red-500 rounded-full"
+              className="w-10 h-10 flex items-center justify-center bg-red-500 rounded-full shadow-none hover:shadow-lg hover:bg-red-600 transition-all"
               onClick={() => {
                 handleDelete(photo.id);
               }}
