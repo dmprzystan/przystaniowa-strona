@@ -66,3 +66,26 @@ model TripAttachment {
   tripId String
   trip   Trip   @relation(fields: [tripId], references: [id])
 }
+
+model Album {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  date        DateTime     @default(now())
+  AlbumPhoto  AlbumPhoto[]
+}
+
+enum AlbumPhotoSize {
+  NORMAL
+  WIDE
+  TALL
+  BIG
+}
+
+model AlbumPhoto {
+  id      String         @id @default(cuid())
+  url     String
+  size    AlbumPhotoSize @default(NORMAL)
+  albumId String
+  album   Album          @relation(fields: [albumId], references: [id])
+}

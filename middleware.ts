@@ -14,6 +14,14 @@ export const middleware = async (request: NextRequest) => {
     return NextResponse.rewrite(`${process.env.TRIPS_ENDPOINT}/${url}`);
   }
 
+  if (path.startsWith("/galeria/img")) {
+    const url = path.split("/").slice(3).join("/");
+    console.log(url);
+    return NextResponse.rewrite(
+      `${process.env.GALLERY_ENDPOINT}/gallery/${url}`
+    );
+  }
+
   const token = request.cookies.get("token")?.value; // Get the token from the cookies
 
   let loggedIn = false;
@@ -52,5 +60,11 @@ export const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/(admin.*)", "/(api/admin.*)", "/(gazetka/.*)", "/(wyjazdy/.*)"],
+  matcher: [
+    "/(admin.*)",
+    "/(api/admin.*)",
+    "/(gazetka/.*)",
+    "/(wyjazdy/.*)",
+    "/(galeria/img/.*)",
+  ],
 };
