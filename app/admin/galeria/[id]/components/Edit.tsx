@@ -24,35 +24,21 @@ function Edit({ album, onClose, onSubmit }: EditProps) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    //     const form = e.currentTarget;
-    //     const formData = new FormData(form);
+    const body = JSON.stringify({ title, date, description });
+    const res = await fetch(`/api/admin/gallery/${album.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+    });
 
-    //     const title = formData.get("title") as string;
-    //     const date = formData.get("date") as string;
-    //     const description = formData.get("description") as string;
-
-    //     if (!title || !date) {
-    //       alert("Tytuł i data są wymagane");
-    //       return;
-    //     }
-
-    //     const body = JSON.stringify({ title, date, description });
-
-    //     const res = await fetch("/api/admin/gallery", {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body,
-    //     });
-
-    //     if (res.ok) {
-    //       form.reset();
-    //       onSubmit();
-    //       onClose();
-    //     } else {
-    //       alert("Wystąpił błąd");
-    //     }
+    if (res.ok) {
+      onSubmit();
+      onClose();
+    } else {
+      alert("Wystąpił błąd");
+    }
   }
 
   async function handleDelete() {
@@ -101,6 +87,8 @@ function Edit({ album, onClose, onSubmit }: EditProps) {
             name="title"
             id="title"
             required
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
         <div className="mt-4 flex flex-col gap-1">
@@ -112,8 +100,9 @@ function Edit({ album, onClose, onSubmit }: EditProps) {
             type="date"
             name="date"
             id="date"
-            defaultValue={new Date().toISOString().split("T")[0]} // today's date
             required
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
           />
         </div>
         <div className="mt-4 flex flex-col gap-1">
@@ -125,6 +114,8 @@ function Edit({ album, onClose, onSubmit }: EditProps) {
             id="description"
             rows={4}
             className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg resize-none"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           ></textarea>
         </div>
         <div className="mt-4 flex justify-between">

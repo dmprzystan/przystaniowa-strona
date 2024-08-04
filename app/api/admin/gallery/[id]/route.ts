@@ -19,6 +19,7 @@ export async function GET(
       id: true,
       title: true,
       date: true,
+      description: true,
       AlbumPhoto: {
         select: {
           id: true,
@@ -41,6 +42,29 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+
+  const data = await req.json();
+
+  const { title, date, description } = data;
+
+  try {
+    await prisma.album.update({
+      where: {
+        id,
+      },
+      data: {
+        title,
+        date: new Date(date),
+        description,
+      },
+    });
+
+    revalidatePath("/galeria");
+    revalidatePath(`/galeria/${id}`);
+    return NextResponse.json({ message: "ok" });
+  } catch (e) {
+    return NextResponse.json({ message: "Error" }, { status: 500 });
+  }
 }
 
 export async function DELETE(
