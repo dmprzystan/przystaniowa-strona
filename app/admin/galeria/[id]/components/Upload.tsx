@@ -22,6 +22,17 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
 
   const [uploads, setUploads] = React.useState<FileUpload[]>([]);
 
+  const handleClose = () => {
+    const notUploaded = uploads.filter((u) => u.progress < 100);
+    if (notUploaded.length > 0) {
+      if (confirm("Trwa wysyłanie plików, czy na pewno chcesz zamknąć okno?")) {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  };
+
   async function handleUpload(fileList: FileList) {
     const files = Array.from(fileList || []);
 
@@ -37,20 +48,21 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
         const formData = new FormData();
         formData.append("file", file);
 
-        const response = await fetch(`/api/admin/gallery/${album.id}`, {
+        fetch(`/api/admin/gallery/${album.id}`, {
           method: "POST",
           body: formData,
-        });
-
-        if (response.ok) {
-          upload.progress = 100;
-          setUploads((prev) => [...prev]);
-          setTimeout(() => {
+        }).then((res) => {
+          if (res.ok) {
+            upload.progress = 100;
+            setUploads((prev) => [...prev]);
+            onSubmit();
+            setTimeout(() => {
+              setUploads((prev) => prev.filter((u) => u.file !== file));
+            }, 5000);
+          } else {
             setUploads((prev) => prev.filter((u) => u.file !== file));
-          }, 5000);
-        } else {
-          setUploads((prev) => prev.filter((u) => u.file !== file));
-        }
+          }
+        });
       }
     }
 
@@ -73,11 +85,11 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
 
   return (
     <div
-      className="fixed w-full h-full left-0 top-0 bg-white bg-opacity-30 backdrop-blur-md flex justify-center items-center z-50"
-      onClick={onClose}
+      className="fixed w-full h-full left-0 top-0 bg-white bg-opacity-30 backdrop-blur-lg flex justify-center items-center z-50"
+      onClick={handleClose}
     >
       <div
-        className="bg-white px-6 py-6 rounded-3xl w-[500px]"
+        className="bg-white px-6 py-6 rounded-3xl w-[500px] shadow-2xl"
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -89,7 +101,7 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
           </h2>
           <button
             className="absolute right-0 hover:rotate-90 rotate-0 transition-all text-gray-600 hover:text-black"
-            onClick={onClose}
+            onClick={handleClose}
           >
             <CloseRounded />
           </button>

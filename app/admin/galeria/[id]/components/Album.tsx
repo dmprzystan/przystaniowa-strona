@@ -18,8 +18,34 @@ type AlbumProps = {
 
 function Album(props: AlbumProps) {
   const [album, setAlbum] = React.useState<Album>(props.album);
-  const [upload, setUpload] = React.useState(true);
+  const [upload, setUpload] = React.useState(false);
   const [edit, setEdit] = React.useState(false);
+
+  const handleDelete = async (id: string) => {
+    fetch(`/api/admin/gallery/${album.id}/${id}`, {
+      method: "DELETE",
+    }).then((res) => {
+      if (res.ok) {
+        getAlbum();
+      }
+    });
+    setAlbum((prev) => ({
+      ...prev,
+      AlbumPhoto: prev.AlbumPhoto.filter((photo) => photo.id !== id),
+    }));
+  };
+
+  const getAlbum = async () => {
+    const res = await fetch(`/api/admin/gallery/${album.id}`);
+    const rawData = (await res.json()) as { album: Album };
+
+    const data: Album = {
+      ...rawData.album,
+      date: new Date(rawData.album.date),
+    };
+
+    setAlbum(data);
+  };
 
   return (
     <>
@@ -50,7 +76,12 @@ function Album(props: AlbumProps) {
         {album.AlbumPhoto.length > 0 ? (
           <div className="mt-8 masonry">
             {album.AlbumPhoto.map((photo, i) => (
-              <Photo photo={photo} />
+              <Photo
+                key={photo.id}
+                photo={photo}
+                handleDelete={handleDelete}
+                fetchAll={getAlbum}
+              />
             ))}
           </div>
         ) : (
@@ -69,7 +100,7 @@ function Album(props: AlbumProps) {
         <Upload
           album={album}
           onClose={() => setUpload(false)}
-          onSubmit={() => {}}
+          onSubmit={getAlbum}
         />
       )}
     </>

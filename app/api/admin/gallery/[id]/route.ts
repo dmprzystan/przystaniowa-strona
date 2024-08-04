@@ -10,6 +10,30 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
+
+  const album = await prisma.album.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      title: true,
+      date: true,
+      AlbumPhoto: {
+        select: {
+          id: true,
+          url: true,
+          size: true,
+        },
+      },
+    },
+  });
+
+  if (!album) {
+    return NextResponse.json({ message: "Album not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({ album });
 }
 
 export async function PUT(
@@ -62,6 +86,7 @@ export async function POST(
     putObjectBody: file.stream(),
   });
 
+  revalidatePath("/galeria");
   revalidatePath(`/galeria/${id}`);
 
   return NextResponse.json({ message: "ok" });
