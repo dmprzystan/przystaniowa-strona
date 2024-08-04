@@ -75,9 +75,17 @@ model Album {
   AlbumPhoto  AlbumPhoto[]
 }
 
+enum AlbumPhotoSize {
+  NORMAL
+  WIDE
+  TALL
+  BIG
+}
+
 model AlbumPhoto {
-  id      String @id @default(cuid())
+  id      String         @id @default(cuid())
   url     String
+  size    AlbumPhotoSize @default(NORMAL)
   albumId String
-  album   Album  @relation(fields: [albumId], references: [id])
+  album   Album          @relation(fields: [albumId], references: [id])
 }
