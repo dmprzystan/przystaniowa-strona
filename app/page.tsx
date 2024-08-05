@@ -16,8 +16,9 @@ export default async function Home() {
   return (
     <>
       <Script
-        src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_CAPTCHA_KEY}`}
-        strategy="beforeInteractive"
+        src={`https://challenges.cloudflare.com/turnstile/v0/api.js`}
+        async={true}
+        defer={true}
       />
       <Link href="/" className="focus:outline-none">
         <Header />

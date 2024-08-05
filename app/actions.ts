@@ -27,8 +27,10 @@ export async function submitMessage(
     surname: formData.get("surname"),
     email: formData.get("email"),
     message: formData.get("message"),
-    captcha: formData.get("captcha"),
+    captcha: formData.get("cf-turnstile-response"),
   });
+
+  console.log(formData);
 
   if (!parse.success) {
     return { message: "Nie wszystkie wymagane pola zostały wypełnione" };
@@ -37,7 +39,7 @@ export async function submitMessage(
   const contactData = parse.data;
 
   const captcha = await fetch(
-    "https://www.google.com/recaptcha/api/siteverify",
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
     {
       method: "POST",
       headers: {
@@ -50,10 +52,6 @@ export async function submitMessage(
   const captchaData = await captcha.json();
 
   if (!captchaData.success) {
-    return { message: "Weryfikacja CAPTCHA nie powiodła się" };
-  }
-
-  if (captchaData.score < 0.7) {
     return { message: "Weryfikacja CAPTCHA nie powiodła się" };
   }
 

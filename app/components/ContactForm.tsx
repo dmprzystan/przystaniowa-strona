@@ -16,21 +16,14 @@ const initialState = {
   message: "",
 };
 
-function Button({
-  mobile,
-  onClick,
-}: {
-  mobile?: boolean;
-  onClick: () => void;
-}) {
+function Button({ mobile }: { mobile?: boolean }) {
   const { pending } = useFormStatus();
   return (
     <button
-      onClick={onClick}
       className={`
         ${mobile ? "block sm:hidden" : "hidden sm:block"}
         bg-white rounded-full shadow-arround text-[#525252] uppercase py-2 mt-4 w-full disabled:opacity-50`}
-      type="button"
+      type="submit"
       disabled={pending}
     >
       wyślij
@@ -62,24 +55,6 @@ function ContactForm() {
       }, 5000);
     }
   }, [state.message]);
-
-  function handleSubmit() {
-    // @ts-ignore
-    grecaptcha.ready(function () {
-      // @ts-ignore
-      grecaptcha
-        .execute(process.env.NEXT_PUBLIC_CAPTCHA_KEY, { action: "submit" })
-        .then(function (token: any) {
-          if (captchaRef.current) {
-            // @ts-ignore
-            captchaRef.current.value = token;
-          }
-          if (submitRef.current) {
-            submitRef.current.click();
-          }
-        });
-    });
-  }
 
   return (
     <form
@@ -142,12 +117,17 @@ function ContactForm() {
               </button>
             </div>
           )}
-          <Button onClick={handleSubmit} />
+          <Button />
         </div>
       </div>
       <TextArea label="TWOJA WIADOMOŚĆ" name="message" />
-      <Button onClick={handleSubmit} mobile />
-      <button className="hidden" type="submit" ref={submitRef} />
+      <Button mobile />
+      <div>
+        <div
+          className="cf-turnstile"
+          data-sitekey={process.env.NEXT_PUBLIC_CAPTCHA_KEY}
+        ></div>
+      </div>
     </form>
   );
 }
