@@ -1,24 +1,25 @@
 import * as oci from "oci-sdk";
-import path from "path";
-import { readFileSync } from "fs";
 
-const ociConfigPath = path.join(process.cwd(), ".oci", "config");
-const provider = new oci.common.ConfigFileAuthenticationDetailsProvider(
-  ociConfigPath
+if (
+  !process.env.OCI_TENANCY ||
+  !process.env.OCI_USER ||
+  !process.env.OCI_FINGERPRINT ||
+  !process.env.OCI_PRIVATE_KEY
+) {
+  throw new Error("Missing OCI credentials");
+}
+
+const simpleProvider = new oci.common.SimpleAuthenticationDetailsProvider(
+  process.env.OCI_TENANCY,
+  process.env.OCI_USER,
+  process.env.OCI_FINGERPRINT,
+  process.env.OCI_PRIVATE_KEY,
+  null,
+  oci.common.Region.EU_FRANKFURT_1
 );
 
-console.log("OCI config path: ", ociConfigPath);
-const config = readFileSync(ociConfigPath, "utf8");
-console.log("OCI config: ", config);
-const keyPath = config.split("key_file=")[1].replace("\n", "") || "";
-if (!keyPath) {
-  throw new Error("OCI_PRIVATE_KEY_PATH is not defined");
-}
-console.log("OCI private key path: ", keyPath);
-console.log("OCI private key: ", readFileSync(keyPath, "utf8"));
-
 export const ObjectStorageClient = new oci.objectstorage.ObjectStorageClient({
-  authenticationDetailsProvider: provider,
+  authenticationDetailsProvider: simpleProvider,
 });
 
 export const getNamespace = async () => {
