@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { Inter } from "next/font/google";
+import Head from "next/head"
 import "./globals.css";
 
 const inter = Inter({
@@ -22,6 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pl" className="bg-[#F2F2F2]">
+      <Head>
+        <meta name="google-site-verification" content="iJECGwc0x7S9ntjUbeidgchhZ0eDS4y05hB3UnM5bRM" />
+      </Head>
       <body className={`${inter.className} bg-[#F2F2F2]`}>
         {children}
         <SpeedInsights />
