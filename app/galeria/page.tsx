@@ -44,7 +44,7 @@ async function page() {
           {albums.map(
             (album) =>
               album.AlbumPhoto.length > 0 && (
-                <a
+                <Link
                   key={album.id}
                   className="flex flex-col gap-4 px-2 py-2 hover:shadow-arround duration-300 transition-all rounded-3xl overflow-hidden justify-end"
                   href={`/galeria/${album.id}`}
@@ -70,7 +70,7 @@ async function page() {
                       </span>
                     </p>
                   </div>
-                </a>
+                </Link>
               )
           )}
         </div>
