@@ -91,8 +91,6 @@ function Calendar({
       }
     });
 
-    console.log(newTripDates);
-
     setTripDates(newTripDates);
   }, [tripsThisMonth]);
 
@@ -170,7 +168,6 @@ function Calendar({
 
                   bg-[#4F5D75] text-white cursor-pointer p-1`}
                 onClick={() => {
-                  console.log(isTripDay[0].id);
                   window.scrollTo({
                     top:
                       (document.getElementById(isTripDay[0].id)?.offsetTop ||
