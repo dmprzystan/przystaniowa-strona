@@ -1,10 +1,21 @@
 import * as oci from "oci-sdk";
 import path from "path";
+import { readFileSync } from "fs";
 
 const ociConfigPath = path.join(process.cwd(), ".oci", "config");
 const provider = new oci.common.ConfigFileAuthenticationDetailsProvider(
   ociConfigPath
 );
+
+console.log("OCI config path: ", ociConfigPath);
+const config = readFileSync(ociConfigPath, "utf8");
+console.log("OCI config: ", config);
+const keyPath = config.split("key_file=")[1].replace("\n", "") || "";
+if (!keyPath) {
+  throw new Error("OCI_PRIVATE_KEY_PATH is not defined");
+}
+console.log("OCI private key path: ", keyPath);
+console.log("OCI private key: ", readFileSync(keyPath, "utf8"));
 
 export const ObjectStorageClient = new oci.objectstorage.ObjectStorageClient({
   authenticationDetailsProvider: provider,

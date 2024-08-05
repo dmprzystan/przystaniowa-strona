@@ -6,7 +6,6 @@
     "dev": "next dev -H 0.0.0.0",
     "postinstall": "prisma generate",
     "build": "node ./scripts/prebuild.js && next build",
-    "prebuild": "node ./scripts/prebuild.js",
     "start": "next start",
     "lint": "next lint"
   },
