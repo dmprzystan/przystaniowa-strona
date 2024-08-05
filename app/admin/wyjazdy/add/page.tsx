@@ -426,8 +426,6 @@ export default function Page() {
                       .split(".")
                       .slice(-1)[0];
 
-                    console.log(name, extension);
-
                     const newName = `${name}.${extension}`;
                     setAttachmentsToAdd([
                       {

@@ -16,7 +16,6 @@ export const middleware = async (request: NextRequest) => {
 
   if (path.startsWith("/galeria/img")) {
     const url = path.split("/").slice(3).join("/");
-    console.log(url);
     return NextResponse.rewrite(
       `${process.env.GALLERY_ENDPOINT}/gallery/${url}`
     );

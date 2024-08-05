@@ -129,8 +129,6 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  console.log(id);
-
   const data = await req.formData();
   const file = data.get("file");
   const size = data.get("size") as string;

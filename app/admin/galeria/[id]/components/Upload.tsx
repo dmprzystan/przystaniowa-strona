@@ -64,8 +64,6 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
         const ar = dimensions.width / dimensions.height;
         const delta = ar - 1.25;
 
-        console.log(dimensions, ar, delta);
-
         let size: AlbumPhotoSize = "NORMAL";
 
         if (delta > 0.25) {

@@ -175,8 +175,6 @@ function Wyjazdy(props: { trips: Trip[] }) {
       return;
     }
 
-    console.log(currentTrip.attachments);
-
     if (currentTrip.id) {
       const formData = new FormData();
       formData.append("id", currentTrip.id);
