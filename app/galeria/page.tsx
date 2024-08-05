@@ -39,7 +39,7 @@ async function page() {
           GALERIA
         </h2>
         <div
-          className={`px-8 md:px-16 xl:px-32 gallery grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 mt-16`}
+          className={`px-8 md:px-16 xl:px-32 gallery grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 mt-8 md:mt-16`}
         >
           {albums.map(
             (album) =>

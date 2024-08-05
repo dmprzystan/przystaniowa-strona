@@ -43,9 +43,10 @@ export default async function Plan({ params }: { params: { id: string } }) {
       </Link>
       <Navbar />
       <div className="container mx-auto pb-8 pt-4 md:pt-6 lg:pt-8 xl:pt-12 mt-8 sm:mt-4">
-        <div className="flex gap-3 items-center justify-center">
-          <h2 className="text-4xl text-center font-semibold">{album.title}</h2>
-          <div className="w-2 h-2 rounded-full bg-black"></div>
+        <div className="flex flex-col gap-3 items-center justify-center flex-wrap w-full overflow-hidden">
+          <h2 className="text-4xl text-center font-semibold overflow-hidden w-full">
+            {album.title}
+          </h2>
           <p className="font-light text-xl">{date(album.date)}</p>
         </div>
         {album.description && (
@@ -54,7 +55,7 @@ export default async function Plan({ params }: { params: { id: string } }) {
             <p className="text-center">{album.description}</p>
           </div>
         )}
-        <div className="mt-8 masonry">
+        <div className="mt-8 masonry grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 px-4">
           {album.AlbumPhoto.map((photo, i) => (
             <div key={photo.id} className={photo.size.toLowerCase()}>
               <img
