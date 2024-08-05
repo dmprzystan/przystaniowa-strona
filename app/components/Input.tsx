@@ -33,6 +33,7 @@ function Input(props: InputProps) {
         required={required || false}
         onFocus={() => setLabelMove(true)}
         onBlur={(e) => setLabelMove(e.target.value.length > 0)}
+        onChange={(e) => setLabelMove(e.target.value.length > 0)}
       />
       <div className="shadow-arround w-full h-px bg-[#C2C2C2]" />
     </div>

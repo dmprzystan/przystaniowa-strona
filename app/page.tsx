@@ -5,13 +5,21 @@ import Schedule from "./components/Schedule";
 import Contact from "./components/Contact";
 import Link from "next/link";
 
+import Head from "next/head";
+
 import { getSchedule } from "./lib/prisma";
+import Script from "next/script";
 
 export default async function Home() {
   const schedule = await getSchedule();
 
   return (
     <>
+      <Script
+        src={`https://challenges.cloudflare.com/turnstile/v0/api.js`}
+        async={true}
+        defer={true}
+      />
       <Link href="/" className="focus:outline-none">
         <Header />
       </Link>
