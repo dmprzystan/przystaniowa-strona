@@ -4,6 +4,7 @@ import { getNamespace } from "@/app/lib/oci";
 import { v7 } from "uuid";
 import prisma, { AlbumPhotoSize } from "@/app/lib/prisma";
 import { ObjectStorageClient } from "@/app/lib/oci";
+import sharp from "sharp";
 
 export async function GET(
   _req: NextRequest,
@@ -83,6 +84,7 @@ export async function DELETE(
         select: {
           id: true,
           url: true,
+          preview: true,
         },
       },
     },
@@ -100,7 +102,7 @@ export async function DELETE(
 
   const namespaceName = await getNamespace();
 
-  const deleteAlbum = album.AlbumPhoto.map((photo) => {
+  const deleteImages = album.AlbumPhoto.map((photo) => {
     return ObjectStorageClient.deleteObject({
       bucketName: "przystaniowa-strona",
       namespaceName: namespaceName,
@@ -108,7 +110,16 @@ export async function DELETE(
     });
   });
 
-  await Promise.all(deleteAlbum);
+  const deletePreviews = album.AlbumPhoto.map((photo) => {
+    return ObjectStorageClient.deleteObject({
+      bucketName: "przystaniowa-strona",
+      namespaceName: namespaceName,
+      objectName: `gallery/${photo.preview}`,
+    });
+  });
+
+  await Promise.all(deleteImages);
+  await Promise.all(deletePreviews);
 
   try {
     await deleteDB;
@@ -142,8 +153,10 @@ export async function POST(
   const namespaceName = await getNamespace();
   const objectPath = "gallery";
   const uniqueName = `${id}/galeria-${uuid}.${file.name.split(".").pop()}`;
+  const previewUniqueName = `${id}/preview-${uuid}.webp`;
 
   const objectName = `${objectPath}/${uniqueName}`;
+  const previewObjectName = `${objectPath}/${previewUniqueName}`;
 
   let s: AlbumPhotoSize = "NORMAL";
 
@@ -156,6 +169,7 @@ export async function POST(
     data: {
       albumId: id,
       url: uniqueName,
+      preview: previewUniqueName,
       size: s,
     },
   });
@@ -165,6 +179,51 @@ export async function POST(
     namespaceName,
     objectName,
     putObjectBody: file.stream(),
+  });
+
+  const imageReader = file.stream().getReader();
+  const chunks = [];
+  let done = false;
+  while (!done) {
+    const { value, done: d } = await imageReader.read();
+    if (d) {
+      done = true;
+    } else {
+      chunks.push(value);
+    }
+  }
+
+  const buffer = Buffer.concat(chunks);
+
+  let image = sharp(buffer);
+
+  if (s === "NORMAL") {
+    image = image.resize(300, 250);
+  } else if (s === "WIDE") {
+    image = image.resize(600, 250);
+  } else if (s === "TALL") {
+    image = image.resize(300, 500);
+  } else if (s === "BIG") {
+    image = image.resize(600, 500);
+  }
+
+  image.blur(1);
+  image.toFormat("webp", {
+    quality: 50,
+  });
+
+  image.toBuffer((err, data, info) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    ObjectStorageClient.putObject({
+      bucketName: "przystaniowa-strona",
+      namespaceName,
+      objectName: previewObjectName,
+      putObjectBody: data,
+    });
   });
 
   revalidatePath("/galeria");

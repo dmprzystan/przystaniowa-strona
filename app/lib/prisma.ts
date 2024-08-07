@@ -63,6 +63,7 @@ export type Album = Prisma.AlbumGetPayload<{
       select: {
         id: true;
         url: true;
+        preview: true;
         size: true;
         albumId: true;
       };
@@ -74,6 +75,7 @@ export type AlbumPhoto = Prisma.AlbumPhotoGetPayload<{
   select: {
     id: true;
     url: true;
+    preview: true;
     size: true;
     albumId: true;
   };
@@ -146,6 +148,7 @@ export const getGallery: () => Promise<Album[]> = cache(async () => {
         select: {
           id: true,
           url: true,
+          preview: true,
           size: true,
           albumId: true,
         },
@@ -172,6 +175,7 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
           select: {
             id: true,
             url: true,
+            preview: true,
             size: true,
             albumId: true,
           },

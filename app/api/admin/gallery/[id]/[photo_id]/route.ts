@@ -62,17 +62,25 @@ export async function DELETE(
   const objectPath = "gallery";
   const objectName = `${objectPath}/${photo.url}`;
 
-  await prisma.albumPhoto.delete({
+  const deleteDB = prisma.albumPhoto.delete({
     where: {
       id: photo_id,
     },
   });
 
-  await ObjectStorageClient.deleteObject({
+  const deleteImage = ObjectStorageClient.deleteObject({
     bucketName: "przystaniowa-strona",
     namespaceName,
     objectName,
   });
+
+  const deletePrevew = ObjectStorageClient.deleteObject({
+    bucketName: "przystaniowa-strona",
+    namespaceName,
+    objectName: `${objectPath}/${photo.preview}`,
+  });
+
+  await Promise.all([deleteDB, deleteImage, deletePrevew]);
 
   revalidatePath(`/galeria`);
   revalidatePath(`/galeria/${id}`);

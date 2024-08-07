@@ -6,6 +6,7 @@ import { Album } from "@/app/lib/prisma";
 import Link from "next/link";
 
 import "@/app/galeria/style.scss";
+import { ImageNotSupportedRounded } from "@mui/icons-material";
 
 const months = [
   "Styczeń",
@@ -66,11 +67,18 @@ function Galeria(props: { gallery: Album[] }) {
               href={`/admin/galeria/${album.id}`}
             >
               <div className="w-full h-full rounded-3xl overflow-hidden">
-                <img
-                  src={`/galeria/img/${album.AlbumPhoto[0].url}`}
-                  alt=""
-                  className="block rounded-3xl object-cover shadow-xl h-full w-full"
-                />
+                {album.AlbumPhoto.length === 0 ? (
+                  <div className="bg-gray-200 w-full h-full flex items-center justify-center flex-col gap-2">
+                    <ImageNotSupportedRounded className="text-gray-500" />
+                    <p className="text-lg text-gray-500">Brak zdjęć</p>
+                  </div>
+                ) : (
+                  <img
+                    src={`/galeria/img/${album.AlbumPhoto[0].url}`}
+                    alt=""
+                    className="block rounded-3xl object-cover shadow-xl h-full w-full"
+                  />
+                )}
               </div>
               <div className="flex flex-col items-center gap-2">
                 <h3 className="text-3xl font-extrabold text-center uppercase whitespace-nowrap text-ellipsis w-full overflow-hidden">
@@ -85,29 +93,6 @@ function Galeria(props: { gallery: Album[] }) {
                 </p>
               </div>
             </Link>
-            // <div key={album.id} className="flex w-full">
-            //   <Link
-            //     href={`/admin/galeria/${album.id}`}
-            //     className="block relative overflow-hidden rounded-3xl shadow-none hover:shadow-lg transition-all cursor-pointer duration-300 w-full"
-            //   >
-            //     <div className="absolute z-10 bg-white bg-opacity-60 backdrop-blur-lg w-full bottom-0 left-0 px-4 py-4 flex items-center gap-3">
-            //       <h3 className="text-2xl drop-shadow-md font-bold">
-            //         {album.title}
-            //       </h3>
-            //       <div className="w-1.5 h-1.5 rounded-full bg-black"></div>
-            //       <p className="font-light">{date(album.date)}</p>
-            //     </div>
-            //     <img
-            //       src={
-            //         album.AlbumPhoto[0]
-            //           ? `/galeria/img/${album.AlbumPhoto[0].url}`
-            //           : `https://picsum.photos/600/400/?blur=6?random=${album.id}`
-            //       }
-            //       alt=""
-            //       className="w-full h-full object-cover"
-            //     />
-            //   </Link>
-            // </div>
           ))}
         </div>
       </div>
