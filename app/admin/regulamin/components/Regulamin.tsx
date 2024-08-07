@@ -17,7 +17,7 @@ function Regulamin(props: { statute: string }) {
 
     const response = await fetch("/api/admin/statue", {
       method: "PUT",
-      body: statute,
+      body: JSON.stringify({ statute }),
     });
 
     if (response.ok) {

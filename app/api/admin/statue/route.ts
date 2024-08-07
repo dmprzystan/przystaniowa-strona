@@ -3,12 +3,16 @@ import { putStatute, getStatute } from "@/app/lib/oci";
 import { revalidatePath } from "next/cache";
 
 export async function PUT(req: NextRequest) {
-  const data = await req.text();
+  const data = await req.json();
 
-  console.log(data);
+  const { statute } = data;
+
+  if (!statute || typeof statute !== "string") {
+    return NextResponse.json({ message: "Invalid data" }, { status: 400 });
+  }
 
   try {
-    // await putStatute(data);
+    await putStatute(statute);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: "Error" }, { status: 500 });
