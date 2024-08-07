@@ -12,6 +12,7 @@ function TextSelect({ editor }: { editor: Editor | null }) {
   return (
     <div className="relative">
       <button
+        type="button"
         className="flex hover:bg-gray-300 items-center pl-2 py-1 rounded-lg"
         onClick={() => {
           setSelectShown(!selectShown);
@@ -28,6 +29,7 @@ function TextSelect({ editor }: { editor: Editor | null }) {
       {selectShown && (
         <div className="absolute z-50 bg-gray-50 px-4 py-2 rounded-xl mt-2 flex flex-col items-stretch gap-2 shadow-lg prose">
           <button
+            type="button"
             className="hover:bg-gray-200 px-2 py-1 rounded-lg whitespace-nowrap text-left  transition-all duration-200"
             onClick={() => {
               editor?.chain().setParagraph().run();
@@ -48,6 +50,7 @@ function TextSelect({ editor }: { editor: Editor | null }) {
               <div className="absolute left-full pl-6">
                 <div className="bg-gray-50 px-2 py-2 rounded-lg shadow-md">
                   <button
+                    type="button"
                     className="relative hover:bg-gray-200 px-2 py-1 rounded-lg whitespace-nowrap flex items-center justify-between gap-2  transition-all duration-200"
                     onClick={() => {
                       editor?.chain().setHeading({ level: 3 }).run();
@@ -58,6 +61,7 @@ function TextSelect({ editor }: { editor: Editor | null }) {
                     <h3 className="my-0">Nagłówek 1</h3>
                   </button>
                   <button
+                    type="button"
                     className="relative hover:bg-gray-200 px-2 py-1 rounded-lg whitespace-nowrap flex items-center justify-between gap-2  transition-all duration-200"
                     onClick={() => {
                       editor?.chain().setHeading({ level: 4 }).run();
@@ -68,6 +72,7 @@ function TextSelect({ editor }: { editor: Editor | null }) {
                     <h4 className="my-0">Nagłówek 2</h4>
                   </button>
                   <button
+                    type="button"
                     className="relative hover:bg-gray-200 px-2 py-1 rounded-lg whitespace-nowrap flex items-center justify-between gap-2  transition-all duration-200"
                     onClick={() => {
                       editor?.chain().setHeading({ level: 5 }).run();

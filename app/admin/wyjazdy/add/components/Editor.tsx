@@ -45,6 +45,7 @@ export default function Editor({
         <div className="my-1.5 w-0.5 bg-gray-400 rounded-full"></div>
         <div className="flex gap-1">
           <button
+            type="button"
             className="hover:bg-gray-300 rounded-lg px-0.5 py-0.5 transition-all duration-200"
             onClick={() => {
               editor?.chain().focus().undo().run();
@@ -53,6 +54,7 @@ export default function Editor({
             <UndoRounded />
           </button>
           <button
+            type="button"
             className="hover:bg-gray-300 rounded-lg px-0.5 py-0.5 transition-all duration-200"
             onClick={() => {
               editor?.chain().focus().redo().run();
@@ -64,6 +66,7 @@ export default function Editor({
         <div className="my-1.5 w-0.5 bg-gray-400 rounded-full"></div>
         <div className="flex gap-1">
           <button
+            type="button"
             className="hover:bg-gray-300 rounded-lg px-0.5 py-0.5 data-[is-active]:bg-gray-300 transition-all duration-200"
             {...(editor?.isActive("bold") ? { "data-is-active": "true" } : {})}
             onClick={() => {
@@ -73,6 +76,7 @@ export default function Editor({
             <FormatBoldRounded />
           </button>
           <button
+            type="button"
             className="hover:bg-gray-300 rounded-lg px-0.5 py-0.5 data-[is-active]:bg-gray-300 transition-all duration-200"
             {...(editor?.isActive("italic")
               ? { "data-is-active": "true" }
@@ -84,6 +88,7 @@ export default function Editor({
             <FormatItalicRounded />
           </button>
           <button
+            type="button"
             className="hover:bg-gray-300 rounded-lg px-0.5 py-0.5 data-[is-active]:bg-gray-300 transition-all duration-200"
             {...(editor?.isActive("underline")
               ? { "data-is-active": "true" }
@@ -98,6 +103,7 @@ export default function Editor({
         <div className="my-1.5 w-0.5 bg-gray-400 rounded-full"></div>
         <div className="flex gap-1">
           <button
+            type="button"
             className="hover:bg-gray-300 rounded-lg px-0.5 py-0.5 data-[is-active]:bg-gray-300 transition-all duration-200"
             {...(editor?.isActive("bulletList")
               ? { "data-is-active": "true" }
@@ -109,6 +115,7 @@ export default function Editor({
             <FormatListBulletedRounded />
           </button>
           <button
+            type="button"
             className="hover:bg-gray-300 rounded-lg px-0.5 py-0.5 data-[is-active]:bg-gray-300 transition-all duration-200"
             {...(editor?.isActive("orderedList")
               ? { "data-is-active": "true" }

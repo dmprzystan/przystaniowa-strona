@@ -126,11 +126,11 @@ function Gazetka(props: GazetkaProps) {
             <form className="flex flex-col gap-4" onSubmit={handleAdd}>
               <div className="flex flex-col gap-1">
                 <label htmlFor="title" className="text-gray-500 ml-2">
-                  Tytuł
+                  Numer
                 </label>
                 <input
                   className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg"
-                  type="text"
+                  type="number"
                   name="title"
                   id="title"
                   required
@@ -146,6 +146,7 @@ function Gazetka(props: GazetkaProps) {
                   name="date"
                   id="date"
                   required
+                  defaultValue={new Date().toISOString().split("T")[0]}
                 />
               </div>
               <div className="flex flex-col gap-1">

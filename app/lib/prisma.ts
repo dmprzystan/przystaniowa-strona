@@ -116,7 +116,7 @@ export const getNewspapers = cache(async () => {
   return newspapers;
 });
 
-export const getTrips = cache(async () => {
+export const getTrips: () => Promise<Trip[]> = cache(async () => {
   const trips = await prisma.trip.findMany({
     select: {
       id: true,
@@ -142,9 +142,10 @@ export const getTrips = cache(async () => {
         },
       },
     },
+    orderBy: {
+      dateStart: "desc",
+    },
   });
-
-  trips.sort((a, b) => b.dateStart.valueOf() - a.dateStart.valueOf());
 
   return trips;
 });
