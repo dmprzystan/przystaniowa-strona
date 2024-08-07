@@ -144,7 +144,7 @@ function Wyjazdy(props: { trips: Trip[] }) {
   const addTrip = async () => {
     const newTrip: TripAdmin = {
       id: "",
-      title: "asdf",
+      title: "",
       description: "",
       dateStart: new Date(),
       dateEnd: new Date(),

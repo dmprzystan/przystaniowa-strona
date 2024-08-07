@@ -1,25 +1,10 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { ObjectStorageClient, getNamespace } from "@/app/lib/oci";
-
-const months = [
-  "Styczeń",
-  "Luty",
-  "Marzec",
-  "Kwiecień",
-  "Maj",
-  "Czerwiec",
-  "Lipiec",
-  "Sierpień",
-  "Wrzesień",
-  "Październik",
-  "Listopad",
-  "Grudzień",
-];
+import { deleteFile } from "@/app/lib/oci";
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
@@ -62,28 +47,14 @@ export async function DELETE(
     }),
   ]);
 
-  const namespaceName = await getNamespace();
-
   try {
     const promises = [];
     for (const photo of trip.TripPhoto) {
-      promises.push(
-        ObjectStorageClient.deleteObject({
-          bucketName: "przystaniowa-strona",
-          namespaceName,
-          objectName: photo.url,
-        })
-      );
+      promises.push(deleteFile(`wyjazdy/${trip.id}/${photo.url}`));
     }
 
     for (const attachment of trip.TripAttachment) {
-      promises.push(
-        ObjectStorageClient.deleteObject({
-          bucketName: "przystaniowa-strona",
-          namespaceName,
-          objectName: attachment.url,
-        })
-      );
+      promises.push(deleteFile(`wyjazdy/${trip.id}/${attachment.url}`));
     }
 
     await Promise.all(promises);
@@ -96,74 +67,169 @@ export async function DELETE(
   return NextResponse.json(trip);
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
+// export async function PATCH(req: NextRequest) {
+//   const data = await req.formData();
 
-  const data = await req.formData();
+//   const id = data.get("id") as string;
+//   const title = data.get("title") as string;
+//   const dateStart = data.get("dateStart") as string;
+//   const dateEnd = data.get("dateEnd") as string;
+//   const description = data.get("description") as string;
 
-  const title = data.get("title") as string;
-  const date = data.get("date") as string;
-  const file = data.get("file") as File;
+//   if (!id || !title || !dateStart || !dateEnd || !description) {
+//     return NextResponse.json({ message: "Missing fields" }, { status: 400 });
+//   }
 
-  const oldGazetka = await prisma.newspaper.findUnique({
-    where: {
-      id,
-    },
-  });
+//   const parsedDateStart = new Date(dateStart);
+//   const parsedDateEnd = new Date(dateEnd);
 
-  if (!oldGazetka) {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
-  }
+//   if (isNaN(parsedDateStart.getTime()) || isNaN(parsedDateEnd.getTime())) {
+//     return NextResponse.json({ message: "Invalid date" }, { status: 400 });
+//   }
 
-  const parsedDate = new Date(date);
+//   if (parsedDateStart > parsedDateEnd) {
+//     return NextResponse.json(
+//       { message: "Invalid date range" },
+//       { status: 400 }
+//     );
+//   }
 
-  if (isNaN(parsedDate.getTime())) {
-    return NextResponse.json({ message: "Invalid date" }, { status: 400 });
-  }
+//   const oldTrip = await prisma.trip.findUnique({
+//     where: {
+//       id: id,
+//     },
+//     include: {
+//       TripPhoto: true,
+//       TripLink: true,
+//       TripAttachment: true,
+//     },
+//   });
 
-  const dateStr = `${
-    months[parsedDate.getMonth()]
-  } ${parsedDate.getFullYear()}`;
+//   if (!oldTrip) {
+//     return NextResponse.json({ message: "Trip not found" }, { status: 404 });
+//   }
 
-  const name = `Gazetka 19tka ${title} (${dateStr}).pdf`;
+//   await prisma.tripAttachment.deleteMany({
+//     where: {
+//       tripId: id,
+//     },
+//   });
+//   await prisma.tripLink.deleteMany({
+//     where: {
+//       tripId: id,
+//     },
+//   });
+//   await prisma.tripPhoto.deleteMany({
+//     where: {
+//       tripId: id,
+//     },
+//   });
 
-  const namespaceName = await getNamespace();
+//   const oldPhoto = oldTrip.TripPhoto[0];
+//   if (oldPhoto) {
+//     const namespaceName = await getNamespace();
+//     const name = oldPhoto.url;
 
-  if (file.size > 0) {
-    const putObjectRequest = {
-      bucketName: "przystaniowa-strona",
-      namespaceName,
-      objectName: name,
-      putObjectBody: file.stream(),
-    };
+//     const deleteObjectRequest: oci.objectstorage.requests.DeleteObjectRequest =
+//       {
+//         bucketName: "przystaniowa-strona",
+//         namespaceName,
+//         objectName: name,
+//       };
 
-    await ObjectStorageClient.putObject(putObjectRequest);
-  } else {
-    await ObjectStorageClient.renameObject({
-      bucketName: "przystaniowa-strona",
-      namespaceName,
-      renameObjectDetails: {
-        sourceName: oldGazetka.url,
-        newName: name,
-      },
-    });
-  }
+//     await ObjectStorageClient.deleteObject(deleteObjectRequest);
+//   }
 
-  await prisma.newspaper.update({
-    where: {
-      id,
-    },
-    data: {
-      title,
-      date: parsedDate,
-      url: name,
-    },
-  });
+//   const oldAttachments = oldTrip.TripAttachment;
+//   for (const attachment of oldAttachments) {
+//     const namespaceName = await getNamespace();
+//     const name = attachment.url;
 
-  revalidatePath("/gazetka");
+//     const deleteObjectRequest: oci.objectstorage.requests.DeleteObjectRequest =
+//       {
+//         bucketName: "przystaniowa-strona",
+//         namespaceName,
+//         objectName: name,
+//       };
 
-  return NextResponse.json({ message: "ok" });
-}
+//     await ObjectStorageClient.deleteObject(deleteObjectRequest);
+//   }
+
+//   const trip = await prisma.trip.update({
+//     where: {
+//       id: id,
+//     },
+//     data: {
+//       title,
+//       dateStart: parsedDateStart,
+//       dateEnd: parsedDateEnd,
+//       description,
+//     },
+//   });
+
+//   const image = data.get("image") as File | undefined;
+
+//   if (image) {
+//     const namespaceName = await getNamespace();
+//     const extension = image.name.split(".").pop();
+//     const name = `trip-${trip.id}.${extension}`;
+
+//     const putObjectRequest: oci.objectstorage.requests.PutObjectRequest = {
+//       bucketName: "przystaniowa-strona",
+//       namespaceName,
+//       objectName: name,
+//       putObjectBody: image.stream(),
+//     };
+
+//     await ObjectStorageClient.putObject(putObjectRequest);
+
+//     await prisma.tripPhoto.create({
+//       data: {
+//         url: name,
+//         tripId: trip.id,
+//       },
+//     });
+//   }
+
+//   const attachments = data.getAll("attachments") as File[];
+//   if (attachments.length > 0) {
+//     for (const attachment of attachments) {
+//       const namespaceName = await getNamespace();
+//       const name = `trip-${trip.id}-${attachment.name}`;
+
+//       const putObjectRequest: oci.objectstorage.requests.PutObjectRequest = {
+//         bucketName: "przystaniowa-strona",
+//         namespaceName,
+//         objectName: name,
+//         putObjectBody: attachment.stream(),
+//       };
+
+//       await ObjectStorageClient.putObject(putObjectRequest);
+
+//       await prisma.tripAttachment.create({
+//         data: {
+//           url: name,
+//           tripId: trip.id,
+//           name: attachment.name,
+//         },
+//       });
+//     }
+//   }
+
+//   const links = data.getAll("links") as string[];
+//   for (const link of links) {
+//     const parsedLink = JSON.parse(link) as { url: string; name: string };
+
+//     await prisma.tripLink.create({
+//       data: {
+//         url: parsedLink.url,
+//         name: parsedLink.name,
+//         tripId: trip.id,
+//       },
+//     });
+//   }
+
+//   revalidatePath("/wyjazdy");
+
+//   return NextResponse.json({ message: "ok" });
+// }
