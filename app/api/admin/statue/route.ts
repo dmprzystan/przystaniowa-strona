@@ -12,7 +12,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    await putStatute(statute);
+    // await putStatute(statute);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: "Error" }, { status: 500 });
