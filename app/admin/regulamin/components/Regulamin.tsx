@@ -26,7 +26,9 @@ function Regulamin(props: { statute: string }) {
       alert("Błąd podczas zapisywania regulaminu");
     }
 
-    fetch("/api/admin/statue").then(async (response) => {
+    fetch("/api/admin/statue", {
+      cache: "no-cache",
+    }).then(async (response) => {
       if (response.ok) {
         const statute = await response.text();
         setStatute(statute);

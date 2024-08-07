@@ -2,22 +2,32 @@ import { AlbumPhoto, AlbumPhotoSize } from "@/app/lib/prisma";
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 
-import { DeleteRounded } from "@mui/icons-material";
+import {
+  DeleteRounded,
+  StarBorderRounded,
+  StarRounded,
+} from "@mui/icons-material";
 
 function Photo({
   photo,
   handleDelete,
+  handleStar,
   fetchAll,
 }: {
   photo: AlbumPhoto;
   handleDelete: (id: string) => void;
+  handleStar: (id: string) => void;
   fetchAll: () => void;
 }) {
   const [hover, setHover] = React.useState(false);
   const [size, setSize] = React.useState<AlbumPhotoSize>(photo.size);
+  const [isStarred, setIsStarred] = React.useState(
+    photo.thumbnailForAlbumId !== null
+  );
 
   useEffect(() => {
     setSize(photo.size);
+    setIsStarred(photo.thumbnailForAlbumId !== null);
   }, [photo]);
 
   const handleSize = async (size: AlbumPhotoSize) => {
@@ -87,14 +97,39 @@ function Photo({
                 <div className="h-4 w-4 bg-white rounded-sm"></div>
               </button>
             </div>
-            <button
-              className="w-10 h-10 flex items-center justify-center bg-red-500 rounded-full shadow-none hover:shadow-lg hover:bg-red-600 transition-all"
-              onClick={() => {
-                handleDelete(photo.id);
-              }}
-            >
-              <DeleteRounded className="text-white" style={{ fontSize: 20 }} />
-            </button>
+            <div className="flex gap-2">
+              <button
+                className="w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-md rounded-full shadow-none hover:shadow-lg hover:bg-opacity-40 transition-all"
+                onClick={() => {
+                  handleStar(photo.id);
+                  setIsStarred(true);
+                }}
+                disabled={isStarred}
+              >
+                {isStarred ? (
+                  <StarRounded
+                    className="text-yellow-500"
+                    style={{ fontSize: 20 }}
+                  />
+                ) : (
+                  <StarBorderRounded
+                    className="text-white"
+                    style={{ fontSize: 20 }}
+                  />
+                )}
+              </button>
+              <button
+                className="w-10 h-10 flex items-center justify-center bg-red-500 rounded-full shadow-none hover:shadow-lg hover:bg-red-600 transition-all"
+                onClick={() => {
+                  handleDelete(photo.id);
+                }}
+              >
+                <DeleteRounded
+                  className="text-white"
+                  style={{ fontSize: 20 }}
+                />
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -5,8 +5,10 @@ import { revalidatePath } from "next/cache";
 export async function PUT(req: NextRequest) {
   const data = await req.text();
 
+  console.log(data);
+
   try {
-    await putStatute(data);
+    // await putStatute(data);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: "Error" }, { status: 500 });

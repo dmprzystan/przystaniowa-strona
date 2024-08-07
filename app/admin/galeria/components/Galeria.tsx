@@ -24,7 +24,7 @@ const months = [
 ];
 
 function Galeria(props: { gallery: Album[] }) {
-  const [gallery, setGallery] = React.useState(props.gallery);
+  const [gallery, setGallery] = React.useState<Album[]>(props.gallery);
   const [newAlbum, setNewAlbum] = React.useState(false);
 
   const date = (date: Date) => {
@@ -67,14 +67,20 @@ function Galeria(props: { gallery: Album[] }) {
               href={`/admin/galeria/${album.id}`}
             >
               <div className="w-full h-full rounded-3xl overflow-hidden">
-                {album.AlbumPhoto.length === 0 ? (
+                {album.thumbnail ? (
+                  <img
+                    src={`/galeria/img/${album.thumbnail.url}`}
+                    alt=""
+                    className="block rounded-3xl object-cover shadow-xl h-full w-full"
+                  />
+                ) : album.photos.length === 0 ? (
                   <div className="bg-gray-200 w-full h-full flex items-center justify-center flex-col gap-2">
                     <ImageNotSupportedRounded className="text-gray-500" />
                     <p className="text-lg text-gray-500">Brak zdjęć</p>
                   </div>
                 ) : (
                   <img
-                    src={`/galeria/img/${album.AlbumPhoto[0].url}`}
+                    src={`/galeria/img/${album.photos[0].url}`}
                     alt=""
                     className="block rounded-3xl object-cover shadow-xl h-full w-full"
                   />

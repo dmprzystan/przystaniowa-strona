@@ -59,13 +59,24 @@ export type Album = Prisma.AlbumGetPayload<{
     title: true;
     description: true;
     date: true;
-    AlbumPhoto: {
+    photos: {
       select: {
         id: true;
         url: true;
         preview: true;
         size: true;
         albumId: true;
+        thumbnailForAlbumId: true;
+      };
+    };
+    thumbnail: {
+      select: {
+        id: true;
+        url: true;
+        preview: true;
+        size: true;
+        albumId: true;
+        thumbnailForAlbumId: true;
       };
     };
   };
@@ -78,6 +89,7 @@ export type AlbumPhoto = Prisma.AlbumPhotoGetPayload<{
     preview: true;
     size: true;
     albumId: true;
+    thumbnailForAlbumId: true;
   };
 }>;
 
@@ -144,15 +156,26 @@ export const getGallery: () => Promise<Album[]> = cache(async () => {
       title: true,
       description: true,
       date: true,
-      AlbumPhoto: {
+      photos: {
         select: {
           id: true,
           url: true,
           preview: true,
           size: true,
           albumId: true,
+          thumbnailForAlbumId: true,
         },
-        take: 10,
+        take: 1,
+      },
+      thumbnail: {
+        select: {
+          id: true,
+          url: true,
+          preview: true,
+          size: true,
+          albumId: true,
+          thumbnailForAlbumId: true,
+        },
       },
     },
   });
@@ -171,13 +194,24 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
         title: true,
         description: true,
         date: true,
-        AlbumPhoto: {
+        photos: {
           select: {
             id: true,
             url: true,
             preview: true,
             size: true,
             albumId: true,
+            thumbnailForAlbumId: true,
+          },
+        },
+        thumbnail: {
+          select: {
+            id: true,
+            url: true,
+            preview: true,
+            size: true,
+            albumId: true,
+            thumbnailForAlbumId: true,
           },
         },
       },
