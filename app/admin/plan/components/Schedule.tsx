@@ -98,7 +98,7 @@ function Schedule(props: ScheduleProps) {
   };
 
   return (
-    <div className="px-4 sm:px-16 rounded-3xl">
+    <div className="px-4 md:px-6 xl:px-8 2xl:px-16 rounded-3xl mt-4 sm:mt-0">
       <h2 className="text-4xl text-left">Plan tygodnia</h2>
       <div className="flex flex-wrap mt-8 gap-8 justify-around">
         {days &&
@@ -124,27 +124,42 @@ function Schedule(props: ScheduleProps) {
               </ul>
               <form
                 onSubmit={(e) => handleAdd(e, day)}
-                className="flex flex-col sm:flex-row gap-4 shadow-arround px-4 py-3 rounded-2xl items-center"
+                className="flex flex-col sm:flex-row gap-4 md:gap-2 lg:gap-4 shadow-arround px-4 py-3 rounded-2xl items-center"
               >
                 <input
                   type="time"
                   name="time"
                   id=""
-                  className="px-4 py-2 rounded-lg shadow-arround flex-shrink-0 focus:outline-none focus:bg-gray-100 transition duration-200  w-full sm:w-auto"
+                  className="hidden sm:block px-2 2xl:px-4 py-2 rounded-lg shadow-arround flex-shrink-0 focus:outline-none focus:bg-gray-100 transition duration-200  w-full sm:w-auto"
                   defaultValue={"12:00"}
                 />
                 <input
                   type="text"
                   name="title"
-                  className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg"
+                  className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-2 2xl:px-4 py-2 rounded-lg"
                   placeholder="Tytuł"
                 />
                 <button
                   type="submit"
-                  className="bg-white shadow-arround px-4 py-2 rounded-xl hover:bg-gray-100 transition duration-200 flex-shrink-0 w-full sm:w-auto"
+                  className="hidden sm:block bg-white shadow-arround px-2 2xl:px-4 py-2 rounded-xl hover:bg-gray-100 transition duration-200 flex-shrink-0 w-full sm:w-auto"
                 >
                   Dodaj
                 </button>
+                <div className="sm:hidden grid grid-cols-2 w-full gap-2">
+                  <input
+                    type="time"
+                    name="time"
+                    id=""
+                    className="px-4 py-2 rounded-lg shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 w-full"
+                    defaultValue={"12:00"}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-white shadow-arround px-4 py-2 rounded-xl hover:bg-gray-100 transition duration-200 w-full"
+                  >
+                    Dodaj
+                  </button>
+                </div>
               </form>
             </div>
           ))}

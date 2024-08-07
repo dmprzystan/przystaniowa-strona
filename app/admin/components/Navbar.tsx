@@ -23,7 +23,7 @@ function Navbar() {
 
   return (
     <>
-      <aside className="hidden sm:flex flex-col items-center pr-8 border-r border-r-gray-300 flex-shrink-0">
+      <aside className="hidden md:flex flex-col items-center lg:pr-4 border-r border-r-gray-300 flex-shrink-0">
         <Link href="/">
           <Image
             className="w-64"
@@ -33,7 +33,7 @@ function Navbar() {
             height={200}
           />
         </Link>
-        <nav className="mt-8 w-full px-4">
+        <nav className="mt-8 w-full px-4 md:px-2 lg:px-4">
           <ul className="flex flex-col gap-4">
             {pages.map((page) => (
               <li key={page.href}>
@@ -56,7 +56,7 @@ function Navbar() {
           </ul>
         </nav>
       </aside>
-      <aside className="sm:hidden fixed z-50">
+      <aside className="md:hidden fixed z-50">
         <button
           className="fixed top-4 left-4 px-2 py-2 bg-white shadow-lg rounded-full bg-opacity-25 backdrop-blur-lg z-50"
           onClick={() => {
