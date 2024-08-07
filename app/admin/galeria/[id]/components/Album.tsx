@@ -41,14 +41,20 @@ function Album(props: AlbumProps) {
     fetch(`/api/admin/gallery/${album.id}/${id}`, {
       method: "DELETE",
     }).then((res) => {
-      if (res.ok) {
-        getAlbum();
-      }
+      getAlbum();
     });
     setAlbum((prev) => ({
       ...prev,
-      AlbumPhoto: prev.AlbumPhoto.filter((photo) => photo.id !== id),
+      AlbumPhoto: prev.photos.filter((photo) => photo.id !== id),
     }));
+  };
+
+  const handleStar = async (id: string) => {
+    await fetch(`/api/admin/gallery/${album.id}/${id}/thumbnail`, {
+      method: "PUT",
+    });
+
+    getAlbum();
   };
 
   const getAlbum = async () => {
@@ -106,13 +112,14 @@ function Album(props: AlbumProps) {
           </div>
         )}
 
-        {album.AlbumPhoto.length > 0 ? (
+        {album.photos.length > 0 ? (
           <div className="mt-8 masonry grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 px-4">
-            {album.AlbumPhoto.map((photo, i) => (
+            {album.photos.map((photo, i) => (
               <Photo
                 key={photo.id}
                 photo={photo}
                 handleDelete={handleDelete}
+                handleStar={handleStar}
                 fetchAll={getAlbum}
               />
             ))}

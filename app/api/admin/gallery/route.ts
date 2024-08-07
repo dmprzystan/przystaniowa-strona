@@ -1,18 +1,9 @@
-import prisma from "@/app/lib/prisma";
+import prisma, { getGallery } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
 export async function GET(_req: NextRequest) {
-  const gallery = await prisma.album.findMany({
-    orderBy: {
-      date: "desc",
-    },
-    include: {
-      AlbumPhoto: {
-        take: 1,
-      },
-    },
-  });
+  const gallery = await getGallery();
 
   return NextResponse.json(gallery);
 }
@@ -39,6 +30,8 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return NextResponse.json({ message: e.message }, { status: 500 });
   }
+
+  revalidatePath("/galeria");
 
   return NextResponse.json({ message: "ok" });
 }

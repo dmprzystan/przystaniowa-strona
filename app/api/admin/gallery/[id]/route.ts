@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getNamespace } from "@/app/lib/oci";
 import { v7 } from "uuid";
-import prisma, { AlbumPhotoSize } from "@/app/lib/prisma";
+import prisma, { AlbumPhotoSize, getAlbum } from "@/app/lib/prisma";
 import { ObjectStorageClient } from "@/app/lib/oci";
 import sharp from "sharp";
 
@@ -12,24 +12,7 @@ export async function GET(
 ) {
   const { id } = params;
 
-  const album = await prisma.album.findUnique({
-    where: {
-      id,
-    },
-    select: {
-      id: true,
-      title: true,
-      date: true,
-      description: true,
-      AlbumPhoto: {
-        select: {
-          id: true,
-          url: true,
-          size: true,
-        },
-      },
-    },
-  });
+  const album = await getAlbum(id);
 
   if (!album) {
     return NextResponse.json({ message: "Album not found" }, { status: 404 });
@@ -80,7 +63,7 @@ export async function DELETE(
     },
     select: {
       id: true,
-      AlbumPhoto: {
+      photos: {
         select: {
           id: true,
           url: true,
@@ -102,7 +85,7 @@ export async function DELETE(
 
   const namespaceName = await getNamespace();
 
-  const deleteImages = album.AlbumPhoto.map((photo) => {
+  const deleteImages = album.photos.map((photo) => {
     return ObjectStorageClient.deleteObject({
       bucketName: "przystaniowa-strona",
       namespaceName: namespaceName,
@@ -110,7 +93,7 @@ export async function DELETE(
     });
   });
 
-  const deletePreviews = album.AlbumPhoto.map((photo) => {
+  const deletePreviews = album.photos.map((photo) => {
     return ObjectStorageClient.deleteObject({
       bucketName: "przystaniowa-strona",
       namespaceName: namespaceName,
@@ -165,7 +148,13 @@ export async function POST(
     s = size as AlbumPhotoSize;
   }
 
-  await prisma.albumPhoto.create({
+  const album = await getAlbum(id);
+
+  if (!album) {
+    return NextResponse.json({ message: "Album not found" }, { status: 404 });
+  }
+
+  const photo = await prisma.albumPhoto.create({
     data: {
       albumId: id,
       url: uniqueName,
@@ -173,6 +162,21 @@ export async function POST(
       size: s,
     },
   });
+
+  if (album.thumbnail === null) {
+    await prisma.album.update({
+      where: {
+        id,
+      },
+      data: {
+        thumbnail: {
+          connect: {
+            id: photo.id,
+          },
+        },
+      },
+    });
+  }
 
   await ObjectStorageClient.putObject({
     bucketName: "przystaniowa-strona",

@@ -65,7 +65,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           </div>
         )}
         <div className="mt-8 masonry grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 px-4">
-          {album.AlbumPhoto.map((photo, i) => (
+          {album.photos.map((photo) => (
             <AlbumImage key={photo.id} photo={photo} />
           ))}
         </div>
