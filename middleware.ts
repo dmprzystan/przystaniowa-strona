@@ -6,7 +6,11 @@ export const middleware = async (request: NextRequest) => {
 
   if (path.startsWith("/gazetka")) {
     const url = path.split("/").slice(2).join("/");
-    return NextResponse.rewrite(`${process.env.NEWSPAPER_ENDPOINT}/${url}`);
+
+    console.log(`${process.env.NEWSPAPER_ENDPOINT}/gazetki/${url}`);
+    return NextResponse.rewrite(
+      `${process.env.NEWSPAPER_ENDPOINT}/gazetki/${url}`
+    );
   }
 
   if (path.startsWith("/wyjazdy")) {

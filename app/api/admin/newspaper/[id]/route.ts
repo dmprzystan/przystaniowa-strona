@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { ObjectStorageClient, getNamespace } from "@/app/lib/oci";
+import { deleteFile, renameFile, uploadFile } from "@/app/lib/oci";
 
 const months = [
   "Styczeń",
@@ -19,7 +19,7 @@ const months = [
 ];
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
@@ -30,14 +30,8 @@ export async function DELETE(
     },
   });
 
-  const namespaceName = await getNamespace();
-
   try {
-    await ObjectStorageClient.deleteObject({
-      bucketName: "przystaniowa-strona",
-      namespaceName,
-      objectName: gazetka.url,
-    });
+    await deleteFile(`gazetki/${gazetka.url}`);
   } catch (error) {
     console.error(error);
   }
@@ -79,28 +73,13 @@ export async function PUT(
     months[parsedDate.getMonth()]
   } ${parsedDate.getFullYear()}`;
 
-  const name = `Gazetka 19tka ${title} (${dateStr}).pdf`;
-
-  const namespaceName = await getNamespace();
+  const name = `Gazetka 19tka nr. ${title} (${dateStr}).pdf`;
 
   if (file.size > 0) {
-    const putObjectRequest = {
-      bucketName: "przystaniowa-strona",
-      namespaceName,
-      objectName: name,
-      putObjectBody: file.stream(),
-    };
-
-    await ObjectStorageClient.putObject(putObjectRequest);
+    await deleteFile(`gazetki/${oldGazetka.url}`);
+    await uploadFile(file, `gazetki/${name}`);
   } else {
-    await ObjectStorageClient.renameObject({
-      bucketName: "przystaniowa-strona",
-      namespaceName,
-      renameObjectDetails: {
-        sourceName: oldGazetka.url,
-        newName: name,
-      },
-    });
+    await renameFile(`gazetki/${oldGazetka.url}`, `gazetki/${name}`);
   }
 
   await prisma.newspaper.update({

@@ -71,3 +71,43 @@ export const putStatute = async (statute: string) => {
 
   await ObjectStorageClient.putObject(request);
 };
+
+export const uploadFile = async (file: File, path: string) => {
+  const namespace = await getNamespace();
+
+  const request: oci.objectstorage.requests.PutObjectRequest = {
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespace,
+    objectName: path,
+    putObjectBody: file.stream(),
+  };
+
+  await ObjectStorageClient.putObject(request);
+};
+
+export const deleteFile = async (path: string) => {
+  const namespace = await getNamespace();
+
+  const request: oci.objectstorage.requests.DeleteObjectRequest = {
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespace,
+    objectName: path,
+  };
+
+  await ObjectStorageClient.deleteObject(request);
+};
+
+export const renameFile = async (oldPath: string, newPath: string) => {
+  const namespace = await getNamespace();
+
+  const request: oci.objectstorage.requests.RenameObjectRequest = {
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespace,
+    renameObjectDetails: {
+      sourceName: oldPath,
+      newName: newPath,
+    },
+  };
+
+  await ObjectStorageClient.renameObject(request);
+};

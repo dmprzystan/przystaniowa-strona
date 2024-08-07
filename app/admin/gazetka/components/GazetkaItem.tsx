@@ -44,13 +44,16 @@ function GazetkaItem(props: GazetkaItemProps) {
           }}
         >
           <div className="flex items-center gap-4">
-            <input
-              className="text-xl px-2 py-1 rounded-lg shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 w-24"
-              type="text"
-              name="title"
-              id="title"
-              defaultValue={newspaper.title}
-            />
+            <div className="flex items-end gap-1">
+              <p className="font-light">nr.</p>
+              <input
+                className="text-xl px-2 py-1 rounded-lg shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 w-24"
+                type="text"
+                name="title"
+                id="title"
+                defaultValue={newspaper.title}
+              />
+            </div>
             <input
               type="date"
               className="text-xl px-2 py-1 rounded-lg shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 w-44"
@@ -83,7 +86,10 @@ function GazetkaItem(props: GazetkaItemProps) {
       ) : (
         <div className="flex items-center gap-4 justify-between">
           <div className="flex items-center gap-4">
-            <h3 className="text-2xl">{newspaper.title}</h3>
+            <div className="flex items-end gap-1">
+              <p className="font-light">nr.</p>
+              <h3 className="text-2xl">{newspaper.title}</h3>
+            </div>
             <p className="text-gray-500">{`${
               months[newspaper.date.getMonth()]
             } ${newspaper.date.getFullYear()}`}</p>
