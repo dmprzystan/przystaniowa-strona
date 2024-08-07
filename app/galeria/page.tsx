@@ -51,7 +51,7 @@ async function page() {
                 >
                   <div className="w-full h-full rounded-3xl overflow-hidden">
                     <img
-                      src={`/galeria/img/${album.photos[0].url}`}
+                      src={`/galeria/img/${album.thumbnail.url}`}
                       alt=""
                       className="block rounded-3xl object-cover shadow-xl h-full w-full"
                     />
