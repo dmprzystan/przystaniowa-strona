@@ -1,4 +1,5 @@
 import { Newspaper } from "@/app/lib/prisma";
+import { DeleteOutlineRounded, EditRounded } from "@mui/icons-material";
 import { useState } from "react";
 
 type GazetkaItemProps = {
@@ -37,38 +38,40 @@ function GazetkaItem(props: GazetkaItemProps) {
     >
       {editMode ? (
         <form
-          className="flex items-center gap-4 justify-between"
+          className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between"
           onSubmit={(e) => {
             handleEdit(e, newspaper.id);
             setEditMode(false);
           }}
         >
-          <div className="flex items-center gap-4">
-            <div className="flex items-end gap-1">
-              <p className="font-light">nr.</p>
+          <div className="flex flex-col lg:flex-row items-start sm:items-center gap-4 w-full xl:w-auto">
+            <div className="flex flex-row items-start sm:items-end gap-4 w-full xl:w-auto">
+              <div className="flex flex-row items-end gap-1">
+                <p className="font-light pl-2 sm:pl-0">nr.</p>
+                <input
+                  className="text-xl px-2 py-1 rounded-lg shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 w-16"
+                  type="number"
+                  name="title"
+                  id="title"
+                  defaultValue={newspaper.title}
+                />
+              </div>
               <input
-                className="text-xl px-2 py-1 rounded-lg shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 w-24"
-                type="text"
-                name="title"
-                id="title"
-                defaultValue={newspaper.title}
+                type="date"
+                className="text-xl px-2 py-1 rounded-lg shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 w-full sm:w-40 xl:w-44 bg-white"
+                defaultValue={newspaper.date.toISOString().split("T")[0]}
+                name="date"
+                id="date"
               />
             </div>
             <input
-              type="date"
-              className="text-xl px-2 py-1 rounded-lg shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 w-44"
-              defaultValue={newspaper.date.toISOString().split("T")[0]}
-              name="date"
-              id="date"
-            />
-            <input
-              className="shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 rounded-lg file:bg-gray-100 file:outline-none file:border-none file:px-4 file:py-2 file:mr-2 pr-2"
+              className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 rounded-lg file:bg-gray-100 file:outline-none file:border-none file:px-4 file:py-2 file:mr-2 pr-2"
               id="file-upload"
               type="file"
               name="file"
             />
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center md:flex-col lg:flex-row gap-4 sm:gap-2 md:gap-4 justify-between lg:justify-normal w-full lg:w-auto">
             <button
               className="bg-red-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
               onClick={() => setEditMode(false)}
@@ -85,14 +88,16 @@ function GazetkaItem(props: GazetkaItemProps) {
         </form>
       ) : (
         <div className="flex items-center gap-4 justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-end gap-1">
-              <p className="font-light">nr.</p>
-              <h3 className="text-2xl">{newspaper.title}</h3>
+          <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex flex-col sm:flex-row sm:gap-2 md:gap-4 sm:items-center">
+              <div className="flex items-end gap-1">
+                <p className="font-light">nr.</p>
+                <h3 className="text-2xl">{newspaper.title}</h3>
+              </div>
+              <p className="text-gray-500 font-light text-sm sm:text-base">{`${
+                months[newspaper.date.getMonth()]
+              } ${newspaper.date.getFullYear()}`}</p>
             </div>
-            <p className="text-gray-500">{`${
-              months[newspaper.date.getMonth()]
-            } ${newspaper.date.getFullYear()}`}</p>
             <a
               href={`/gazetka/${newspaper.url}`}
               target="_blank"
@@ -104,18 +109,20 @@ function GazetkaItem(props: GazetkaItemProps) {
           </div>
           <div className="flex items-center gap-4">
             <button
-              className="bg-blue-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
+              className="bg-blue-500 text-white rounded-full sm:rounded-lg p-3 sm:px-4 sm:py-2 shadow-lg sm:shadow-none hover:shadow-lg duration-300 transition-all"
               onClick={() => setEditMode(true)}
             >
-              Edytuj
+              <div className="hidden sm:block">Edytuj</div>
+              <EditRounded className="block sm:hidden" />
             </button>
             <button
-              className="bg-red-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
+              className="bg-red-500 text-white rounded-full sm:rounded-lg p-3 sm:px-4 sm:py-2 shadow-lg sm:shadow-none hover:shadow-lg duration-300 transition-all"
               onClick={() => {
                 handleDelete(newspaper.id);
               }}
             >
-              Usuń
+              <div className="hidden sm:block">Usuń</div>
+              <DeleteOutlineRounded className="block sm:hidden" />
             </button>
           </div>
         </div>

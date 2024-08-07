@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Newspaper } from "@/app/lib/prisma";
 import GazetkaItem from "./GazetkaItem";
+import { AddRounded } from "@mui/icons-material";
 
 type GazetkaProps = {
   newspapers: Newspaper[];
@@ -96,16 +97,17 @@ function Gazetka(props: GazetkaProps) {
 
   return (
     <>
-      <div className="px-4 sm:px-16 w-full">
+      <div className="px-4 sm:px-16 w-full mt-4 md:mt-0">
         <div className="flex justify-between items-center">
           <h2 className="text-4xl text-center">GAZETKA 19tka</h2>
           <button
-            className="bg-green-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
+            className="bg-green-500 text-white rounded-full sm:rounded-lg p-2 sm:px-4 shadow-lg sm:shadow-none hover:shadow-lg duration-300 transition-all"
             onClick={() => {
               setAddModal(true);
             }}
           >
-            Dodaj
+            <div className="hidden sm:block">Dodaj</div>
+            <AddRounded className="block sm:hidden" />
           </button>
         </div>
         <div className="flex flex-col mt-8 gap-8">
