@@ -72,7 +72,8 @@ model Album {
   title       String
   description String
   date        DateTime     @default(now())
-  AlbumPhoto  AlbumPhoto[]
+  photos      AlbumPhoto[] @relation("Photos")
+  thumbnail   AlbumPhoto?  @relation("Thumbnail")
 }
 
 enum AlbumPhotoSize {
@@ -87,6 +88,10 @@ model AlbumPhoto {
   url     String
   preview String
   size    AlbumPhotoSize @default(NORMAL)
+
   albumId String
-  album   Album          @relation(fields: [albumId], references: [id])
+  album   Album  @relation("Photos", fields: [albumId], references: [id])
+
+  thumbnailForAlbumId String? @unique
+  thumbnailForAlbum   Album?  @relation("Thumbnail", fields: [thumbnailForAlbumId], references: [id])
 }
