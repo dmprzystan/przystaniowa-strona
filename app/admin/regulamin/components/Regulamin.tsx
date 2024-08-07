@@ -16,8 +16,8 @@ function Regulamin(props: { statute: string }) {
     setIsEditing(false);
 
     const response = await fetch("/api/admin/statue", {
-      method: "PUT",
-      // body: JSON.stringify({ statute }),
+      method: "PATCH",
+      body: JSON.stringify({ statute }),
     });
 
     if (response.ok) {

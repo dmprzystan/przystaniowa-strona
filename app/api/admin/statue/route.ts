@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { putStatute, getStatute } from "@/app/lib/oci";
 import { revalidatePath } from "next/cache";
 
-export async function PUT(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   const data = await req.json();
 
   const { statute } = data;
@@ -12,7 +12,7 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    // await putStatute(statute);
+    await putStatute(statute);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: "Error" }, { status: 500 });
