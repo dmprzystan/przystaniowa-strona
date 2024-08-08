@@ -47,7 +47,7 @@ function Galeria(props: { gallery: Album[] }) {
 
   return (
     <>
-      <div className="px-4 sm:px-16 w-full">
+      <div className="px-4 sm:px-16 w-full mt-4 md:mt-0">
         <div className="flex justify-between items-center">
           <h2 className="text-4xl text-center">Galeria</h2>
           <button

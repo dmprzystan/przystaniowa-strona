@@ -47,6 +47,11 @@ function Photo({
     <motion.div
       className={`relative ${size.toLowerCase()}`}
       key={photo.id}
+      onTouchStart={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === "BUTTON") return;
+        setHover((prev) => !prev);
+      }}
       onHoverStart={() => {
         setHover(true);
       }}
@@ -66,35 +71,51 @@ function Photo({
             <div className="flex flex-col gap-2">
               <button
                 className="w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-md rounded-full shadow-none hover:shadow-lg hover:bg-opacity-40 transition-all"
-                onClick={() => {
+                onMouseDown={() => {
                   handleSize("NORMAL");
                 }}
               >
-                <div className="h-2 w-2 bg-white rounded-sm"></div>
+                <div
+                  className={`pointer-events-none h-2 w-2 ${
+                    size === "NORMAL" ? "bg-yellow-500" : "bg-white"
+                  } rounded-sm`}
+                />
               </button>
               <button
                 className="w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-md rounded-full shadow-none hover:shadow-lg hover:bg-opacity-40 transition-all"
-                onClick={() => {
+                onMouseDown={() => {
                   handleSize("WIDE");
                 }}
               >
-                <div className="h-2 w-4 bg-white rounded-sm"></div>
+                <div
+                  className={`pointer-events-none h-2 w-4 ${
+                    size === "WIDE" ? "bg-yellow-500" : "bg-white"
+                  } rounded-sm`}
+                />
               </button>
               <button
                 className="w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-md rounded-full shadow-none hover:shadow-lg hover:bg-opacity-40 transition-all"
-                onClick={() => {
+                onMouseDown={() => {
                   handleSize("TALL");
                 }}
               >
-                <div className="h-4 w-2 bg-white rounded-sm"></div>
+                <div
+                  className={`pointer-events-none h-4 w-2 ${
+                    size === "TALL" ? "bg-yellow-500" : "bg-white"
+                  } rounded-sm`}
+                />
               </button>
               <button
                 className="w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-md rounded-full shadow-none hover:shadow-lg hover:bg-opacity-40 transition-all"
-                onClick={() => {
+                onMouseDown={(e) => {
                   handleSize("BIG");
                 }}
               >
-                <div className="h-4 w-4 bg-white rounded-sm"></div>
+                <div
+                  className={`pointer-events-none h-4 w-4 ${
+                    size === "BIG" ? "bg-yellow-500" : "bg-white"
+                  } rounded-sm`}
+                />
               </button>
             </div>
             <div className="flex gap-2">
@@ -106,17 +127,19 @@ function Photo({
                 }}
                 disabled={isStarred}
               >
-                {isStarred ? (
-                  <StarRounded
-                    className="text-yellow-500"
-                    style={{ fontSize: 20 }}
-                  />
-                ) : (
-                  <StarBorderRounded
-                    className="text-white"
-                    style={{ fontSize: 20 }}
-                  />
-                )}
+                <div className="pointer-events-none flex items-center justify-center">
+                  {isStarred ? (
+                    <StarRounded
+                      className="text-yellow-500"
+                      style={{ fontSize: 20 }}
+                    />
+                  ) : (
+                    <StarBorderRounded
+                      className="text-white"
+                      style={{ fontSize: 20 }}
+                    />
+                  )}
+                </div>
               </button>
               <button
                 className="w-10 h-10 flex items-center justify-center bg-red-500 rounded-full shadow-none hover:shadow-lg hover:bg-red-600 transition-all"
@@ -125,7 +148,7 @@ function Photo({
                 }}
               >
                 <DeleteRounded
-                  className="text-white"
+                  className="text-white pointer-events-none"
                   style={{ fontSize: 20 }}
                 />
               </button>

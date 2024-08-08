@@ -120,7 +120,7 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
       onClick={handleClose}
     >
       <div
-        className="bg-white px-6 py-6 rounded-3xl w-[500px] shadow-2xl"
+        className="bg-white px-6 py-6 rounded-3xl mx-4 w-full sm:w-[500px] shadow-2xl"
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -164,11 +164,11 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
               setIsHovered(false);
             }}
           >
-            <div className="flex items-center justify-center flex-col gap-2">
-              <h3 className="text-xl font-semibold">
+            <div className="flex items-center justify-center flex-col gap-2 px-4">
+              <h3 className="text-xl font-semibold text-center sm:text-left">
                 Przeciągnij zdjęcia lub kliknij w obszar
               </h3>
-              <p className="font-light text-sm text-gray-600">
+              <p className="font-light text-sm text-gray-600 text-center sm:text-left">
                 <span className="font-normal">Obsługiwane formaty:</span> JPG,
                 JPEG, PNG, GIF, WEBP, SVG
               </p>

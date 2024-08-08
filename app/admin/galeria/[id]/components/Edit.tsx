@@ -60,7 +60,7 @@ function Edit({ album, onClose, onSubmit }: EditProps) {
       onClick={onClose}
     >
       <form
-        className="bg-white px-6 py-4 rounded-3xl w-[500px]"
+        className="bg-white px-6 py-6 rounded-3xl mx-4 w-full sm:w-[500px] shadow-2xl"
         onClick={(e) => {
           e.stopPropagation();
         }}
