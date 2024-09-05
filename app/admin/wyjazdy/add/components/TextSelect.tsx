@@ -18,7 +18,7 @@ function TextSelect({ editor }: { editor: Editor | null }) {
           setSelectShown(!selectShown);
         }}
       >
-        <p>
+        <p className="w-10 sm:w-auto md:w-10 lg:w-auto text-ellipsis overflow-hidden whitespace-nowrap">
           {editor?.isActive("heading", { level: 3 }) && "Nagłówek 1"}
           {editor?.isActive("heading", { level: 4 }) && "Nagłówek 2"}
           {editor?.isActive("heading", { level: 5 }) && "Nagłówek 3"}
@@ -41,8 +41,9 @@ function TextSelect({ editor }: { editor: Editor | null }) {
           <div className="bg-gray-200 rounded-full h-0.5" />
           <div
             className="relative hover:bg-gray-200 px-2 py-1 rounded-lg whitespace-nowrap flex items-center justify-between gap-2  transition-all duration-200"
-            onPointerEnter={() => setIsHeadingHovered(true)}
-            onPointerLeave={() => setIsHeadingHovered(false)}
+            onMouseEnter={() => setIsHeadingHovered(true)}
+            onTouchStart={() => setIsHeadingHovered(!isHeadingHovered)}
+            onMouseLeave={() => setIsHeadingHovered(false)}
           >
             <h3 className="my-0">Nagłówek</h3>
             <KeyboardArrowRightRounded />

@@ -1,8 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import * as oci from "oci-sdk";
-import { ObjectStorageClient, getNamespace, uploadFile } from "@/app/lib/oci";
+import { uploadFile } from "@/app/lib/oci";
 
 const months = [
   "Styczeń",

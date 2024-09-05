@@ -40,7 +40,7 @@ export default function Editor({
 
   return (
     <div>
-      <div className="mx-2 flex gap-2 bg-gray-200 rounded-full px-4 py-1 items-stretch sticky top-4 z-50">
+      <div className="sm:mx-2 flex gap-1 sm:gap-2 bg-gray-200 rounded-full px-2 sm:px-4 py-1 items-stretch sticky top-4 z-50">
         <TextSelect editor={editor} />
         <div className="my-1.5 w-0.5 bg-gray-400 rounded-full"></div>
         <div className="flex gap-1">

@@ -46,7 +46,7 @@ function NewAlbum({ onClose, onSubmit }: NewAlbumProps) {
       onClick={onClose}
     >
       <form
-        className="bg-white px-6 py-4 rounded-3xl w-[500px]"
+        className="bg-white px-6 py-4 rounded-3xl w-full mx-4 sm:w-[500px]"
         onClick={(e) => {
           e.stopPropagation();
         }}

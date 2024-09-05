@@ -78,7 +78,7 @@ export async function PUT(
   if (file.size > 0) {
     await deleteFile(`gazetki/${oldGazetka.url}`);
     await uploadFile(file, `gazetki/${name}`);
-  } else {
+  } else if (oldGazetka.url !== name) {
     await renameFile(`gazetki/${oldGazetka.url}`, `gazetki/${name}`);
   }
 

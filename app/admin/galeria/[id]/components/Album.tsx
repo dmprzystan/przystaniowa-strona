@@ -75,10 +75,10 @@ function Album(props: AlbumProps) {
 
   return (
     <>
-      <div className="px-4 sm:px-16 w-full">
-        <div className="flex justify-between items-center">
+      <div className="px-4 sm:px-16 w-full mt-4 md:mt-0">
+        <div className="flex flex-col gap-2 md:flex-row justify-between items-center">
           <div className="flex gap-3 items-center">
-            <h2 className="text-4xl text-center font-semibold">
+            <h2 className="text-3xl md:text-4xl text-center font-semibold">
               {album.title}
             </h2>
             <div className="w-2 h-2 rounded-full bg-black"></div>

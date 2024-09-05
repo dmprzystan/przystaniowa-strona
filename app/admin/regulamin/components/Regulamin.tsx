@@ -42,9 +42,9 @@ function Regulamin(props: { statute: string }) {
   };
 
   return (
-    <div className="px-4 sm:px-16 w-full">
+    <div className="px-4 sm:px-16 w-full mt-4 md:mt-0">
       <div className="flex justify-between items-center">
-        <h2 className="text-4xl text-center">Regulamin</h2>
+        <h2 className="text-3xl sm:text-4xl text-center">Regulamin</h2>
         {isEditing ? (
           <div className="flex gap-4">
             <button
@@ -69,7 +69,7 @@ function Regulamin(props: { statute: string }) {
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-8 mt-16">
+      <div className="mt-4 sm:mt-16">
         {isEditing ? (
           <Editor
             value={statute}

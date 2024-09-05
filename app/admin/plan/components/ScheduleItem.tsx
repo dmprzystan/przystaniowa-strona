@@ -1,5 +1,7 @@
 "use client";
 
+import { DeleteOutlineRounded } from "@mui/icons-material";
+
 type ScheduleItemProps = {
   title: string;
   time: string;
@@ -20,9 +22,9 @@ function ScheduleItem(props: ScheduleItemProps) {
       </div>
       <button
         onClick={() => handleRemove(id)}
-        className="text-sm md:text-base text-red-600 bg-gray-100 shadow-arround hover:bg-red-500 hover:text-white bg-opacity-50 hover:bg-opacity-85 transition duration-200 px-4 py-2 rounded-xl"
+        className="text-sm md:text-base text-red-600 bg-gray-100 shadow-arround hover:bg-red-500 hover:text-white bg-opacity-50 hover:bg-opacity-85 transition duration-200 p-2 rounded-full"
       >
-        Usuń
+        <DeleteOutlineRounded />
       </button>
     </li>
   );
