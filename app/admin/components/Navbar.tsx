@@ -56,7 +56,7 @@ function Navbar() {
           </ul>
         </nav>
       </aside>
-      <aside className="md:hidden fixed z-50">
+      <aside className="md:hidden fixed z-[100]">
         <button
           className="fixed top-4 left-4 px-2 py-2 bg-white shadow-lg rounded-full bg-opacity-25 backdrop-blur-lg z-50"
           onClick={() => {
