@@ -40,7 +40,7 @@ function CalendarContainer(props: {
   }, []);
 
   const date = (year: number, month: number) => {
-    if (month < 0) {
+    if (month < 1) {
       return new Date(`${year - 1}-12-01`);
     } else if (month > 12) {
       return new Date(`${year + 1}-01-01`);
