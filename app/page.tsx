@@ -5,7 +5,8 @@ import Schedule from "./components/Schedule";
 import Contact from "./components/Contact";
 import Link from "next/link";
 
-import Head from "next/head";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 import { getSchedule } from "./lib/prisma";
 import Script from "next/script";
@@ -31,6 +32,9 @@ export default async function Home() {
         </div>
         <Contact />
       </main>
+
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }

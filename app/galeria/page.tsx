@@ -5,6 +5,9 @@ import React from "react";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+
 import "./style.scss";
 
 const months = [
@@ -21,10 +24,6 @@ const months = [
   "Listopad",
   "Grudzień",
 ];
-
-const date = (date: Date) => {
-  return `${months[date.getMonth()]} ${date.getFullYear()}`;
-};
 
 async function page() {
   const albums = await getGallery();
@@ -75,6 +74,9 @@ async function page() {
           )}
         </div>
       </div>
+
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }

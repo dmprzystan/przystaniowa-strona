@@ -4,6 +4,9 @@ import Markdown from "react-markdown";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+
 export default function Page() {
   const steps = [
     "Każdy uczestnik jest zobowiązany do przynoszenia własnego egzemplarza Pisma Świętego. Dobrze, żeby to była Twoja Biblia, a nie tylko książka zdjęta z półki w domu, a potem tam odłożona – ponieważ będziemy czytać Słowo Boga i odnosić do swojego życia osobiście.",
@@ -87,6 +90,9 @@ export default function Page() {
           className="w-full -mt-px"
         />
       </div>
+
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }

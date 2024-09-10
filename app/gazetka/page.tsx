@@ -5,6 +5,9 @@ import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import { Inter } from "next/font/google";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+
 const inter = Inter({
   weight: ["400", "800"],
   subsets: ["latin", "latin-ext"],
@@ -63,6 +66,9 @@ async function page() {
           ))}
         </div>
       </div>
+
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }

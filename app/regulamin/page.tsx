@@ -4,6 +4,9 @@ import { getStatute } from "@/app/lib/oci";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+
 import "./style.scss";
 
 export default async function Page() {
@@ -27,6 +30,9 @@ export default async function Page() {
         </main>
         <img src="/images/bg-statue.svg" alt="" className="w-full -mt-px" />
       </div>
+
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }

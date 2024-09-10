@@ -8,6 +8,9 @@ import CalendarContainer from "./components/CalendarContainer";
 import Image from "next/image";
 import { InsertDriveFile } from "@mui/icons-material";
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+
 const inter = Inter({
   weight: ["400", "800"],
   subsets: ["latin", "latin-ext"],
@@ -142,6 +145,9 @@ async function page() {
           </div>
         </div>
       </div>
+
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }
