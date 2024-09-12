@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Newspaper } from "@/app/lib/prisma";
 import GazetkaItem from "./GazetkaItem";
 import { AddRounded } from "@mui/icons-material";
-import { useMessage } from "../../layout";
+import { useMessage } from "../../AdminContext";
 import LoadingButton from "../../components/LoadingButton";
 
 type GazetkaProps = {

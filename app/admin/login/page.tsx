@@ -4,10 +4,10 @@ import React from "react";
 
 import Input from "@/app/components/Input";
 
-import { useMessage } from "@/app/admin/layout";
+import { useMessage } from "@/app/admin/AdminContext";
 import LoadingButton from "../components/LoadingButton";
 
-function page() {
+function Page() {
   const { setMessage } = useMessage();
   const [loading, setLoading] = React.useState(false);
 
@@ -75,4 +75,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;
