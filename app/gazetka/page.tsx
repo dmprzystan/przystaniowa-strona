@@ -42,7 +42,7 @@ async function page() {
           GAZETKA 19tka
         </h2>
         <div
-          className={`px-8 md:px-16 xl:px-32 flex flex-col sm:flex-row items-center sm:flex-wrap justify-between gap-12 lg:gap-y-16 mt-16 ${inter.className}`}
+          className={`px-8 md:px-16 xl:px-32 grid gap-12 grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 mt-8 md:mt-16`}
         >
           {newspapers.map((newspaper) => (
             <a
@@ -53,13 +53,13 @@ async function page() {
               target="_blank"
             >
               <h3 className="text-xl text-center uppercase">
-                {newspaper.title.split(". ")[0]}{" "}
+                nr{" "}
                 <span className="text-5xl font-extrabold">
-                  {newspaper.title.split(". ")[1]}
+                  {newspaper.title}
                 </span>
               </h3>
-              <div className="flex flex-col items-center uppercase">
-                <p className="text-2xl">{months[newspaper.date.getMonth()]}</p>
+              <div className="flex flex-col items-center uppercase mt-4">
+                <p className="text-xl">{months[newspaper.date.getMonth()]}</p>
                 <p className="text-lg">{newspaper.date.getFullYear()}</p>
               </div>
             </a>
