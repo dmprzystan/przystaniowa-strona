@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { uploadFile } from "@/app/lib/oci";
+import { createPAR, uploadFile } from "@/app/lib/oci";
 
 const months = [
   "Styczeń",
@@ -19,12 +19,10 @@ const months = [
 ];
 
 export async function POST(req: NextRequest) {
-  const data = await req.formData();
-  const title = data.get("title") as string;
-  const date = data.get("date") as string;
-  const file = data.get("file") as File;
+  const data = await req.json();
+  const { title, date } = data;
 
-  if (!title || !date || !file || !file.name) {
+  if (!title || !date) {
     return NextResponse.json({ message: "Missing fields" }, { status: 400 });
   }
 
@@ -38,9 +36,10 @@ export async function POST(req: NextRequest) {
   } ${parsedDate.getFullYear()}`;
 
   const name = `Gazetka 19tka nr. ${title} (${dateStr}).pdf`;
-  await uploadFile(file, `gazetki/${name}`);
 
-  await prisma.newspaper.create({
+  const par = await createPAR(`gazetki/${name}`);
+
+  const newspaper = await prisma.newspaper.create({
     data: {
       title,
       date: parsedDate,
@@ -50,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   revalidatePath("/gazetka");
 
-  return NextResponse.json({ message: "ok" });
+  return NextResponse.json({ message: "ok", par, id: newspaper.id });
 }
 
 export async function GET(_req: NextRequest) {

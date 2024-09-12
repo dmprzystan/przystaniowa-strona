@@ -72,6 +72,25 @@ export const putStatute = async (statute: string) => {
   await ObjectStorageClient.putObject(request);
 };
 
+export const createPAR = async (path: string) => {
+  const namespace = await getNamespace();
+
+  const par = await ObjectStorageClient.createPreauthenticatedRequest({
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespace,
+    createPreauthenticatedRequestDetails: {
+      name: `par-${path}-${Date.now()}`,
+      timeExpires: new Date(Date.now() + 1000 * 60 * 5), // 5 minutes
+      objectName: path,
+      accessType:
+        oci.objectstorage.models.CreatePreauthenticatedRequestDetails.AccessType
+          .ObjectWrite,
+    },
+  });
+
+  return par.preauthenticatedRequest.fullPath;
+};
+
 export const uploadFile = async (file: File, path: string) => {
   const namespace = await getNamespace();
 

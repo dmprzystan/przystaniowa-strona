@@ -38,6 +38,10 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
 
     if (files.length > 0) {
       for (const file of files) {
+        if (file.size > 4 * 1024 * 1024) {
+          continue;
+        }
+
         const upload: FileUpload = {
           file,
           progress: 0,
@@ -171,6 +175,9 @@ function Upload({ album, onClose, onSubmit }: UploadProps) {
               <p className="font-light text-sm text-gray-600 text-center sm:text-left">
                 <span className="font-normal">Obsługiwane formaty:</span> JPG,
                 JPEG, PNG, GIF, WEBP, SVG
+              </p>
+              <p className="font-light text-sm text-gray-600 text-center sm:text-left">
+                <span className="font-normal">Maksymalny rozmiar:</span> 4 MB
               </p>
               <p className="font-light text-sm text-gray-600 text-center px-6 mt-2">
                 Zdjęcia zostaną od razu dodane do albumu po przeciągnięciu lub

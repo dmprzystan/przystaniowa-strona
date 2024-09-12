@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Newspaper } from "@/app/lib/prisma";
 import GazetkaItem from "./GazetkaItem";
 import { AddRounded } from "@mui/icons-material";
+import { useMessage } from "../../AdminContext";
+import LoadingButton from "../../components/LoadingButton";
 
 type GazetkaProps = {
   newspapers: Newspaper[];
@@ -14,22 +16,87 @@ const APILink = "/api/admin/newspaper";
 function Gazetka(props: GazetkaProps) {
   const [clientNewspapers, setClientNewspapers] = useState(props.newspapers);
 
+  const { setMessage } = useMessage();
+
   const [addModal, setAddModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     const form = e.currentTarget;
     const data = new FormData(form);
 
+    const title = data.get("title") as string;
+    const date = data.get("date") as string;
+    const file = data.get("file") as File;
+
+    if (!file.name) {
+      setMessage({
+        type: "error",
+        message: "Błąd podczas dodawania pliku, spróbuj ponownie",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!file.name.endsWith(".pdf")) {
+      setMessage({
+        type: "error",
+        message: "Plik musi być w formacie PDF",
+      });
+      setLoading(false);
+      return;
+    }
+
     const res = await fetch(APILink, {
       method: "POST",
-      body: data,
+      body: JSON.stringify({ title, date }),
     });
 
     if (res.ok) {
+      const { par, id } = await res.json();
+
+      const uploadRes = await fetch(par, {
+        method: "PUT",
+        body: file,
+      });
+
       setAddModal(false);
+
+      if (!uploadRes.ok) {
+        await fetch(`${APILink}/${id}`, {
+          method: "DELETE",
+        });
+
+        setMessage({
+          type: "error",
+          message: "Wystąpił błąd podczas dodawania pliku, spróbuj ponownie",
+        });
+        getNewspapers();
+
+        setLoading(false);
+        return;
+      }
+    } else {
+      setAddModal(false);
+      setMessage({
+        type: "error",
+        message: "Wystąpił błąd podczas dodawania gazetki, spróbuj ponownie",
+      });
+
+      getNewspapers();
+
+      setLoading(false);
+      return;
     }
+
+    setMessage({
+      type: "success",
+      message: "Gazetka dodana pomyślnie",
+    });
+    setLoading(false);
 
     getNewspapers();
   };
@@ -107,7 +174,9 @@ function Gazetka(props: GazetkaProps) {
             }}
           >
             <div className="hidden sm:block">Dodaj</div>
-            <AddRounded className="block sm:hidden" />
+            <div className="block sm:hidden">
+              <AddRounded />
+            </div>
           </button>
         </div>
         <div className="flex flex-col mt-8 gap-8">
@@ -161,6 +230,7 @@ function Gazetka(props: GazetkaProps) {
                   type="file"
                   name="file"
                   required
+                  accept=".pdf"
                 />
               </div>
               <div className="flex justify-between mt-4">
@@ -170,12 +240,13 @@ function Gazetka(props: GazetkaProps) {
                 >
                   Anuluj
                 </button>
-                <button
-                  type="submit"
-                  className="bg-green-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
+                <LoadingButton
+                  loading={loading}
+                  color="text-white"
+                  className="shadow-none hover:shadow-lg rounded-lg bg-green-500 text-white py-2 px-4 duration-300 transition-all"
                 >
-                  Dodaj
-                </button>
+                  <button type="submit">Dodaj</button>
+                </LoadingButton>
               </div>
             </form>
           </div>

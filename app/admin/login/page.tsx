@@ -4,9 +4,16 @@ import React from "react";
 
 import Input from "@/app/components/Input";
 
-function page() {
+import { useMessage } from "@/app/admin/AdminContext";
+import LoadingButton from "../components/LoadingButton";
+
+function Page() {
+  const { setMessage } = useMessage();
+  const [loading, setLoading] = React.useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
@@ -27,7 +34,18 @@ function page() {
 
     if (response.ok) {
       window.location.href = "/admin";
+      return;
     }
+
+    try {
+      const data = await response.json();
+      if (data.error) setMessage({ type: "error", message: data.error });
+      else setMessage({ type: "error", message: "Wystąpił błąd" });
+    } catch {
+      setMessage({ type: "error", message: "Wystąpił błąd" });
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -39,16 +57,22 @@ function page() {
             <Input label="login" name="login" type="text" required />
             <Input label="hasło" name="password" type="password" required />
           </div>
-          <button
-            className="bg-[#EAEAEA] rounded-full shadow-arround text-[#525252] uppercase py-2 mt-4"
-            type="submit"
+          <LoadingButton
+            loading={loading}
+            className="mt-4"
+            color="text-[#525252]"
           >
-            zaloguj się
-          </button>
+            <button
+              className="bg-[#EAEAEA] rounded-full shadow-arround text-[#525252] uppercase py-2 w-full"
+              type="submit"
+            >
+              zaloguj się
+            </button>
+          </LoadingButton>
         </form>
       </div>
     </div>
   );
 }
 
-export default page;
+export default Page;

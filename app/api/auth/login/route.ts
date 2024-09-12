@@ -17,7 +17,7 @@ export const POST = async (req: NextRequest) => {
 
   if (!user) {
     return NextResponse.json(
-      { error: "Invalid login or password" },
+      { error: "Błędny login albo hasło" },
       { status: 401 }
     );
   }
@@ -26,7 +26,7 @@ export const POST = async (req: NextRequest) => {
 
   if (!passwordMatch) {
     return NextResponse.json(
-      { error: "Invalid login or password" },
+      { error: "Błędny login albo hasło" },
       { status: 401 }
     );
   }
