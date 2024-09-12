@@ -113,7 +113,9 @@ function GazetkaItem(props: GazetkaItemProps) {
               onClick={() => setEditMode(true)}
             >
               <div className="hidden sm:block">Edytuj</div>
-              <EditRounded className="block sm:hidden" />
+              <div className="block sm:hidden">
+                <EditRounded />
+              </div>
             </button>
             <button
               className="bg-red-500 text-white rounded-full sm:rounded-lg p-3 sm:px-4 sm:py-2 shadow-lg sm:shadow-none hover:shadow-lg duration-300 transition-all"
@@ -122,7 +124,9 @@ function GazetkaItem(props: GazetkaItemProps) {
               }}
             >
               <div className="hidden sm:block">Usuń</div>
-              <DeleteOutlineRounded className="block sm:hidden" />
+              <div className="block sm:hidden">
+                <DeleteOutlineRounded />
+              </div>
             </button>
           </div>
         </div>

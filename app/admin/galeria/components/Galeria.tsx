@@ -27,10 +27,6 @@ function Galeria(props: { gallery: Album[] }) {
   const [gallery, setGallery] = React.useState<Album[]>(props.gallery);
   const [newAlbum, setNewAlbum] = React.useState(false);
 
-  const date = (date: Date) => {
-    return `${months[date.getMonth()]} ${date.getFullYear()}`;
-  };
-
   const fetchGallery = async () => {
     const res = await fetch("/api/admin/gallery");
     const data = await res.json();
