@@ -4,7 +4,11 @@ import React from "react";
 
 import Input from "@/app/components/Input";
 
+import { useMessage } from "@/app/admin/layout";
+
 function page() {
+  const { setMessage } = useMessage();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -26,8 +30,26 @@ function page() {
     });
 
     if (response.ok) {
-      window.location.href = "/admin";
+      setMessage({ type: "success", message: "Zalogowano pomyślnie" });
+      setTimeout(() => {
+        setMessage(null);
+        window.location.href = "/admin";
+      }, 1000);
+
+      return;
     }
+
+    try {
+      const data = await response.json();
+      if (data.error) setMessage({ type: "error", message: data.error });
+      else setMessage({ type: "error", message: "Wystąpił błąd" });
+    } catch {
+      setMessage({ type: "error", message: "Wystąpił błąd" });
+    }
+
+    setTimeout(() => {
+      setMessage(null);
+    }, 3000);
   };
 
   return (
