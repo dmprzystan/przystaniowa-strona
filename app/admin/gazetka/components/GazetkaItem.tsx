@@ -69,6 +69,7 @@ function GazetkaItem(props: GazetkaItemProps) {
               id="file-upload"
               type="file"
               name="file"
+              accept=".pdf"
             />
           </div>
           <div className="flex items-center md:flex-col lg:flex-row gap-4 sm:gap-2 md:gap-4 justify-between lg:justify-normal w-full lg:w-auto">
