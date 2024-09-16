@@ -30,8 +30,6 @@ export const middleware = async (request: NextRequest) => {
   let loggedIn = false;
 
   if (token) {
-    console.log("Token: ", token);
-    console.log("URL: ", `${url}/api/auth/verify`);
     const res = await fetch(`${url}/api/auth/verify`, {
       method: "POST",
       headers: {
@@ -41,17 +39,7 @@ export const middleware = async (request: NextRequest) => {
     });
 
     if (res.ok) {
-      console.log("User is logged in");
       loggedIn = true;
-    } else {
-      console.log(res.status);
-
-      try {
-        const data = await res.json();
-        console.log(data);
-      } catch (e) {
-        console.log(await res.text());
-      }
     }
   }
 
@@ -62,7 +50,6 @@ export const middleware = async (request: NextRequest) => {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   } else {
-    console.log("Path: ", path);
     if (loggedIn && path === "/admin/login") {
       const url = new URL("/admin", request.url);
       return NextResponse.redirect(url, { status: 302 });
