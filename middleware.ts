@@ -30,9 +30,6 @@ export const middleware = async (request: NextRequest) => {
   let loggedIn = false;
 
   if (token) {
-    console.log("Has token");
-    console.log("Fetching url: ", `${url}/api/auth/verify`);
-
     const res = await fetch(`${url}/api/auth/verify`, {
       method: "POST",
       body: JSON.stringify({ token }),
@@ -43,13 +40,8 @@ export const middleware = async (request: NextRequest) => {
 
     if (res.ok) {
       loggedIn = true;
-    } else {
-      console.log("Something went wrong");
-      console.log(await res.text());
     }
-  } else {
-    console.log("No token - weird");
-  }
+  } 
 
   const api = path.startsWith("/api/admin");
 

@@ -3,8 +3,6 @@ import prisma from "@/app/lib/prisma";
 import jwt from "jsonwebtoken";
 
 export const POST = async (req: NextRequest) => {
-  console.log(req);
-
   try {
     const { token } = (await req.json()) as {
       token: string;
