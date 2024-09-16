@@ -27,6 +27,8 @@ export const middleware = async (request: NextRequest) => {
 
   const token = request.cookies.get("token")?.value; // Get the token from the cookies
 
+  console.log(token);
+
   let loggedIn = false;
 
   if (token) {
