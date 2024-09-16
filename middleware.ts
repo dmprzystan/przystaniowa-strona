@@ -38,9 +38,8 @@ export const middleware = async (request: NextRequest) => {
       body: JSON.stringify({ token }),
     });
 
-    console.log(await res.json());
-
     if (res.ok) {
+      console.log("User is logged in");
       loggedIn = true;
     }
   }
@@ -52,6 +51,7 @@ export const middleware = async (request: NextRequest) => {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   } else {
+    console.log("Path: ", path);
     if (loggedIn && path === "/admin/login") {
       const url = new URL("/admin", request.url);
       return NextResponse.redirect(url, { status: 302 });
