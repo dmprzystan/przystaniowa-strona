@@ -43,6 +43,14 @@ export const middleware = async (request: NextRequest) => {
     if (res.ok) {
       console.log("User is logged in");
       loggedIn = true;
+    } else {
+      console.log(res.status);
+
+      try {
+        const data = await res.json();
+        console.log(data);
+      } catch (e) {
+        console.log(await res.text());
     }
   }
 
