@@ -30,6 +30,8 @@ export const middleware = async (request: NextRequest) => {
   let loggedIn = false;
 
   if (token) {
+    console.log("Token: ", token);
+    console.log("URL: ", `${url}/api/auth/verify`);
     const res = await fetch(`${url}/api/auth/verify`, {
       method: "POST",
       headers: {
