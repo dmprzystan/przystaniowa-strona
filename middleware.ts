@@ -51,6 +51,7 @@ export const middleware = async (request: NextRequest) => {
         console.log(data);
       } catch (e) {
         console.log(await res.text());
+      }
     }
   }
 
