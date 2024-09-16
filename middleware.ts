@@ -38,7 +38,7 @@ export const middleware = async (request: NextRequest) => {
       body: JSON.stringify({ token }),
     });
 
-    console.log(res);
+    console.log(await res.json());
 
     if (res.ok) {
       loggedIn = true;
