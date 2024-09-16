@@ -32,9 +32,6 @@ export const middleware = async (request: NextRequest) => {
   if (token) {
     const res = await fetch(`${url}/api/auth/verify`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({ token }),
     });
 
