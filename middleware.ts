@@ -38,6 +38,8 @@ export const middleware = async (request: NextRequest) => {
       body: JSON.stringify({ token }),
     });
 
+    console.log(res);
+
     if (res.ok) {
       loggedIn = true;
     }
