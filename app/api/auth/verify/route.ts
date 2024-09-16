@@ -8,6 +8,8 @@ export const POST = async (req: NextRequest) => {
       token: string;
     };
 
+    console.log(token);
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       id: string;
     };
