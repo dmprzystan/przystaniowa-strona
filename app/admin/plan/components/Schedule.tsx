@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ScheduleItem from "./ScheduleItem";
+import { useMessage } from "../../AdminContext";
 
 type ScheduleProps = {
   scheduledDays: Record<
@@ -13,6 +14,7 @@ type ScheduleProps = {
 const APILink = "/api/admin/schedule";
 
 function Schedule(props: ScheduleProps) {
+  const { addToast } = useMessage();
   const [clientSchedule, setClientSchedule] = useState(props.scheduledDays);
 
   const days = [
@@ -34,9 +36,21 @@ function Schedule(props: ScheduleProps) {
       return newSchedule;
     });
 
-    await fetch(`${APILink}/${id}`, {
+    const res = await fetch(`${APILink}/${id}`, {
       method: "DELETE",
     });
+
+    if (res.ok) {
+      addToast({ type: "success", message: "Pomyśnie usunięto wydarzenie" });
+    } else {
+      try {
+        const data = await res.json();
+        if (data.error) addToast({ type: "error", message: data.error });
+        else addToast({ type: "error", message: "Wystąpił nieznany błąd" });
+      } catch {
+        addToast({ type: "error", message: "Wystąpił nieznany błąd" });
+      }
+    }
 
     getNewSchedule();
   };
@@ -68,10 +82,22 @@ function Schedule(props: ScheduleProps) {
       return newSchedule;
     });
 
-    await fetch(APILink, {
+    const res = await fetch(APILink, {
       method: "POST",
       body: JSON.stringify({ title, time, day }),
     });
+
+    if (res.ok) {
+      addToast({ type: "success", message: "Pomyśnie dodano wydarzenie" });
+    } else {
+      try {
+        const data = await res.json();
+        if (data.error) addToast({ type: "error", message: data.error });
+        else addToast({ type: "error", message: "Wystąpił nieznany błąd" });
+      } catch {
+        addToast({ type: "error", message: "Wystąpił nieznany błąd" });
+      }
+    }
 
     form.reset();
 

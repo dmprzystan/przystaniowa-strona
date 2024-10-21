@@ -12,8 +12,6 @@ export async function submitMessage(
   },
   formData: FormData
 ) {
-  console.log("submitMessage");
-
   const schema = z.object({
     name: z.string().min(1),
     surname: z.string().min(1),
@@ -29,8 +27,6 @@ export async function submitMessage(
     message: formData.get("message"),
     captcha: formData.get("cf-turnstile-response"),
   });
-
-  console.log(formData);
 
   if (!parse.success) {
     return { message: "Nie wszystkie wymagane pola zostały wypełnione" };
@@ -64,11 +60,9 @@ export async function submitMessage(
     });
 
     if (error) {
-      console.log(error);
       return { message: "Wystąpił błąd podczas wysyłania wiadomości" };
     }
 
-    console.log(data);
 
     return { message: "Wiadomość wysłana" };
   } catch (error) {

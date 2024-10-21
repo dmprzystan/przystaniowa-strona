@@ -1,0 +1,107 @@
+.bierzmowanie {
+    color: white;
+    margin-top: 1rem;
+    padding-inline: 1rem;
+    text-wrap: pretty;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    > p {
+        padding-bottom: 0.5rem;
+        &:last-of-type {
+            padding-bottom: 0;
+        }
+    }
+    > ol {
+        margin-top: 1rem;
+        padding-left: 2.5rem;
+        list-style: none;
+        counter-reset: item;
+        > li {
+            position: relative;
+            counter-increment: item;
+            padding-bottom: 1rem;
+
+            > ul {
+                padding-left: 1.5rem;
+                list-style-type: disc;
+            }
+            &::before {
+                content: counter(item);
+                position: absolute;
+                margin-left: -2.5rem;
+                color: black;
+                background-color: white;
+                border-radius: 50%;
+                width: 2rem;
+                height: 2rem;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 1.25rem;
+                z-index: 2;
+            }
+            &::after {
+                content: '';
+                display: block;
+                width: 0.25rem;
+                height: 100%;
+                background-color: white;
+                position: absolute;
+                top: 0;
+                left: -2.5rem + 1rem;
+            }
+
+            &:last-of-type {
+                padding-bottom: 0;
+                &::after {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 640px) {
+    .bierzmowanie {
+        margin-top: 1.5rem;
+        padding-inline: 3rem;
+        > ol {
+            margin-top: 1.5rem;
+        }
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .bierzmowanie {
+        margin-top: 2rem;
+        padding-inline: 3.5rem;
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+        
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .bierzmowanie {
+        padding-inline: 4rem;
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+        > ol {
+            margin-top: 2rem;
+        }
+    }
+}
+
+@media screen and (min-width: 1280px) {
+    .bierzmowanie {
+        font-size: 1.5rem; /* 24px */
+        line-height: 2rem; /* 32px */
+        > ol {
+            margin-top: 2.5rem;
+        }
+    }
+}
+
+@media screen and (min-width: 1536px) {
+    
+}

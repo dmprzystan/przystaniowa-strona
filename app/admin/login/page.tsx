@@ -8,7 +8,7 @@ import { useMessage } from "@/app/admin/AdminContext";
 import LoadingButton from "../components/LoadingButton";
 
 function Page() {
-  const { setMessage } = useMessage();
+  const { addToast } = useMessage();
   const [loading, setLoading] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,10 +39,10 @@ function Page() {
 
     try {
       const data = await response.json();
-      if (data.error) setMessage({ type: "error", message: data.error });
-      else setMessage({ type: "error", message: "Wystąpił błąd" });
+      if (data.error) addToast({ type: "error", message: data.error });
+      else addToast({ type: "error", message: "Wystąpił nieznany błąd" });
     } catch {
-      setMessage({ type: "error", message: "Wystąpił błąd" });
+      addToast({ type: "error", message: "Wystąpił nieznany błąd" });
     }
 
     setLoading(false);

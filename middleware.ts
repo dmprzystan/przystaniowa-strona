@@ -7,7 +7,6 @@ export const middleware = async (request: NextRequest) => {
   if (path.startsWith("/gazetka")) {
     const url = path.split("/").slice(2).join("/");
 
-    console.log(`${process.env.NEWSPAPER_ENDPOINT}/gazetki/${url}`);
     return NextResponse.rewrite(
       `${process.env.NEWSPAPER_ENDPOINT}/gazetki/${url}`
     );
@@ -34,9 +33,6 @@ export const middleware = async (request: NextRequest) => {
       method: "POST",
       body: JSON.stringify({ token }),
     });
-
-    console.log("Fetch done, status: ", res.status);
-    console.log("Response: ", res);
 
     if (res.ok) {
       loggedIn = true;

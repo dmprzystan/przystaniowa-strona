@@ -69,13 +69,13 @@ function Wyjazd({
       className="flex justify-between gap-8 h-[240px] relative"
     >
       <div>
-        <Image
+        {/* <Image
           src={`/wyjazdy/${trip.TripPhoto[0].url}`}
           alt=""
           width={320}
           height={240}
           className="w-auto rounded-[3rem] shadow-lg h-full"
-        />
+        /> */}
       </div>
       <div className="flex flex-col h-full">
         <div className="flex gap-4 items-center">

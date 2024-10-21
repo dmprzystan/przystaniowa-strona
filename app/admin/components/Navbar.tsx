@@ -15,6 +15,7 @@ function Navbar() {
   const pages = [
     { name: "Strona główna", href: "/admin" },
     { name: "Plan tygodnia", href: "/admin/plan" },
+    { name: "Bierzmowanie", href: "/admin/bierzmowanie" },
     { name: "Gazetka", href: "/admin/gazetka" },
     { name: "Wyjazdy", href: "/admin/wyjazdy" },
     { name: "Galeria", href: "/admin/galeria" },
