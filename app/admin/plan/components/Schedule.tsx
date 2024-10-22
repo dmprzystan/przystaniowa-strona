@@ -125,7 +125,7 @@ function Schedule(props: ScheduleProps) {
   return (
     <div className="px-4 w-full mt-4">
       <h2 className="text-4xl text-center">Plan tygodnia</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 mt-8 gap-8 justify-around pb-6">
+      <div className="mx-auto w-fit grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 items-stretch justify-items-center mt-8 gap-8 pb-6">
         {days &&
           days.map((day) => (
             <ScheduleDay
@@ -133,7 +133,6 @@ function Schedule(props: ScheduleProps) {
               day={day}
               schedule={clientSchedule}
               getNewSchedule={getNewSchedule}
-              setClientSchedule={setClientSchedule}
             />
           ))}
       </div>
@@ -145,12 +144,10 @@ function ScheduleDay({
   day,
   schedule,
   getNewSchedule,
-  setClientSchedule,
 }: {
   day: string;
   schedule: Schedule;
   getNewSchedule: () => void;
-  setClientSchedule: React.Dispatch<React.SetStateAction<Schedule>>;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -202,7 +199,7 @@ function ScheduleDay({
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full max-w-96 flex flex-col">
       <CardHeader className="py-4">
         <CardTitle className="capitalize flex items-center gap-2">
           {day}
@@ -212,7 +209,7 @@ function ScheduleDay({
         </CardTitle>
       </CardHeader>
       <Separator />
-      <CardContent className="mt-6 flex flex-col gap-3">
+      <CardContent className="mt-3 p-3 flex flex-col gap-3 flex-grow">
         {schedule[day] &&
           schedule[day].map(({ title, time, id }) => (
             <ScheduleItem
@@ -225,7 +222,7 @@ function ScheduleDay({
           ))}
       </CardContent>
       <Separator />
-      <CardFooter className="mt-2">
+      <CardFooter className="mt-2 flex justify-center">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(add)}>
             <div className="flex items-center gap-2">
