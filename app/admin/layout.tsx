@@ -10,9 +10,7 @@ export default function AdminLayout({
 }) {
   return (
     <>
-      <div className="container mx-auto min-h-screen flex flex-row py-12">
-        {children}
-      </div>
+      <div className="container mx-auto h-full flex flex-row">{children}</div>
       <Toaster />
     </>
   );

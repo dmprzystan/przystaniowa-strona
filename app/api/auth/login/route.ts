@@ -2,12 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { compare } from "bcrypt";
 import jwt from "jsonwebtoken";
+import { z } from "zod";
+
+const LoginSchema = z.object({
+  login: z.string().min(1),
+  password: z.string().min(1),
+});
 
 export const POST = async (req: NextRequest) => {
-  const { login, password } = (await req.json()) as {
-    login: string;
-    password: string;
-  };
+  const data = await req.json();
+  const parse = LoginSchema.safeParse(data);
+
+  if (!parse.success) {
+    return NextResponse.json({ error: "Błędne dane" }, { status: 400 });
+  }
+
+  const { login, password } = parse.data;
 
   const user = await prisma.user.findUnique({
     where: {

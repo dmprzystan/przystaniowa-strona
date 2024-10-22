@@ -37,7 +37,7 @@ export const middleware = async (request: NextRequest) => {
     if (res.ok) {
       loggedIn = true;
     }
-  } 
+  }
 
   const api = path.startsWith("/api/admin");
 
