@@ -2,13 +2,15 @@ import { getConfirmation } from "@/app/lib/oci";
 
 import Navbar from "../components/Navbar";
 import Bierzmowanie from "./components/Bierzmowanie";
+import { getConfirmationLinks } from "@/app/lib/prisma";
 
 export default async function Page() {
-  const statute = await getConfirmation();
+  const confirmation = await getConfirmation();
+  const links = await getConfirmationLinks();
   return (
     <>
       <Navbar />
-      <Bierzmowanie statute={statute} />
+      <Bierzmowanie confirmation={confirmation} links={links} />
     </>
   );
 }

@@ -93,6 +93,14 @@ export type AlbumPhoto = Prisma.AlbumPhotoGetPayload<{
   };
 }>;
 
+export type ConfirmationLink = Prisma.ConfirmationLinkGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    url: true;
+  };
+}>;
+
 export type AlbumPhotoSize = "NORMAL" | "WIDE" | "TALL" | "BIG";
 
 if (process.env.NODE_ENV === "production") {
@@ -225,5 +233,10 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
     return album;
   }
 );
+
+export const getConfirmationLinks = cache(async () => {
+  const links = await prisma.confirmationLink.findMany();
+  return links;
+});
 
 export default prisma;
