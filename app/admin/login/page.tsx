@@ -158,7 +158,7 @@ function Page() {
                   disabled={loading}
                 >
                   {loading && (
-                    <div className="border-2 rounded-full border-s-transparent mr-2 h-4 w-4 animate-spin" />
+                    <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
                   )}
                   Login
                 </Button>
