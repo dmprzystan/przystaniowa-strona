@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 
 import { Button } from "@/components/ui/button";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
@@ -17,6 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 function Navbar() {
   const pathname = usePathname();
@@ -96,31 +90,33 @@ function Navbar() {
             side="left"
             className="w-4/5 min-w-80 [&>button]:!ring-transparent"
           >
-            <Link href="/">
-              <Image
-                className="w-64"
-                src="/images/logo.png"
-                alt="Przystań"
-                width={300}
-                height={200}
-              />
-            </Link>
-            <nav className="mt-8 w-full px-4">
-              <ul className="flex flex-col gap-4">
-                {pages.map((page) => (
-                  <li key={page.href}>
-                    <Link
-                      className={`hover:bg-gray-50 hover:shadow-md transition-all px-4 py-2 rounded-2xl cursor-pointer block ${isActive(
-                        page.href
-                      )}`}
-                      href={page.href}
-                    >
-                      {page.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+            <ScrollArea className="h-full">
+              <Link href="/">
+                <Image
+                  className="w-64"
+                  src="/images/logo.png"
+                  alt="Przystań"
+                  width={300}
+                  height={200}
+                />
+              </Link>
+              <nav className="mt-8 w-full px-4 pb-4">
+                <ul className="flex flex-col gap-4">
+                  {pages.map((page) => (
+                    <li key={page.href}>
+                      <Link
+                        className={`hover:bg-gray-50 hover:shadow-md transition-all px-4 py-2 rounded-2xl cursor-pointer block ${isActive(
+                          page.href
+                        )}`}
+                        href={page.href}
+                      >
+                        {page.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       )}

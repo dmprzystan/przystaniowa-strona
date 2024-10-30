@@ -1,153 +1,142 @@
 "use client";
 
-import React, { useState } from "react";
-import Editor from "../../wyjazdy/add/components/Editor";
+import React, { useEffect, useRef, useState } from "react";
+import "@/app/bierzmowanie/style.scss";
 import type { ConfirmationLink } from "@/app/lib/prisma";
 
 import "@/app/bierzmowanie/style.scss";
-import { useMessage } from "../../AdminContext";
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
-import Input from "@/app/components/Input";
+import { EditConfirmation, EditLinks } from "./EditForm";
 import { Button } from "@/components/ui/button";
+import { BookmarkIcon, Pencil1Icon } from "@radix-ui/react-icons";
+import Editor from "../../wyjazdy/add/components/Editor";
 
 function Bierzmowanie(props: {
   confirmation: string;
   links: ConfirmationLink[];
 }) {
-  const [statute, setStatute] = useState(props.confirmation);
-  const [lastSaved, setLastSaved] = useState(props.confirmation);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  const { addToast } = useMessage();
+  const [staticHeight, setStaticHeight] = useState(9999);
+
+  const [statute, setStatute] = useState(props.confirmation);
+  const [links, setLinks] = useState(props.links);
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const save = async () => {
-    setLastSaved(statute);
-    setIsEditing(false);
+  useEffect(updateHeight, [links, bottomRef]);
 
-    const response = await fetch("/api/admin/confirmation", {
-      method: "PATCH",
-      body: JSON.stringify({ statute }),
-    });
+  function updateHeight() {
+    if (!bottomRef.current) return;
 
-    if (response.ok) {
-      addToast({
-        type: "success",
-        message: "Pomyśnie zapisano zmiany",
-      });
-    } else {
-      addToast({
-        type: "error",
-        message: "Błąd podczas zapisywania zmian",
-      });
+    const height = bottomRef.current.getBoundingClientRect().height;
+
+    if (height > 0) {
+      setStaticHeight(height);
     }
 
-    fetch("/api/admin/confirmation", {
+    console.log(height);
+  }
+
+  const updateConfirmation = async () => {
+    const res = await fetch("/api/admin/confirmation", {
       cache: "no-cache",
-    }).then(async (response) => {
-      if (response.ok) {
-        const statute = await response.text();
-        setStatute(statute);
-        setLastSaved(statute);
-      }
     });
-  };
-  const discard = () => {
-    setStatute(lastSaved);
-    setIsEditing(false);
+
+    if (!res.ok) {
+      toast.error(
+        "Nie udało się pobrać najnowszych danych, spróbuj odświeżyć stronę"
+      );
+      return;
+    }
+
+    const data = await res.text();
+    setStatute(data);
+
+    const resLinks = await fetch("/api/admin/confirmation/links", {
+      cache: "no-cache",
+    });
+
+    if (!resLinks.ok) {
+      toast.error(
+        "Nie udało się pobrać najnowszych danych, spróbuj odświeżyć stronę"
+      );
+      return;
+    }
+
+    const linksData = await resLinks.json();
+    setLinks(linksData);
   };
 
   return (
-    <div className="px-4 sm:px-16 w-full mt-4 md:mt-0">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl sm:text-4xl text-center">Bierzmowanie</h2>
-        {isEditing ? (
-          <div className="flex gap-4">
-            <button
-              className="bg-red-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
-              onClick={discard}
-            >
-              Anuluj
-            </button>
-            <button
-              className="bg-green-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
-              onClick={save}
-            >
-              Zapisz
-            </button>
-          </div>
-        ) : (
-          <button
-            className="bg-blue-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
-            onClick={() => setIsEditing(true)}
-          >
-            Edytuj
-          </button>
-        )}
+    <div className="px-4 w-full mt-4">
+      <div
+        className={`overflow-hidden ${
+          isEditing ? "max-h-0" : "max-h-12"
+        } transition-all duration-300`}
+      >
+        <h2 className="text-4xl mx-auto text-center">Bierzmowanie</h2>
       </div>
-      <div className="mt-4 sm:mt-16 bg-dimmedBlue sm:px-4 py-4 sm:py-8 rounded-xl">
-        {isEditing ? (
-          <Editor
-            value={statute}
-            setValue={setStatute}
-            classname="bierzmowanie"
-          />
-        ) : (
-          <div
-            className="bierzmowanie mt-4"
-            dangerouslySetInnerHTML={{ __html: statute }}
-          />
-        )}
-        <Separator className="h-[2px] my-4" />
-        <div className="flex flex-col items-center">
-          <h3 className="text-xl sm:text-2xl text-white font-semibold">
-            Linki
-            {isEditing && (
-              <div>
-                <form
-                  className="text-black flex flex-col gap-4 bg-neutral-50 px-4 py-2 pt-8 rounded-lg w-[600px]"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const form = e.target as HTMLFormElement;
-                    const formData = new FormData(form);
-                    const title = formData.get("title") as string;
-                    const link = formData.get("link") as string;
-
-                    fetch("/api/admin/confirmation/links", {
-                      method: "POST",
-                      body: JSON.stringify({ title, url: link }),
-                    }).then(async (response) => {
-                      if (response.ok) {
-                        addToast({
-                          type: "success",
-                          message: "Pomyślnie dodano link",
-                        });
-                        const links = await fetch(
-                          "/api/admin/confirmation/links"
-                        ).then((response) => response.json());
-                        console.log(links);
-                      } else {
-                        addToast({
-                          type: "error",
-                          message: "Błąd podczas dodawania linku",
-                        });
-                      }
-                    });
-                  }}
-                >
-                  <Input type="text" name="title" label="Tytuł" required />
-                  <div></div>
-                  <Input type="url" name="link" label="Adres" required />
-                  <Button type="submit">Dodaj</Button>
-                </form>
-              </div>
+      <div className="mt-4 pb-8">
+        <section>
+          <div className="flex justify-between items-center px-4">
+            <h3
+              className={`text-2xl font-semibold ${
+                isEditing ? "ml-8" : "ml-0"
+              } transition-all duration-300`}
+            >
+              Opis
+            </h3>
+            {isEditing ? (
+              <Button size="icon" onClick={() => setIsEditing(true)}>
+                <BookmarkIcon />
+              </Button>
+            ) : (
+              <Button size="icon" onClick={() => setIsEditing(true)}>
+                <Pencil1Icon />
+              </Button>
             )}
-            {props.links.map((link) => (
-              <div>
-                {link.title} - {link.url}
-              </div>
-            ))}
-          </h3>
+          </div>
+          {isEditing ? (
+            <>
+              <Editor
+                value={statute}
+                setValue={() => {}}
+                classname="bierzmowanie bg-dimmedBlue"
+              />
+            </>
+          ) : (
+            <div
+              className="mt-4 bierzmowanie bg-dimmedBlue p-4 rounded-lg"
+              dangerouslySetInnerHTML={{ __html: statute }}
+            />
+          )}
+        </section>
+        <div
+          className={`overflow-hidden transition-all duration-300 h-full`}
+          style={{
+            maxHeight: isEditing ? "0px" : `${staticHeight}px`,
+          }}
+          ref={bottomRef}
+        >
+          <Separator className="my-4" />
+          <section>
+            <div className="flex justify-between items-center px-4">
+              <h3 className="text-2xl font-semibold">Linki</h3>
+              <EditLinks links={links} update={updateConfirmation} />
+            </div>
+            <div className="flex flex-col sm:flex-row items-stretch w-fit mx-auto gap-6 mt-6 md:text-lg lg:text-2xl xl:text-3xl uppercase">
+              {links.map((link) => (
+                <div
+                  key={link.id}
+                  className="block bg-[#D9D9D9] px-8 lg:px-10 py-3 lg:py-4 rounded-xl shadow-lg text-center"
+                >
+                  {link.title}
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
     </div>

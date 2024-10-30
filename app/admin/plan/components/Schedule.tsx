@@ -36,7 +36,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -60,48 +59,6 @@ const days = [
 
 function Schedule(props: ScheduleProps) {
   const [clientSchedule, setClientSchedule] = useState(props.scheduledDays);
-
-  const handleAdd = async (
-    e: React.FormEvent<HTMLFormElement>,
-    day: string
-  ) => {
-    // e.preventDefault();
-    // const form = e.currentTarget;
-    // const data = new FormData(form);
-    // const title = data.get("title") as string;
-    // const time = data.get("time") as string;
-    // if (!title || !time) {
-    //   return;
-    // }
-    // setClientSchedule((prev) => {
-    //   const newSchedule = { ...prev };
-    //   if (!newSchedule[day]) {
-    //     newSchedule[day] = [];
-    //   }
-    //   newSchedule[day] = [
-    //     ...newSchedule[day],
-    //     { title, time, id: Math.random().toString(), day },
-    //   ].sort((a, b) => a.time.localeCompare(b.time));
-    //   return newSchedule;
-    // });
-    // const res = await fetch(APILink, {
-    //   method: "POST",
-    //   body: JSON.stringify({ title, time, day }),
-    // });
-    // if (res.ok) {
-    //   addToast({ type: "success", message: "Pomyśnie dodano wydarzenie" });
-    // } else {
-    //   try {
-    //     const data = await res.json();
-    //     if (data.error) addToast({ type: "error", message: data.error });
-    //     else addToast({ type: "error", message: "Wystąpił nieznany błąd" });
-    //   } catch {
-    //     addToast({ type: "error", message: "Wystąpił nieznany błąd" });
-    //   }
-    // }
-    // form.reset();
-    // getNewSchedule();
-  };
 
   const getNewSchedule = async () => {
     const res = await fetch(APILink);
