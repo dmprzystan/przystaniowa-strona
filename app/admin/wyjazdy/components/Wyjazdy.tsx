@@ -245,7 +245,11 @@ function Wyjazdy(props: { trips: Trip[] }) {
 
   return (
     <>
-      <div className="px-4 sm:px-16 w-full">
+      <div className="fixed left-0 top-0">
+        <div className="w-full h-[400px] bg-red-500"></div>
+        <textarea name="" id=""></textarea>
+      </div>
+      {/* <div className="px-4 sm:px-16 w-full">
         <div className="flex justify-between items-center">
           <h2 className="text-4xl text-center">Wyjazdy</h2>
           <button
@@ -638,7 +642,7 @@ function Wyjazdy(props: { trips: Trip[] }) {
             </div>
           </form>
         </div>
-      )}
+      )} */}
     </>
   );
 }
