@@ -1,11 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Newspaper } from "@/app/lib/prisma";
 import GazetkaItem from "./GazetkaItem";
-import { AddRounded } from "@mui/icons-material";
-import { useMessage } from "../../AdminContext";
 import LoadingButton from "../../components/LoadingButton";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { Drawer } from "@/components/ui/drawer";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon, UploadIcon } from "@radix-ui/react-icons";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import dayjs from "dayjs";
+import "dayjs/locale/pl";
+import { toast } from "sonner";
 
 type GazetkaProps = {
   newspapers: Newspaper[];
@@ -16,90 +49,8 @@ const APILink = "/api/admin/newspaper";
 function Gazetka(props: GazetkaProps) {
   const [clientNewspapers, setClientNewspapers] = useState(props.newspapers);
 
-  const { setMessage } = useMessage();
-
   const [addModal, setAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const form = e.currentTarget;
-    const data = new FormData(form);
-
-    const title = data.get("title") as string;
-    const date = data.get("date") as string;
-    const file = data.get("file") as File;
-
-    if (!file.name) {
-      setMessage({
-        type: "error",
-        message: "Błąd podczas dodawania pliku, spróbuj ponownie",
-      });
-      setLoading(false);
-      return;
-    }
-
-    if (!file.name.endsWith(".pdf")) {
-      setMessage({
-        type: "error",
-        message: "Plik musi być w formacie PDF",
-      });
-      setLoading(false);
-      return;
-    }
-
-    const res = await fetch(APILink, {
-      method: "POST",
-      body: JSON.stringify({ title, date }),
-    });
-
-    if (res.ok) {
-      const { par, id } = await res.json();
-
-      const uploadRes = await fetch(par, {
-        method: "PUT",
-        body: file,
-      });
-
-      setAddModal(false);
-
-      if (!uploadRes.ok) {
-        await fetch(`${APILink}/${id}`, {
-          method: "DELETE",
-        });
-
-        setMessage({
-          type: "error",
-          message: "Wystąpił błąd podczas dodawania pliku, spróbuj ponownie",
-        });
-        getNewspapers();
-
-        setLoading(false);
-        return;
-      }
-    } else {
-      setAddModal(false);
-      setMessage({
-        type: "error",
-        message: "Wystąpił błąd podczas dodawania gazetki, spróbuj ponownie",
-      });
-
-      getNewspapers();
-
-      setLoading(false);
-      return;
-    }
-
-    setMessage({
-      type: "success",
-      message: "Gazetka dodana pomyślnie",
-    });
-    setLoading(false);
-
-    getNewspapers();
-  };
 
   const handleDelete = async (id: string) => {
     setClientNewspapers((prev) => prev.filter((item) => item.id !== id));
@@ -162,22 +113,36 @@ function Gazetka(props: GazetkaProps) {
     setClientNewspapers(parsedData);
   };
 
+  const update = async () => {
+    const res = await fetch(APILink);
+    const data = (await res.json()) as {
+      id: string;
+      title: string;
+      date: string;
+      url: string;
+    }[];
+
+    const parsedData = data
+      .map((item) => ({
+        id: item.id,
+        title: item.title,
+        date: new Date(item.date),
+        url: item.url,
+      }))
+      .sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+    setClientNewspapers(parsedData);
+  };
+
   return (
     <>
-      <div className="px-4 sm:px-16 w-full mt-4 md:mt-0">
+      <div className="px-4 sm:px-16 w-full mt-4">
         <div className="flex justify-between items-center">
           <h2 className="text-4xl text-center">GAZETKA 19tka</h2>
-          <button
-            className="bg-green-500 text-white rounded-full sm:rounded-lg p-2 sm:px-4 shadow-lg sm:shadow-none hover:shadow-lg duration-300 transition-all"
-            onClick={() => {
-              setAddModal(true);
-            }}
-          >
-            <div className="hidden sm:block">Dodaj</div>
-            <div className="block sm:hidden">
-              <AddRounded />
-            </div>
-          </button>
+          <NewNewspaper
+            lastNumber={parseInt(clientNewspapers[0]?.title) ?? 0}
+            update={update}
+          />
         </div>
         <div className="flex flex-col mt-8 gap-8">
           {clientNewspapers.map((newspaper) => (
@@ -190,70 +155,205 @@ function Gazetka(props: GazetkaProps) {
           ))}
         </div>
       </div>
-
-      {addModal && (
-        <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-30 backdrop-blur-md flex items-center justify-center">
-          <div className="bg-white rounded-2xl px-12 py-8">
-            <form className="flex flex-col gap-4" onSubmit={handleAdd}>
-              <div className="flex flex-col gap-1">
-                <label htmlFor="title" className="text-gray-500 ml-2">
-                  Numer
-                </label>
-                <input
-                  className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg"
-                  type="number"
-                  name="title"
-                  id="title"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label htmlFor="date" className="text-gray-500 ml-2">
-                  Data
-                </label>
-                <input
-                  className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg"
-                  type="date"
-                  name="date"
-                  id="date"
-                  required
-                  defaultValue={new Date().toISOString().split("T")[0]}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label htmlFor="file-upload" className="text-gray-500 ml-2">
-                  Plik
-                </label>
-                <input
-                  className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 rounded-lg file:bg-gray-100 file:outline-none file:border-none file:px-4 file:py-2 file:mr-2 pr-2"
-                  id="file-upload"
-                  type="file"
-                  name="file"
-                  required
-                  accept=".pdf"
-                />
-              </div>
-              <div className="flex justify-between mt-4">
-                <button
-                  className="bg-red-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
-                  onClick={() => setAddModal(false)}
-                >
-                  Anuluj
-                </button>
-                <LoadingButton
-                  loading={loading}
-                  color="text-white"
-                  className="shadow-none hover:shadow-lg rounded-lg bg-green-500 text-white py-2 px-4 duration-300 transition-all"
-                >
-                  <button type="submit">Dodaj</button>
-                </LoadingButton>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   );
+}
+
+const NewNewspaperSchema = z.object({
+  number: z.number(),
+  date: z.coerce.date(),
+  file: z.instanceof(File).refine((file) => file.name.endsWith(".pdf")),
+});
+
+type NewNewspaperProps = {
+  lastNumber: number;
+  update: () => Promise<void>;
+};
+
+function NewNewspaper({ lastNumber, update }: NewNewspaperProps) {
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  const form = useForm<z.infer<typeof NewNewspaperSchema>>({
+    resolver: zodResolver(NewNewspaperSchema),
+    defaultValues: {
+      number: lastNumber + 1,
+      date: new Date(),
+      // @ts-ignore
+      file: null,
+    },
+  });
+
+  useEffect(() => {
+    if (open) {
+      form.setValue("number", lastNumber + 1);
+    } else {
+      form.reset();
+    }
+  }, [open]);
+
+  useEffect(() => {}, [open]);
+
+  async function handleSubmit(data: z.infer<typeof NewNewspaperSchema>) {
+    setLoading(true);
+
+    try {
+      const res = await fetch(APILink, {
+        method: "POST",
+        body: JSON.stringify({
+          title: data.number,
+          date: data.date,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Błąd podczas dodawania gazetki");
+      }
+
+      const { par, id } = await res.json();
+
+      const uploadRes = await fetch(par, {
+        method: "PUT",
+        body: data.file,
+      });
+
+      if (!uploadRes.ok) {
+        await fetch(`${APILink}/${id}`, {
+          method: "DELETE",
+        });
+
+        throw new Error("Błąd podczas dodawania pliku, cofnięto dodawanie");
+      }
+
+      setOpen(false);
+      toast.success("Pomyślnie dodano gazetkę");
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      await update();
+      form.reset();
+      setLoading(false);
+    }
+  }
+
+  if (isDesktop) {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button size="icon">
+            <UploadIcon />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Dodaj gazetkę</DialogTitle>
+            <DialogDescription>Dodaj nową gazetkę do listy</DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="flex flex-col items-stretch gap-4"
+            >
+              <div className="flex gap-4 justify-between">
+                <FormField
+                  control={form.control}
+                  name="number"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Numer</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number"
+                          placeholder="Numer"
+                          required
+                        />
+                      </FormControl>
+                      <FormMessage>
+                        {form.formState.errors.number?.message}
+                      </FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Data</FormLabel>
+                      <FormControl>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline">
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {dayjs(form.getValues("date")).format(
+                                "DD MMMM YYYY"
+                              )}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0">
+                            <Calendar
+                              mode="single"
+                              selected={form.getValues("date")}
+                              onSelect={(date) =>
+                                form.setValue("date", date ?? new Date())
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                      <FormMessage>
+                        {form.formState.errors.date?.message}
+                      </FormMessage>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="file"
+                render={({ field: { value, onChange, ...fieldProps } }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Plik</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...fieldProps}
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(event) =>
+                          onChange(event.target.files && event.target.files[0])
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage>
+                      {form.formState.errors.file?.message?.toString()}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <DialogFooter className="flex !justify-between">
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    Anuluj
+                  </Button>
+                </DialogClose>
+                <Button type="submit" disabled={loading}>
+                  {loading && (
+                    <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
+                  )}
+                  Dodaj
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return <Drawer></Drawer>;
 }
 
 export default Gazetka;
