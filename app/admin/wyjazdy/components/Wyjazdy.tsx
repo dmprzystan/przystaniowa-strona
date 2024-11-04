@@ -245,11 +245,7 @@ function Wyjazdy(props: { trips: Trip[] }) {
 
   return (
     <>
-      <div className="fixed left-0 top-0">
-        <div className="w-full h-[400px] bg-red-500"></div>
-        <textarea name="" id=""></textarea>
-      </div>
-      {/* <div className="px-4 sm:px-16 w-full">
+      <div className="px-4 sm:px-16 w-full">
         <div className="flex justify-between items-center">
           <h2 className="text-4xl text-center">Wyjazdy</h2>
           <button
@@ -270,6 +266,7 @@ function Wyjazdy(props: { trips: Trip[] }) {
           ))}
         </div>
       </div>
+      {/* 
       {showModal && currentTrip && (
         <div className="fixed left-0 top-0 w-full h-full bg-white bg-opacity-30 backdrop-blur-lg flex py-32 justify-center items-start overflow-y-scroll">
           <form

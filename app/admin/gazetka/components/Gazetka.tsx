@@ -5,7 +5,16 @@ import { Newspaper } from "@/app/lib/prisma";
 import GazetkaItem from "./GazetkaItem";
 import LoadingButton from "../../components/LoadingButton";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { Drawer } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import {
   Dialog,
   DialogClose,
@@ -48,9 +57,6 @@ const APILink = "/api/admin/newspaper";
 
 function Gazetka(props: GazetkaProps) {
   const [clientNewspapers, setClientNewspapers] = useState(props.newspapers);
-
-  const [addModal, setAddModal] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const handleDelete = async (id: string) => {
     setClientNewspapers((prev) => prev.filter((item) => item.id !== id));
@@ -137,7 +143,7 @@ function Gazetka(props: GazetkaProps) {
   return (
     <>
       <div className="px-4 sm:px-16 w-full mt-4">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-center md:justify-between items-center">
           <h2 className="text-4xl text-center">GAZETKA 19tka</h2>
           <NewNewspaper
             lastNumber={parseInt(clientNewspapers[0]?.title) ?? 0}
@@ -353,7 +359,122 @@ function NewNewspaper({ lastNumber, update }: NewNewspaperProps) {
     );
   }
 
-  return <Drawer></Drawer>;
+  return (
+    <Drawer open={open} onOpenChange={setOpen} repositionInputs={false}>
+      <DrawerTrigger asChild>
+        <Button
+          size="icon"
+          className="absolute right-2 md:relative md:right-auto"
+        >
+          <UploadIcon />
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Dodaj gazetkę</DrawerTitle>
+          <DrawerDescription>Dodaj nową gazetkę do listy</DrawerDescription>
+        </DrawerHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="flex flex-col items-stretch gap-4 px-4"
+          >
+            <div className="flex gap-4 justify-between">
+              <FormField
+                control={form.control}
+                name="number"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Numer</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        placeholder="Numer"
+                        required
+                      />
+                    </FormControl>
+                    <FormMessage>
+                      {form.formState.errors.number?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Data</FormLabel>
+                    <FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dayjs(form.getValues("date")).format(
+                              "DD MMMM YYYY"
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={form.getValues("date")}
+                            onSelect={(date) =>
+                              form.setValue("date", date ?? new Date())
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormControl>
+                    <FormMessage>
+                      {form.formState.errors.date?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Plik</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors.file?.message?.toString()}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+            <DrawerFooter className="flex !justify-between">
+              <DrawerClose asChild>
+                <Button type="button" variant="secondary">
+                  Anuluj
+                </Button>
+              </DrawerClose>
+              <Button type="submit" disabled={loading}>
+                {loading && (
+                  <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
+                )}
+                Dodaj
+              </Button>
+            </DrawerFooter>
+          </form>
+        </Form>
+      </DrawerContent>
+    </Drawer>
+  );
 }
 
 export default Gazetka;
