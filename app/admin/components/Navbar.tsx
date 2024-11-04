@@ -30,7 +30,7 @@ function Navbar() {
       return "bg-gray-50 shadow-md";
     }
 
-    if (pathname.startsWith(href)) {
+    if (href !== "/admin" && pathname.startsWith(href)) {
       return "bg-gray-50 shadow-md";
     }
 

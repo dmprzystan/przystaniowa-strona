@@ -3,10 +3,43 @@
 import { Trip } from "@/app/lib/prisma";
 import Wyjazd from "./Wyjazd";
 import { useState, useRef, useEffect } from "react";
-import { CloseRounded, InsertDriveFileRounded } from "@mui/icons-material";
-import ImageUpload from "./ImageUpload";
-import Editor from "../add/components/Editor";
 import React from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon, PlusIcon } from "@radix-ui/react-icons";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { DateRange } from "react-day-picker";
+import { addDays } from "date-fns";
+
+import dayjs from "dayjs";
+import "dayjs/locale/pl";
+import { Separator } from "@/components/ui/separator";
 
 type Attachment = {
   file: File;
@@ -245,15 +278,10 @@ function Wyjazdy(props: { trips: Trip[] }) {
 
   return (
     <>
-      <div className="px-4 sm:px-16 w-full">
-        <div className="flex justify-between items-center">
+      <div className="px-4 sm:px-16 w-full mt-4">
+        <div className="flex justify-center md:justify-between items-center">
           <h2 className="text-4xl text-center">Wyjazdy</h2>
-          <button
-            className="bg-green-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
-            onClick={addTrip}
-          >
-            Dodaj
-          </button>
+          <NewTrip />
         </div>
         <div className="flex flex-col gap-8 mt-16">
           {trips.map((trip) => (
@@ -641,6 +669,184 @@ function Wyjazdy(props: { trips: Trip[] }) {
         </div>
       )} */}
     </>
+  );
+}
+
+const NewTripSchema = z.object({
+  title: z.string().min(1, { message: "Tytuł nie może być pusty" }),
+  dateStart: z.coerce.date(),
+  dateEnd: z.coerce.date(),
+  image: z.instanceof(File),
+  description: z.string(),
+  attachments: z.array(
+    z.object({
+      file: z.instanceof(File),
+      name: z.string(),
+    })
+  ),
+  links: z.array(
+    z.object({
+      url: z.string().url(),
+      name: z.string(),
+    })
+  ),
+});
+
+function NewTrip() {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  if (isDesktop) {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button size="icon">
+            <PlusIcon />
+          </Button>
+        </DialogTrigger>
+      </Dialog>
+    );
+  }
+
+  return (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <Button
+          size="icon"
+          className="absolute right-2 md:relative md:right-auto"
+        >
+          <PlusIcon />
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent className="flex flex-col gap-2 items-stretch">
+        <DrawerHeader>
+          <DrawerTitle>Dodaj wyjazd</DrawerTitle>
+          <DrawerDescription>Dodaj nowy wyjazd do listy</DrawerDescription>
+        </DrawerHeader>
+        <Separator orientation="horizontal" />
+        <div className="px-4">
+          <NewTripForm />
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
+function NewTripForm() {
+  const form = useForm<z.infer<typeof NewTripSchema>>({
+    resolver: zodResolver(NewTripSchema),
+    defaultValues: {
+      title: "",
+      dateStart: new Date(),
+      dateEnd: new Date(),
+      image: new File([], ""),
+      description: "",
+      attachments: [],
+      links: [],
+    },
+  });
+
+  const handleFormSubmit = async (data: z.infer<typeof NewTripSchema>) => {};
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+        <div className="flex flex-col gap-2">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel className="ml-2">Tytuł</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="text-base"
+                    placeholder="Tytuł"
+                    required
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.title?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <div>
+            <FormLabel className="ml-2">Data</FormLabel>
+            <CalendarInput form={form} />
+          </div>
+        </div>
+      </form>
+    </Form>
+  );
+}
+
+function CalendarInput({
+  form,
+}: {
+  form: ReturnType<typeof useForm<z.infer<typeof NewTripSchema>>>;
+}) {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [date, setDate] = useState<DateRange>({
+    from: new Date(),
+    to: addDays(new Date(), 1),
+  });
+
+  useEffect(() => {
+    if (date.from) {
+      form.setValue("dateStart", date.from);
+    }
+    if (date.to) {
+      form.setValue("dateEnd", date.to);
+    }
+  }, [date]);
+
+  if (isDesktop) {
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline">
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {dayjs(date.from).locale("pl").format("DD MMMM YYYY")}
+            <span className="mx-2">-</span>
+            {dayjs(date.to).locale("pl").format("DD MMMM YYYY")}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="range"
+            defaultMonth={date.from}
+            selected={date}
+            onSelect={(date) => date && setDate(date)}
+            numberOfMonths={1}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {dayjs(date.from).locale("pl").format("DD MMMM YYYY")}
+          <span className="mx-2">-</span>
+          {dayjs(date.to).locale("pl").format("DD MMMM YYYY")}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-fit">
+        <Calendar
+          mode="range"
+          defaultMonth={date.from}
+          selected={date}
+          onSelect={(date) => date && setDate(date)}
+          numberOfMonths={1}
+          initialFocus
+        />
+      </DialogContent>
+    </Dialog>
   );
 }
 
