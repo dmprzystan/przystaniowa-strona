@@ -115,7 +115,7 @@ export const putConfirmation = async (confirmation: string) => {
   await ObjectStorageClient.putObject(request);
 };
 
-export const createPAR = async (path: string) => {
+export const createPAR = async (path: string, folder = false) => {
   const namespace = await getNamespace();
 
   const par = await ObjectStorageClient.createPreauthenticatedRequest({
@@ -125,11 +125,17 @@ export const createPAR = async (path: string) => {
       name: `par-${path}-${Date.now()}`,
       timeExpires: new Date(Date.now() + 1000 * 60 * 5), // 5 minutes
       objectName: path,
-      accessType:
-        oci.objectstorage.models.CreatePreauthenticatedRequestDetails.AccessType
-          .ObjectWrite,
+      accessType: folder
+        ? oci.objectstorage.models.CreatePreauthenticatedRequestDetails
+            .AccessType.AnyObjectWrite
+        : oci.objectstorage.models.CreatePreauthenticatedRequestDetails
+            .AccessType.ObjectWrite,
     },
   });
+
+  if (folder) {
+    return par.preauthenticatedRequest.fullPath + path;
+  }
 
   return par.preauthenticatedRequest.fullPath;
 };
@@ -172,4 +178,27 @@ export const renameFile = async (oldPath: string, newPath: string) => {
   };
 
   await ObjectStorageClient.renameObject(request);
+};
+
+export const removeExpiredPARs = async () => {
+  const namespace = await getNamespace();
+
+  const parList = await ObjectStorageClient.listPreauthenticatedRequests({
+    bucketName: "przystaniowa-strona",
+    namespaceName: namespace,
+  });
+
+  const expiredPARs = parList.items.filter(
+    (par) => new Date(par.timeExpires) < new Date()
+  );
+
+  await Promise.all(
+    expiredPARs.map((par) =>
+      ObjectStorageClient.deletePreauthenticatedRequest({
+        bucketName: "przystaniowa-strona",
+        namespaceName: namespace,
+        parId: par.id,
+      })
+    )
+  );
 };

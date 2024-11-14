@@ -457,7 +457,7 @@ function NewNewspaper({ lastNumber, update }: NewNewspaperProps) {
                 </FormItem>
               )}
             />
-            <DrawerFooter className="flex !justify-between">
+            <DrawerFooter className="flex !justify-between gap-4">
               <DrawerClose asChild>
                 <Button type="button" variant="secondary">
                   Anuluj

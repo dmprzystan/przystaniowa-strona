@@ -14,7 +14,7 @@ export const middleware = async (request: NextRequest) => {
 
   if (path.startsWith("/wyjazdy")) {
     const url = path.split("/").slice(2).join("/");
-    return NextResponse.rewrite(`${process.env.TRIPS_ENDPOINT}/${url}`);
+    return NextResponse.rewrite(`${process.env.TRIPS_ENDPOINT}/wyjazdy/${url}`);
   }
 
   if (path.startsWith("/galeria/img")) {
