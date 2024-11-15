@@ -158,6 +158,44 @@ export const getTrips: () => Promise<Trip[]> = cache(async () => {
   return trips;
 });
 
+export const getTrip: (id: string) => Promise<Trip> = cache(
+  async (id: string) => {
+    const trip = await prisma.trip.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        dateStart: true,
+        dateEnd: true,
+        description: true,
+        TripPhoto: {
+          select: {
+            url: true,
+          },
+        },
+        TripLink: {
+          select: {
+            url: true,
+            name: true,
+          },
+        },
+        TripAttachment: {
+          select: {
+            url: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!trip) {
+      throw new Error("Trip not found");
+    }
+
+    return trip;
+  }
+);
+
 export const getGallery: () => Promise<Album[]> = cache(async () => {
   const albums = await prisma.album.findMany({
     select: {

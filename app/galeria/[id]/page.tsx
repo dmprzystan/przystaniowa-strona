@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import Header from "../../components/Header";
 import Navbar from "../../components/Navbar";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 
 import "../style.scss";
@@ -37,7 +36,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   try {
     album = await getAlbum(params.id);
   } catch (e) {
-    redirect("/galeria");
+    redirect("/admin/galeria");
   }
 
   const date = (date: Date) => {

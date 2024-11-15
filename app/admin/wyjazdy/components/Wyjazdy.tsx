@@ -1,7 +1,6 @@
 "use client";
 
 import { Trip } from "@/app/lib/prisma";
-import Wyjazd from "./Wyjazd";
 import { useState, useRef, useEffect } from "react";
 import React from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -103,17 +102,6 @@ type Link = {
   name: string;
 };
 
-interface TripAdmin {
-  id: string;
-  title: string;
-  description: string;
-  dateStart: Date;
-  dateEnd: Date;
-  image: File | null;
-  attachments: Attachment[];
-  links: Link[];
-}
-
 function Wyjazdy(props: { trips: Trip[] }) {
   const [trips, setTrips] = useState<Trip[]>(props.trips);
 
@@ -168,7 +156,7 @@ function Wyjazdy(props: { trips: Trip[] }) {
           <h2 className="text-4xl text-center">Wyjazdy</h2>
           <NewTrip update={fetchTrips} />
         </div>
-        <div className="flex flex-col gap-8 mt-16">
+        <div className="flex flex-col gap-4 mt-8">
           {trips.map((trip) => (
             <Link key={trip.id} href={`/admin/wyjazdy/${trip.id}`}>
               <Card className="flex flex-row h-32 p-2 gap-4">
