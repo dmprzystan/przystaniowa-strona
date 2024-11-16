@@ -161,21 +161,24 @@ function Wyjazdy(props: { trips: Trip[] }) {
             <Link key={trip.id} href={`/admin/wyjazdy/${trip.id}`}>
               <Card className="flex flex-row h-32 lg:h-56 p-2 lg:p-4 gap-2 lg:gap-4">
                 {trip.TripPhoto[0]?.url && (
-                  <div
-                    className="flex-shrink-0 h-full flex items-center justify-center object-fill overflow-hidden rounded-lg shadow-sm"
-                    style={{
-                      aspectRatio: "4 / 3",
-                    }}
-                  >
-                    <Image
-                      src={`/wyjazdy/${trip.id}/${trip.TripPhoto[0].url}`}
-                      alt=""
-                      width={320}
-                      height={240}
-                    />
-                  </div>
+                  <>
+                    <div
+                      className="flex-shrink-0 h-full flex items-center justify-center object-fill overflow-hidden rounded-lg shadow-sm"
+                      style={{
+                        aspectRatio: "4 / 3",
+                      }}
+                    >
+                      <Image
+                        src={`/wyjazdy/${trip.id}/${trip.TripPhoto[0].url}`}
+                        alt=""
+                        width={320}
+                        height={240}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <Separator orientation="vertical" className="h-full" />
+                  </>
                 )}
-                <Separator orientation="vertical" className="h-full" />
                 <div className="overflow-hidden flex flex-col h-full">
                   <CardTitle className="flex-shrink-0 text-lg lg:text-xl xl:text-3xl overflow-hidden whitespace-nowrap text-ellipsis">
                     {trip.title}
