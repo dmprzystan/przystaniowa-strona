@@ -159,7 +159,7 @@ function Wyjazdy(props: { trips: Trip[] }) {
         <div className="flex flex-col gap-4 mt-8">
           {trips.map((trip) => (
             <Link key={trip.id} href={`/admin/wyjazdy/${trip.id}`}>
-              <Card className="flex flex-row h-32 p-2 gap-4">
+              <Card className="flex flex-row h-32 lg:h-56 p-2 lg:p-4 gap-2 lg:gap-4">
                 {trip.TripPhoto[0]?.url && (
                   <div
                     className="flex-shrink-0 h-full flex items-center justify-center object-fill overflow-hidden rounded-lg shadow-sm"
@@ -175,15 +175,16 @@ function Wyjazdy(props: { trips: Trip[] }) {
                     />
                   </div>
                 )}
+                <Separator orientation="vertical" className="h-full" />
                 <div className="overflow-hidden flex flex-col h-full">
-                  <CardTitle className="flex-shrink-0 text-lg overflow-hidden whitespace-nowrap text-ellipsis">
+                  <CardTitle className="flex-shrink-0 text-lg lg:text-xl xl:text-3xl overflow-hidden whitespace-nowrap text-ellipsis">
                     {trip.title}
                   </CardTitle>
                   <div
-                    className="text-xs flex-1 overflow-hidden"
+                    className="text-xs lg:text-sm xl:text-base flex-1 overflow-hidden"
                     dangerouslySetInnerHTML={{ __html: trip.description }}
                   />
-                  <div className="flex flex-row text-xs gap-3">
+                  <div className="flex flex-row text-xs lg:text-sm gap-3">
                     <p>
                       Załączniki: <span>{trip.TripAttachment.length}</span>
                     </p>
@@ -234,6 +235,14 @@ function NewTrip({ update }: { update: () => Promise<void> }) {
             <PlusIcon />
           </Button>
         </DialogTrigger>
+        <DialogContent className="max-w-2xl w-full max-h-[80%] overflow-y-scroll">
+          <DialogHeader>
+            <DialogTitle>Dodaj wyjazd</DialogTitle>
+            <DialogDescription>Dodaj nowy wyjazd do listy</DialogDescription>
+          </DialogHeader>
+          <Separator orientation="horizontal" className="mb-4" />
+          <NewTripForm update={update} setOpen={setOpen} />
+        </DialogContent>
       </Dialog>
     );
   }
@@ -364,29 +373,31 @@ function NewTripForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)}>
         <div className="flex flex-col gap-2">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel className="ml-2">Tytuł</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    className="text-base"
-                    placeholder="Tytuł"
-                    required
-                  />
-                </FormControl>
-                <FormMessage>
-                  {form.formState.errors.title?.message}
-                </FormMessage>
-              </FormItem>
-            )}
-          />
-          <div>
-            <FormLabel className="ml-2">Data</FormLabel>
-            <CalendarInput form={form} />
+          <div className="flex flex-col md:flex-row gap-2">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem className="flex flex-col w-full">
+                  <FormLabel className="ml-2">Tytuł</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className="text-base"
+                      placeholder="Tytuł"
+                      required
+                    />
+                  </FormControl>
+                  <FormMessage>
+                    {form.formState.errors.title?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+            <div className="flex flex-col max-w-sm">
+              <FormLabel className="ml-2">Data</FormLabel>
+              <CalendarInput form={form} />
+            </div>
           </div>
           <FormField
             control={form.control}
@@ -440,7 +451,17 @@ function NewTripForm({
         </div>
         <Separator orientation="horizontal" className="mt-4" />
         {isDesktop ? (
-          <></>
+          <DialogFooter className="flex-row !justify-between mt-4">
+            <DialogClose asChild>
+              <Button variant="outline">Anuluj</Button>
+            </DialogClose>
+            <Button type="submit" disabled={loading}>
+              {loading && (
+                <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
+              )}
+              Dodaj
+            </Button>
+          </DialogFooter>
         ) : (
           <DrawerFooter className="flex !flex-row px-0 justify-between gap-8">
             <DrawerClose asChild>
@@ -495,7 +516,7 @@ function CalendarInput({
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline">
+          <Button variant="outline" className="mt-2">
             <CalendarIcon className="mr-2 h-4 w-4" />
             {dayjs(date.from).locale("pl").format("DD MMMM YYYY")}
             <span className="mx-2">-</span>
@@ -549,7 +570,17 @@ type ImageInputField = ControllerRenderProps<
 function ImageInput({ field }: { field: ImageInputField }) {
   return (
     <AspectRatio ratio={4 / 3}>
-      <label className="block h-full rounded-xl overflow-hidden">
+      <label
+        className="block h-full rounded-xl overflow-hidden"
+        htmlFor="image-input"
+        onDragOver={(e) => {
+          e.preventDefault();
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          field.onChange(e.dataTransfer.files?.[0]);
+        }}
+      >
         <input
           type="file"
           id="image-input"
@@ -560,10 +591,31 @@ function ImageInput({ field }: { field: ImageInputField }) {
           }}
         />
         {field.value && field.value.size > 0 ? (
-          <img src={URL.createObjectURL(field.value)} alt="Zdjęcie" />
+          <div className="h-full relative hover:[&>div]:opacity-100">
+            <img src={URL.createObjectURL(field.value)} alt="Zdjęcie" />
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-15 md:bg-opacity-50 md:backdrop-blur-sm md:opacity-0 transition-all duration-300">
+              <Button
+                size="icon"
+                onClick={(e) => {
+                  field.onChange(new File([], ""));
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                variant="destructive"
+              >
+                <TrashIcon className="w-8 h-8 text-white" />
+              </Button>
+            </div>
+          </div>
         ) : (
           <div className="flex items-center justify-center w-full h-full bg-neutral-100 border-2 border-neutral-400 rounded-xl border-dashed">
-            <div className="hidden sm:flex"></div>
+            <div className="hidden sm:flex items-center justify-center">
+              <div className="flex flex-col items-center">
+                <p className="font-semibold">Przeciągnij zdjęcie tutaj</p>
+                <p className="font-light text-sm mt-1">lub</p>
+                <p>kliknij, aby wybrać</p>
+              </div>
+            </div>
             <div className="sm:hidden flex flex-col items-center gap-2">
               Kliknij, aby wybrać zdjęcie
               <div className="bg-primary text-primary-foreground p-1 rounded-md">
@@ -626,6 +678,8 @@ const EditorSidebar = ({
   editor: IEditor;
   setFocused: (focused: boolean) => void;
 }) => {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
   const [step, setStep] = useState(0);
   const [focusTimeout, setFocusTimeout] = useState<Timer | null>(null);
 
@@ -639,6 +693,261 @@ const EditorSidebar = ({
       setFocused(false);
     }
   }, [cardFocused, selectFocused]);
+
+  if (isDesktop) {
+    return (
+      <Card
+        className="absolute h-12 z-50 left-1/2 -translate-x-1/2 flex items-center px-2 top-2 gap-2 justify-between"
+        onTouchStart={() => {
+          setCardFocused(true);
+
+          if (focusTimeout) {
+            clearTimeout(focusTimeout);
+          }
+
+          setFocusTimeout(
+            setTimeout(() => {
+              setCardFocused(false);
+              setFocusTimeout(null);
+            }, 500)
+          );
+        }}
+        onMouseDown={(e) => {
+          setCardFocused(true);
+
+          if (focusTimeout) {
+            clearTimeout(focusTimeout);
+          }
+
+          setFocusTimeout(
+            setTimeout(() => {
+              setCardFocused(false);
+              setFocusTimeout(null);
+            }, 500)
+          );
+        }}
+      >
+        <div className="border rounded-lg flex">
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().undo().run();
+            }}
+            variant="ghost"
+            className={`hover:bg-transparent hover:text-primary`}
+          >
+            <UndoRounded />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().redo().run();
+            }}
+            variant="ghost"
+            className={`hover:bg-transparent hover:text-primary`}
+          >
+            <RedoRounded />
+          </Button>
+        </div>
+        <Separator orientation="vertical" className="h-8" />
+        <div className="border rounded-lg flex">
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().toggleBold().run();
+            }}
+            variant="ghost"
+            className={`
+              hover:bg-transparent
+              hover:text-primary
+              ${
+                editor?.isActive("bold")
+                  ? "!bg-primary !text-primary-foreground"
+                  : "!bg-transparent !text-secondary-foreground"
+              } transition-all duration-300
+              ${editor?.isActive("italic") && "rounded-r-none"}`}
+          >
+            <FontBoldIcon />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().toggleItalic().run();
+            }}
+            variant="ghost"
+            className={`
+              hover:bg-transparent
+              hover:text-primary
+              ${
+                editor?.isActive("italic")
+                  ? "!bg-primary !text-primary-foreground"
+                  : "!bg-transparent !text-secondary-foreground"
+              } transition-all duration-300
+              ${editor?.isActive("bold") && "rounded-l-none"}
+              ${editor?.isActive("underline") && "rounded-r-none"}
+              `}
+          >
+            <FontItalicIcon />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().toggleUnderline().run();
+            }}
+            variant="ghost"
+            className={`
+              hover:bg-transparent
+              hover:text-primary
+              ${
+                editor?.isActive("underline")
+                  ? "!bg-primary !text-primary-foreground"
+                  : "!bg-transparent !text-secondary-foreground"
+              } transition-all duration-300
+              ${editor?.isActive("italic") && "rounded-l-none"}
+              ${editor?.isActive("strike") && "rounded-r-none"}
+              `}
+          >
+            <UnderlineIcon />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().toggleStrike().run();
+            }}
+            variant="ghost"
+            className={`
+              hover:bg-transparent
+              hover:text-primary
+              ${
+                editor?.isActive("strike")
+                  ? "!bg-primary !text-primary-foreground"
+                  : "!bg-transparent !text-secondary-foreground"
+              } transition-all duration-300
+              ${editor?.isActive("underline") && "rounded-l-none"}
+              `}
+          >
+            <StrikethroughIcon />
+          </Button>
+        </div>
+        <Separator orientation="vertical" className="h-8" />
+        <div className="border rounded-lg flex">
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().toggleBulletList().run();
+            }}
+            variant="ghost"
+            className={`
+              hover:bg-transparent
+              hover:text-primary
+              ${
+                editor?.isActive("bulletList")
+                  ? "!bg-primary !text-primary-foreground"
+                  : "!bg-transparent !text-secondary-foreground"
+              } transition-all duration-300
+              ${editor?.isActive("orderedList") && "rounded-r-none"}
+              `}
+          >
+            <FormatListBulletedRounded />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().toggleOrderedList().run();
+            }}
+            variant="ghost"
+            className={`
+              hover:bg-transparent
+              hover:text-primary
+              ${
+                editor?.isActive("orderedList")
+                  ? "!bg-primary !text-primary-foreground"
+                  : "!bg-transparent !text-secondary-foreground"
+              } transition-all duration-300
+              ${editor?.isActive("bulletList") && "rounded-l-none"}
+              `}
+          >
+            <FormatListNumberedRounded />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().liftListItem("listItem").run();
+            }}
+            variant="ghost"
+            className={`
+              hover:bg-transparent hover:text-primary transition-all duration-300`}
+          >
+            <FormatIndentDecreaseRounded />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => {
+              editor?.chain().focus().sinkListItem("listItem").run();
+            }}
+            variant="ghost"
+            className={`
+              hover:bg-transparent hover:text-primary transition-all duration-300`}
+          >
+            <FormatIndentIncreaseRounded />
+          </Button>
+        </div>
+        <Separator orientation="vertical" className="h-8" />
+        <Select
+          onOpenChange={(open) => {
+            if (open) {
+              setSelectFocused(true);
+            } else {
+              setTimeout(() => {
+                setSelectFocused(false);
+              }, 500);
+            }
+          }}
+          onValueChange={(value) => {
+            switch (value) {
+              case "h2":
+                editor?.chain().focus().setHeading({ level: 2 }).run();
+                break;
+              case "h3":
+                editor?.chain().focus().setHeading({ level: 3 }).run();
+                break;
+              case "h4":
+                editor?.chain().focus().setHeading({ level: 4 }).run();
+                break;
+              case "p":
+                editor?.chain().focus().setParagraph().run();
+                break;
+              default:
+                break;
+            }
+
+            setTimeout(() => {
+              editor?.chain().focus();
+            }, 100);
+          }}
+          value={
+            editor?.isActive("heading", { level: 2 })
+              ? "h2"
+              : editor?.isActive("heading", { level: 3 })
+              ? "h3"
+              : editor?.isActive("heading", { level: 4 })
+              ? "h4"
+              : "p"
+          }
+        >
+          <SelectTrigger className="overflow-hidden">
+            <SelectValue className="w-full overflow-hidden text-ellipsis whitespace-nowrap" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="h2">Nagłówek 1</SelectItem>
+            <SelectItem value="h3">Nagłówek 2</SelectItem>
+            <SelectItem value="h4">Nagłówek 3</SelectItem>
+            <SelectItem value="p">Paragraf</SelectItem>
+          </SelectContent>
+        </Select>
+      </Card>
+    );
+  }
 
   return (
     <Card
@@ -921,8 +1230,6 @@ type LinkInputField = ControllerRenderProps<
 >;
 
 const LinkInput = ({ field }: { field: LinkInputField }) => {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
@@ -948,12 +1255,8 @@ const LinkInput = ({ field }: { field: LinkInputField }) => {
     field.onChange(field.value.filter((_, i) => i !== index));
   };
 
-  if (isDesktop) {
-    return <></>;
-  }
-
   return (
-    <ScrollArea className="max-h-48">
+    <ScrollArea className="max-h-48 md:max-h-full">
       <div className="flex flex-col gap-2">
         {field.value.map((link, i: number) => (
           <Card
@@ -1024,8 +1327,6 @@ type AttachmentInputField = ControllerRenderProps<
 >;
 
 const AttachmentInput = ({ field }: { field: AttachmentInputField }) => {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-
   const [open, setOpen] = useState(false);
   const [attachment, setAttachment] = useState<Attachment>({
     file: new File([], ""),
@@ -1066,12 +1367,8 @@ const AttachmentInput = ({ field }: { field: AttachmentInputField }) => {
     }
   };
 
-  if (isDesktop) {
-    return <></>;
-  }
-
   return (
-    <ScrollArea className="max-h-48">
+    <ScrollArea className="max-h-48 md:max-h-full">
       <div className="flex flex-col gap-2">
         {field.value.map((attachment, i: number) => (
           <Card
