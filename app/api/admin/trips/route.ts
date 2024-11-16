@@ -1,7 +1,7 @@
 import prisma, { getTrips } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createPAR, removeExpiredPARs, uploadFile } from "@/app/lib/oci";
+import { createPAR, removeExpiredPARs } from "@/app/lib/oci";
 import { z } from "zod";
 
 export async function GET(_req: NextRequest) {

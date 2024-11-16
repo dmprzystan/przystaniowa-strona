@@ -1,5 +1,4 @@
-import * as oci from "oci-sdk";
-
+import { common, objectstorage } from "oci-sdk";
 if (
   !process.env.OCI_TENANCY ||
   !process.env.OCI_USER ||
@@ -9,16 +8,16 @@ if (
   throw new Error("Missing OCI credentials");
 }
 
-const simpleProvider = new oci.common.SimpleAuthenticationDetailsProvider(
+const simpleProvider = new common.SimpleAuthenticationDetailsProvider(
   process.env.OCI_TENANCY,
   process.env.OCI_USER,
   process.env.OCI_FINGERPRINT,
   process.env.OCI_PRIVATE_KEY,
   null,
-  oci.common.Region.EU_FRANKFURT_1
+  common.Region.EU_FRANKFURT_1
 );
 
-export const ObjectStorageClient = new oci.objectstorage.ObjectStorageClient({
+export const ObjectStorageClient = new objectstorage.ObjectStorageClient({
   authenticationDetailsProvider: simpleProvider,
 });
 
@@ -30,7 +29,7 @@ export const getNamespace = async () => {
 export const getStatute = async () => {
   const namespace = await getNamespace();
 
-  const request: oci.objectstorage.requests.GetObjectRequest = {
+  const request: objectstorage.requests.GetObjectRequest = {
     bucketName: "przystaniowa-strona",
     namespaceName: namespace,
     objectName: "regulamin/regulamin.html",
@@ -61,7 +60,7 @@ export const getStatute = async () => {
 export const getConfirmation = async () => {
   const namespace = await getNamespace();
 
-  const request: oci.objectstorage.requests.GetObjectRequest = {
+  const request: objectstorage.requests.GetObjectRequest = {
     bucketName: "przystaniowa-strona",
     namespaceName: namespace,
     objectName: "bierzmowanie/bierzmowanie.html",
@@ -93,7 +92,7 @@ export const getConfirmation = async () => {
 export const putStatute = async (statute: string) => {
   const namespace = await getNamespace();
 
-  const request: oci.objectstorage.requests.PutObjectRequest = {
+  const request: objectstorage.requests.PutObjectRequest = {
     bucketName: "przystaniowa-strona",
     namespaceName: namespace,
     objectName: "regulamin/regulamin.html",
@@ -105,7 +104,7 @@ export const putStatute = async (statute: string) => {
 export const putConfirmation = async (confirmation: string) => {
   const namespace = await getNamespace();
 
-  const request: oci.objectstorage.requests.PutObjectRequest = {
+  const request: objectstorage.requests.PutObjectRequest = {
     bucketName: "przystaniowa-strona",
     namespaceName: namespace,
     objectName: "bierzmowanie/bierzmowanie.html",
@@ -126,10 +125,10 @@ export const createPAR = async (path: string, folder = false) => {
       timeExpires: new Date(Date.now() + 1000 * 60 * 5), // 5 minutes
       objectName: path,
       accessType: folder
-        ? oci.objectstorage.models.CreatePreauthenticatedRequestDetails
-            .AccessType.AnyObjectWrite
-        : oci.objectstorage.models.CreatePreauthenticatedRequestDetails
-            .AccessType.ObjectWrite,
+        ? objectstorage.models.CreatePreauthenticatedRequestDetails.AccessType
+            .AnyObjectWrite
+        : objectstorage.models.CreatePreauthenticatedRequestDetails.AccessType
+            .ObjectWrite,
     },
   });
 
@@ -143,7 +142,7 @@ export const createPAR = async (path: string, folder = false) => {
 export const uploadFile = async (file: File, path: string) => {
   const namespace = await getNamespace();
 
-  const request: oci.objectstorage.requests.PutObjectRequest = {
+  const request: objectstorage.requests.PutObjectRequest = {
     bucketName: "przystaniowa-strona",
     namespaceName: namespace,
     objectName: path,
@@ -156,7 +155,7 @@ export const uploadFile = async (file: File, path: string) => {
 export const deleteFile = async (path: string) => {
   const namespace = await getNamespace();
 
-  const request: oci.objectstorage.requests.DeleteObjectRequest = {
+  const request: objectstorage.requests.DeleteObjectRequest = {
     bucketName: "przystaniowa-strona",
     namespaceName: namespace,
     objectName: path,
@@ -168,7 +167,7 @@ export const deleteFile = async (path: string) => {
 export const renameFile = async (oldPath: string, newPath: string) => {
   const namespace = await getNamespace();
 
-  const request: oci.objectstorage.requests.RenameObjectRequest = {
+  const request: objectstorage.requests.RenameObjectRequest = {
     bucketName: "przystaniowa-strona",
     namespaceName: namespace,
     renameObjectDetails: {
