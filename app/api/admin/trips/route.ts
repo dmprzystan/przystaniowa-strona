@@ -1,7 +1,8 @@
 import prisma, { getTrips } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { uploadFile } from "@/app/lib/oci";
+import { createPAR, removeExpiredPARs } from "@/app/lib/oci";
+import { z } from "zod";
 
 export async function GET(_req: NextRequest) {
   const trips = await getTrips();
@@ -9,28 +10,51 @@ export async function GET(_req: NextRequest) {
   return NextResponse.json(trips);
 }
 
+const NewTripSchema = z.object({
+  title: z.string().min(1, { message: "Tytuł jest wymagany" }),
+  dateStart: z.coerce.date({ message: "Nieprawidłowa data rozpoczęcia" }),
+  dateEnd: z.coerce.date({ message: "Nieprawidłowa data zakończenia" }),
+  description: z.string(),
+  photoExt: z
+    .string()
+    .min(1, { message: "Rozszerzenie zdjęcia jest wymagane" }),
+  attachments: z.array(
+    z.object({
+      name: z.string(),
+      ext: z.string(),
+    })
+  ),
+  links: z.array(
+    z.object({
+      url: z.string(),
+      name: z.string(),
+    })
+  ),
+});
+
 export async function POST(req: NextRequest) {
-  const data = await req.formData();
+  const data = await req.json();
 
-  const title = data.get("title") as string;
-  const dateStart = data.get("dateStart") as string;
-  const dateEnd = data.get("dateEnd") as string;
-  const description = data.get("description") as string;
+  const parse = NewTripSchema.safeParse(data);
 
-  if (!title || !dateStart || !dateEnd || !description) {
-    return NextResponse.json({ message: "Missing fields" }, { status: 400 });
+  if (!parse.success) {
+    const message = parse.error.errors.map((error) => error.message).join(", ");
+    return NextResponse.json({ message }, { status: 400 });
   }
 
-  const parsedDateStart = new Date(dateStart);
-  const parsedDateEnd = new Date(dateEnd);
+  const {
+    title,
+    dateStart,
+    dateEnd,
+    description,
+    photoExt,
+    attachments,
+    links,
+  } = parse.data;
 
-  if (isNaN(parsedDateStart.getTime()) || isNaN(parsedDateEnd.getTime())) {
-    return NextResponse.json({ message: "Invalid date" }, { status: 400 });
-  }
-
-  if (parsedDateStart > parsedDateEnd) {
+  if (dateStart > dateEnd) {
     return NextResponse.json(
-      { message: "Invalid date range" },
+      { message: "Data zakończenia nie może być przed datą rozpoczęcia" },
       { status: 400 }
     );
   }
@@ -38,55 +62,56 @@ export async function POST(req: NextRequest) {
   const trip = await prisma.trip.create({
     data: {
       title,
-      dateStart: parsedDateStart,
-      dateEnd: parsedDateEnd,
+      dateStart,
+      dateEnd,
       description,
     },
   });
 
-  const image = data.get("image") as File | undefined;
-
-  if (image) {
-    const extension = image.name.split(".").pop();
-
-    await uploadFile(image, `wyjazdy/${trip.id}/zdjecie.${extension}`);
-
-    await prisma.tripPhoto.create({
-      data: {
-        url: `${trip.id}/zdjecie.${extension}`,
+  const linkPromise = prisma.tripLink.createMany({
+    data: links.map((link) => {
+      return {
         tripId: trip.id,
-      },
-    });
-  }
+        name: link.name,
+        url: link.url,
+      };
+    }),
+  });
 
-  const attachments = data.getAll("attachments") as File[];
+  const photoPromise = prisma.tripPhoto.create({
+    data: {
+      url: `zdjecie.${photoExt}`,
+      tripId: trip.id,
+    },
+  });
 
-  for (const attachment of attachments) {
-    await uploadFile(attachment, `wyjazdy/${trip.id}/${attachment.name}`);
-
-    await prisma.tripAttachment.create({
-      data: {
-        url: `${trip.id}/${attachment.name}`,
+  const attachmentPromise = prisma.tripAttachment.createMany({
+    data: attachments.map((attachment) => {
+      return {
         tripId: trip.id,
         name: attachment.name,
-      },
-    });
-  }
+        url: `${attachment.name}.${attachment.ext}`,
+      };
+    }),
+  });
 
-  const links = data.getAll("links") as string[];
-  for (const link of links) {
-    const parsedLink = JSON.parse(link) as { url: string; name: string };
+  await Promise.all([linkPromise, photoPromise, attachmentPromise]);
 
-    await prisma.tripLink.create({
-      data: {
-        url: parsedLink.url,
-        name: parsedLink.name,
-        tripId: trip.id,
-      },
-    });
-  }
+  // Create PARs for the photo and attachments
+  const photoPar = await createPAR(`wyjazdy/${trip.id}/zdjecie.${photoExt}`);
+  const attachmentPAR = await createPAR(
+    `wyjazdy/${trip.id}/attachments/`,
+    true
+  );
+
+  await removeExpiredPARs();
 
   revalidatePath("/wyjazdy");
 
-  return NextResponse.json({ message: "ok" });
+  return NextResponse.json({
+    message: "ok",
+    id: trip.id,
+    photoPar,
+    attachmentPAR,
+  });
 }

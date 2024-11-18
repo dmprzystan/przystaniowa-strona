@@ -35,13 +35,8 @@ export async function POST(req: NextRequest) {
   });
 
   const res = await req.json();
-  const { title, time, day } = res;
 
-  const parse = schema.safeParse({
-    title,
-    time,
-    day,
-  });
+  const parse = schema.safeParse(res);
 
   if (!parse.success) {
     const message = Readable(parse.error);

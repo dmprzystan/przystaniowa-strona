@@ -9,6 +9,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 import "./style.scss";
 import { getConfirmation } from "../lib/oci";
+import { getConfirmationLinks } from "../lib/prisma";
 
 const inter = Inter({
   subsets: ["latin-ext"],
@@ -16,6 +17,7 @@ const inter = Inter({
 
 export default async function Page() {
   const confirmation = await getConfirmation();
+  const links = await getConfirmationLinks();
 
   return (
     <>
@@ -32,6 +34,17 @@ export default async function Page() {
             className={`bierzmowanie ${inter.className}`}
             dangerouslySetInnerHTML={{ __html: confirmation }}
           />
+          <div className="flex flex-col sm:flex-row items-stretch w-fit mx-auto gap-6 mt-6 md:text-lg lg:text-2xl xl:text-3xl uppercase">
+            {links.map((link) => (
+              <Link
+                key={link.id}
+                href={link.url}
+                className="block bg-[#D9D9D9] px-8 lg:px-10 py-3 lg:py-4 rounded-xl shadow-lg text-center"
+              >
+                {link.title}
+              </Link>
+            ))}
+          </div>
         </main>
         <img
           src="/images/bg-contact-bottom.svg"

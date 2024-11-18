@@ -5,13 +5,32 @@
     text-wrap: pretty;
     font-size: 1rem;
     line-height: 1.5rem;
-    > p {
+    h2 {
+        font-size: 1.5rem;
+        line-height: 2rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    h3 {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    h4 {
+        font-size: 1.125rem;
+        line-height: 1.5rem;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    p {
         padding-bottom: 0.5rem;
         &:last-of-type {
             padding-bottom: 0;
         }
     }
-    > ol {
+    ol {
         margin-top: 1rem;
         padding-left: 2.5rem;
         list-style: none;
@@ -21,10 +40,6 @@
             counter-increment: item;
             padding-bottom: 1rem;
 
-            > ul {
-                padding-left: 1.5rem;
-                list-style-type: disc;
-            }
             &::before {
                 content: counter(item);
                 position: absolute;
@@ -47,8 +62,8 @@
                 height: 100%;
                 background-color: white;
                 position: absolute;
-                top: 0;
-                left: -2.5rem + 1rem;
+                top: 0.125rem;
+                left: -2.5rem + 1rem - 0.125rem;
             }
 
             &:last-of-type {
@@ -58,6 +73,10 @@
                 }
             }
         }
+    }
+    ul {
+        padding-left: 1.5rem;
+        list-style-type: disc;
     }
 }
 
@@ -86,8 +105,20 @@
         padding-inline: 4rem;
         font-size: 1.25rem;
         line-height: 1.75rem;
-        > ol {
+        ol {
             margin-top: 2rem;
+            padding-inline: 5rem;
+            li {
+                &::before {
+                    margin-left: -3.5rem;
+                    width: 2.5rem;
+                    height: 2.5rem;
+                    font-size: 1.5rem;
+                }
+                &::after {
+                    left: -3.5rem + 1.25rem - 0.125rem;
+                }
+            }
         }
     }
 }
@@ -96,12 +127,20 @@
     .bierzmowanie {
         font-size: 1.5rem; /* 24px */
         line-height: 2rem; /* 32px */
-        > ol {
+        ol {
             margin-top: 2.5rem;
+            padding-inline: 7.5rem;
         }
     }
 }
 
 @media screen and (min-width: 1536px) {
-    
+    .bierzmowanie {
+        font-size: 1.75rem; /* 28px */
+        line-height: 2.25rem; /* 36px */
+        margin-top: 3rem;
+        ol {
+            padding-inline: 10rem;
+        }
+    }
 }

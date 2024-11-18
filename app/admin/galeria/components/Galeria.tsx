@@ -7,6 +7,8 @@ import Link from "next/link";
 
 import "@/app/galeria/style.scss";
 import { ImageNotSupportedRounded } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 const months = [
   "Styczeń",
@@ -43,17 +45,16 @@ function Galeria(props: { gallery: Album[] }) {
 
   return (
     <>
-      <div className="px-4 sm:px-16 w-full mt-4 md:mt-0">
-        <div className="flex justify-between items-center">
+      <div className="px-4 sm:px-16 w-full mt-4">
+        <div className="flex justify-center md:justify-between items-center">
           <h2 className="text-4xl text-center">Galeria</h2>
-          <button
-            className="bg-green-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
-            onClick={() => {
-              setNewAlbum(true);
-            }}
+          <Button
+            className="absolute right-2 md:static md:right-auto"
+            size="icon"
+            onClick={() => setNewAlbum(true)}
           >
-            Nowy album
-          </button>
+            <PlusIcon />
+          </Button>
         </div>
         <div className="gallery grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 mt-8 md:mt-16">
           {gallery.map((album) => (

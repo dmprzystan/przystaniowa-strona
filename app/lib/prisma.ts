@@ -93,6 +93,14 @@ export type AlbumPhoto = Prisma.AlbumPhotoGetPayload<{
   };
 }>;
 
+export type ConfirmationLink = Prisma.ConfirmationLinkGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    url: true;
+  };
+}>;
+
 export type AlbumPhotoSize = "NORMAL" | "WIDE" | "TALL" | "BIG";
 
 if (process.env.NODE_ENV === "production") {
@@ -149,6 +157,44 @@ export const getTrips: () => Promise<Trip[]> = cache(async () => {
 
   return trips;
 });
+
+export const getTrip: (id: string) => Promise<Trip> = cache(
+  async (id: string) => {
+    const trip = await prisma.trip.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        dateStart: true,
+        dateEnd: true,
+        description: true,
+        TripPhoto: {
+          select: {
+            url: true,
+          },
+        },
+        TripLink: {
+          select: {
+            url: true,
+            name: true,
+          },
+        },
+        TripAttachment: {
+          select: {
+            url: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!trip) {
+      throw new Error("Trip not found");
+    }
+
+    return trip;
+  }
+);
 
 export const getGallery: () => Promise<Album[]> = cache(async () => {
   const albums = await prisma.album.findMany({
@@ -225,5 +271,15 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
     return album;
   }
 );
+
+export const getConfirmationLinks = cache(async () => {
+  const links = await prisma.confirmationLink.findMany();
+  return links;
+});
+
+export const getEmail = cache(async () => {
+  const email = await prisma.messageEmail.findFirst();
+  return email;
+});
 
 export default prisma;

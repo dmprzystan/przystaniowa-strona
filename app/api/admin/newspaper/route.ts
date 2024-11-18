@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
   const newspaper = await prisma.newspaper.create({
     data: {
-      title,
+      title: title.toString(),
       date: parsedDate,
       url: name,
     },

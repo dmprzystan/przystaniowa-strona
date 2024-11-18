@@ -12,6 +12,7 @@ import Upload from "./Upload";
 import "@/app/galeria/style.scss";
 import Photo from "./Photo";
 import Edit from "./Edit";
+import { Separator } from "@/components/ui/separator";
 
 type AlbumProps = {
   album: Album;
@@ -75,14 +76,17 @@ function Album(props: AlbumProps) {
 
   return (
     <>
-      <div className="px-4 sm:px-16 w-full mt-4 md:mt-0">
-        <div className="flex flex-col gap-2 md:flex-row justify-between items-center">
-          <div className="flex gap-3 items-center">
-            <h2 className="text-3xl md:text-4xl text-center font-semibold">
+      <div className="px-4 lg:px-16 mt-4 overflow-x-hidden">
+        <div className="flex flex-col gap-2 lg:flex-row justify-between items-center overflow-hidden">
+          <div className="flex flex-col md:flex-row gap-2 items-center overflow-hidden w-full">
+            <h2 className="text-3xl leading-10 whitespace-nowrap overflow-hidden text-ellipsis">
               {album.title}
             </h2>
-            <div className="w-2 h-2 rounded-full bg-black"></div>
-            <p className="font-light text-xl">{date(album.date)}</p>
+            <Separator className="md:hidden" />
+            <div className="hidden md:block w-2 h-2 rounded-full bg-black flex-shrink-0" />
+            <p className="font-light text-base md:text-lg flex-shrink-0">
+              {date(album.date)}
+            </p>
           </div>
           <div className="flex gap-4">
             <button

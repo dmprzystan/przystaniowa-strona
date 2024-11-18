@@ -94,25 +94,27 @@ async function page() {
                   <p className="text-center text-lg">
                     {displayDate(trip.dateStart, trip.dateEnd)}
                   </p>
+                  {trip.TripPhoto.length > 1 && (
+                    <div className="mt-4 w-full">
+                      <Image
+                        src={`/wyjazdy/${trip.id}/${trip.TripPhoto[0].url}`}
+                        alt=""
+                        width={800}
+                        height={500}
+                        className="max-w-4xl w-full min-w-[300px] rounded-[3rem] shadow-lg h-auto"
+                      />
+                    </div>
+                  )}
                   <div
                     className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl mt-4"
                     dangerouslySetInnerHTML={{ __html: trip.description }}
                   />
-                  <div className="mt-4 w-full">
-                    <Image
-                      src={`/wyjazdy/${trip.TripPhoto[0].url}`}
-                      alt=""
-                      width={800}
-                      height={500}
-                      className="max-w-4xl w-full min-w-[300px] rounded-[3rem] shadow-lg h-auto"
-                    />
-                  </div>
                   {trip.TripAttachment.length > 0 && (
                     <div className="mt-4 w-full flex flex-col items-center sm:flex-row flex-wrap gap-4">
                       {trip.TripAttachment.map((attachment) => (
                         <a
                           key={attachment.name}
-                          href={`/wyjazdy/${attachment.url}`}
+                          href={`/wyjazdy/${trip.id}/attachments/${attachment.url}`}
                           target="_blank"
                           rel="noreferrer"
                           download

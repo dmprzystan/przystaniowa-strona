@@ -95,3 +95,15 @@ model AlbumPhoto {
   thumbnailForAlbumId String? @unique
   thumbnailForAlbum   Album?  @relation("Thumbnail", fields: [thumbnailForAlbumId], references: [id])
 }
+
+model ConfirmationLink {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  createdAt DateTime @default(now())
+}
+
+model MessageEmail {
+  id    String @id @default(cuid())
+  email String
+}
