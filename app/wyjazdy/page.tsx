@@ -94,7 +94,7 @@ async function page() {
                   <p className="text-center text-lg">
                     {displayDate(trip.dateStart, trip.dateEnd)}
                   </p>
-                  {trip.TripPhoto.length > 1 && (
+                  {trip.TripPhoto.length > 0 && (
                     <div className="mt-4 w-full">
                       <Image
                         src={`/wyjazdy/${trip.id}/${trip.TripPhoto[0].url}`}
