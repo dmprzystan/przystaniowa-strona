@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
   const parse = NewTripSchema.safeParse(data);
 
   if (!parse.success) {
-    return NextResponse.json({ message: parse.error }, { status: 400 });
+    const message = parse.error.errors.map((error) => error.message).join(", ");
+    return NextResponse.json({ message }, { status: 400 });
   }
 
   const {

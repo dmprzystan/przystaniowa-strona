@@ -1,6 +1,11 @@
 "use client";
 
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 import { Button } from "@/components/ui/button";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
@@ -91,15 +96,17 @@ function Navbar() {
             className="w-4/5 min-w-80 [&>button]:!ring-transparent"
           >
             <ScrollArea className="h-full">
-              <Link href="/">
-                <Image
-                  className="w-64"
-                  src="/images/logo.png"
-                  alt="Przystań"
-                  width={300}
-                  height={200}
-                />
-              </Link>
+              <SheetTitle>
+                <Link href="/">
+                  <Image
+                    className="w-64"
+                    src="/images/logo.png"
+                    alt="Przystań"
+                    width={300}
+                    height={200}
+                  />
+                </Link>
+              </SheetTitle>
               <nav className="mt-8 w-full px-4 pb-4">
                 <ul className="flex flex-col gap-4">
                   {pages.map((page) => (

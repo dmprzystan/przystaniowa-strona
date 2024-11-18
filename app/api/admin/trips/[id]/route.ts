@@ -103,7 +103,6 @@ export async function PATCH(
         createMany: {
           data: links.map((link) => {
             return {
-              tripId: trip.id,
               name: link.name,
               url: link.url,
             };
@@ -174,7 +173,7 @@ export async function DELETE(
     }
 
     for (const attachment of trip.TripAttachment) {
-      promises.push(deleteFile(`wyjazdy/${trip.id}/${attachment.url}`));
+      promises.push(deleteFile(`wyjazdy/${trip.id}/attachments/${attachment.url}`));
     }
 
     await promiseEach(promises, (promise) => promise);

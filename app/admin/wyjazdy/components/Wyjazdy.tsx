@@ -1238,6 +1238,16 @@ const LinkInput = ({ field }: { field: LinkInputField }) => {
   const [url, setUrl] = useState("");
 
   const handleAddLink = () => {
+    if (!url || !title) {
+      toast.error("Wypełnij wszystkie pola");
+      return;
+    }
+
+    if (field.value.some((l) => l.name === title)) {
+      toast.error("Link o takiej nazwie już istnieje");
+      return;
+    }
+
     field.onChange([
       ...field.value,
       {
@@ -1339,6 +1349,11 @@ const AttachmentInput = ({ field }: { field: AttachmentInputField }) => {
   const handleAddAttachment = () => {
     if (attachment.file.name === "") {
       toast.error("Nie wybrano pliku");
+      return;
+    }
+
+    if (field.value.some((a) => a.name === attachment.name)) {
+      toast.error("Załącznik o takiej nazwie już istnieje");
       return;
     }
 
