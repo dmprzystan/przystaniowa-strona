@@ -102,3 +102,8 @@ model ConfirmationLink {
   url       String
   createdAt DateTime @default(now())
 }
+
+model MessageEmail {
+  id    String @id @default(cuid())
+  email String
+}

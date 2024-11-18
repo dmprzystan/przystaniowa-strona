@@ -277,4 +277,9 @@ export const getConfirmationLinks = cache(async () => {
   return links;
 });
 
+export const getEmail = cache(async () => {
+  const email = await prisma.messageEmail.findFirst();
+  return email;
+});
+
 export default prisma;
