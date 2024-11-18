@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
+import prisma from "@/app/lib/prisma";
 
 export async function PATCH(
   req: NextRequest,

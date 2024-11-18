@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createPAR, deleteFile } from "@/app/lib/oci";
 import { z } from "zod";
+import prisma from "@/app/lib/prisma";
 
 // Delete the trip photo
 export async function DELETE(
