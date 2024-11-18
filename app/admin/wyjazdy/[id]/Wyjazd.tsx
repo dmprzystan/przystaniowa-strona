@@ -574,7 +574,10 @@ function DescriptionEdit({ trip, updateTrip }: PartialEditProps) {
       {edit ? (
         <Editor value={description} setValue={setDescription} />
       ) : (
-        <div dangerouslySetInnerHTML={{ __html: description }} />
+        <div
+          className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl mt-4"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
       )}
     </div>
   );
