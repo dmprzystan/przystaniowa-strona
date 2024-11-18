@@ -166,7 +166,7 @@ function Gazetka(props: GazetkaProps) {
 }
 
 const NewNewspaperSchema = z.object({
-  number: z.number(),
+  number: z.coerce.number(),
   date: z.coerce.date(),
   file: z.instanceof(File).refine((file) => file.name.endsWith(".pdf")),
 });
