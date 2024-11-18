@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 function About() {
@@ -27,9 +28,15 @@ function About() {
               <p className="text-center text-sm sm:text-base lg:text-lg opacity-75">
                 Jesteś niepełnoletni? Pamiętaj o wypełnieniu zgody poniżej!
               </p>
-              <button className="rounded-full bg-slate-600 text-white uppercase px-8 py-2 shadow-lg">
+              <Link
+                href="/ZGODA-RODZICA-LUB-OPIEKUNA-PRAWNEGO-NA-UDZIAL-MALOLETNIEGO.pdf"
+                target="_blank"
+                rel="noreferrer"
+                download
+                className="rounded-full bg-slate-600 text-white uppercase px-8 py-2 shadow-lg"
+              >
                 zgoda
-              </button>
+              </Link>
             </div>
           </div>
         </div>
