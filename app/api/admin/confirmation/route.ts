@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getConfirmation, putConfirmation } from "@/app/lib/oci";
+import { readFile, writeFile } from "@/app/lib/b2";
 import { revalidatePath } from "next/cache";
 
 export async function PATCH(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    await putConfirmation(confirmation);
+    await writeFile("bierzmowanie/bierzmowanie.html", confirmation);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: "Error" }, { status: 500 });
@@ -24,6 +24,6 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function GET(_req: NextRequest) {
-  const statute = await getConfirmation();
+  const statute = await readFile("bierzmowanie/bierzmowanie.html");
   return new NextResponse(statute);
 }
