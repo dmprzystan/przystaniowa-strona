@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export default async function Page() {
-  const confirmation = await readFile("/bierzmowanie/bierzmowanie.html");
+  const confirmation = await readFile("bierzmowanie/bierzmowanie.html");
   const links = await getConfirmationLinks();
 
   return (
