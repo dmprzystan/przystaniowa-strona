@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getStatute } from "@/app/lib/oci";
+import { readFile } from "@/app/lib/b2";
 
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
@@ -10,7 +10,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./style.scss";
 
 export default async function Page() {
-  const statute = await getStatute();
+  const statute = await readFile("regulamin/regulamin.html");
 
   return (
     <>
