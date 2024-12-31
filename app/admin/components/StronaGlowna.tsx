@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import EmailTile from "./EmailTile";
+import EmailTile from "./tiles/EmailTile";
 
 function StronaGlowna() {
   return (
