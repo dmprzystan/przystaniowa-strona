@@ -94,7 +94,7 @@ export default function EmailTile() {
   };
 
   return (
-    <Card className="col-start-1 col-end-1">
+    <Card className="">
       <CardHeader>
         <CardTitle>Adres korespondencyjny</CardTitle>
         <CardDescription>
