@@ -5,6 +5,7 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
   CopyObjectCommand,
+  ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 
 if (
@@ -94,6 +95,18 @@ export const renameFile = async (oldPath: string, newPath: string) => {
   await b2Client.send(content);
 
   await deleteFile(oldPath);
+};
+
+export const getBucketSize = async () => {
+  const listCommand = new ListObjectsV2Command({
+    Bucket: process.env.B2_BUCKET,
+  });
+
+  const response = await b2Client.send(listCommand);
+
+  return response.Contents?.reduce((acc, file) => {
+    return acc + (file.Size ? Number(file.Size) : 0);
+  }, 0);
 };
 
 export default b2Client;
