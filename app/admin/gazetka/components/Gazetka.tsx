@@ -3,28 +3,12 @@
 import { useEffect, useState } from "react";
 import { Newspaper } from "@/app/lib/prisma";
 import GazetkaItem from "./GazetkaItem";
-import LoadingButton from "../../components/LoadingButton";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
+import Drawer from "@/components/ui/drawer";
+import Dialog from "@/components/ui/dialog";
+import Popover from "@/components/ui/popover";
+
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, UploadIcon } from "@radix-ui/react-icons";
 import { z } from "zod";
@@ -39,11 +23,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import dayjs from "dayjs";
 import "dayjs/locale/pl";
@@ -144,7 +123,7 @@ function Gazetka(props: GazetkaProps) {
     <>
       <div className="px-4 sm:px-16 w-full mt-4">
         <div className="flex justify-center md:justify-between items-center">
-          <h2 className="text-4xl text-center">GAZETKA 19tka</h2>
+          <h2 className="text-3xl sm:text-4xl text-center">GAZETKA 19tka</h2>
           <NewNewspaper
             lastNumber={parseInt(clientNewspapers[0]?.title) ?? 0}
             update={update}
@@ -180,6 +159,9 @@ function NewNewspaper({ lastNumber, update }: NewNewspaperProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  const Component = isDesktop ? Dialog : Drawer;
+  const CalendarComponent = isDesktop ? Popover : Dialog;
 
   const form = useForm<z.infer<typeof NewNewspaperSchema>>({
     resolver: zodResolver(NewNewspaperSchema),
@@ -243,137 +225,23 @@ function NewNewspaper({ lastNumber, update }: NewNewspaperProps) {
     }
   }
 
-  if (isDesktop) {
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button size="icon">
-            <UploadIcon />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Dodaj gazetkę</DialogTitle>
-            <DialogDescription>Dodaj nową gazetkę do listy</DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSubmit)}
-              className="flex flex-col items-stretch gap-4"
-            >
-              <div className="flex gap-4 justify-between">
-                <FormField
-                  control={form.control}
-                  name="number"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Numer</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="number"
-                          placeholder="Numer"
-                          required
-                        />
-                      </FormControl>
-                      <FormMessage>
-                        {form.formState.errors.number?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="date"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Data</FormLabel>
-                      <FormControl>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="outline">
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {dayjs(form.getValues("date")).format(
-                                "DD MMMM YYYY"
-                              )}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            <Calendar
-                              mode="single"
-                              selected={form.getValues("date")}
-                              onSelect={(date) =>
-                                form.setValue("date", date ?? new Date())
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </FormControl>
-                      <FormMessage>
-                        {form.formState.errors.date?.message}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="file"
-                render={({ field: { value, onChange, ...fieldProps } }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Plik</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...fieldProps}
-                        type="file"
-                        accept="application/pdf"
-                        onChange={(event) =>
-                          onChange(event.target.files && event.target.files[0])
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.file?.message?.toString()}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-              <DialogFooter className="flex !justify-between">
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    Anuluj
-                  </Button>
-                </DialogClose>
-                <Button type="submit" disabled={loading}>
-                  {loading && (
-                    <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
-                  )}
-                  Dodaj
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
-    <Drawer open={open} onOpenChange={setOpen} repositionInputs={false}>
-      <DrawerTrigger asChild>
+    <Component open={open} onOpenChange={setOpen} repositionInputs={false}>
+      <Component.Trigger asChild>
         <Button
           size="icon"
           className="absolute right-2 md:relative md:right-auto"
         >
           <UploadIcon />
         </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Dodaj gazetkę</DrawerTitle>
-          <DrawerDescription>Dodaj nową gazetkę do listy</DrawerDescription>
-        </DrawerHeader>
+      </Component.Trigger>
+      <Component.Content>
+        <Component.Header>
+          <Component.Title>Dodaj gazetkę</Component.Title>
+          <Component.Description>
+            Dodaj nową gazetkę do listy
+          </Component.Description>
+        </Component.Header>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -407,16 +275,16 @@ function NewNewspaper({ lastNumber, update }: NewNewspaperProps) {
                   <FormItem className="flex flex-col">
                     <FormLabel>Data</FormLabel>
                     <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
+                      <CalendarComponent>
+                        <CalendarComponent.Trigger asChild>
                           <Button variant="outline">
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {dayjs(form.getValues("date")).format(
                               "DD MMMM YYYY"
                             )}
                           </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
+                        </CalendarComponent.Trigger>
+                        <CalendarComponent.Content className="w-auto rounded-xl pt-10 sm:p-0">
                           <Calendar
                             mode="single"
                             selected={form.getValues("date")}
@@ -425,8 +293,8 @@ function NewNewspaper({ lastNumber, update }: NewNewspaperProps) {
                             }
                             initialFocus
                           />
-                        </PopoverContent>
-                      </Popover>
+                        </CalendarComponent.Content>
+                      </CalendarComponent>
                     </FormControl>
                     <FormMessage>
                       {form.formState.errors.date?.message}
@@ -457,23 +325,23 @@ function NewNewspaper({ lastNumber, update }: NewNewspaperProps) {
                 </FormItem>
               )}
             />
-            <DrawerFooter className="flex !justify-between gap-4">
-              <DrawerClose asChild>
+            <Component.Footer className="flex !justify-between gap-4">
+              <Component.Close asChild>
                 <Button type="button" variant="secondary">
                   Anuluj
                 </Button>
-              </DrawerClose>
+              </Component.Close>
               <Button type="submit" disabled={loading}>
                 {loading && (
                   <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
                 )}
                 Dodaj
               </Button>
-            </DrawerFooter>
+            </Component.Footer>
           </form>
         </Form>
-      </DrawerContent>
-    </Drawer>
+      </Component.Content>
+    </Component>
   );
 }
 
