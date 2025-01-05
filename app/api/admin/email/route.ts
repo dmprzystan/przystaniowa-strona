@@ -3,9 +3,11 @@ import prisma from "@/app/lib/prisma";
 import { z } from "zod";
 
 export async function GET(_req: NextRequest) {
-  const email = await prisma.messageEmail.findFirst();
+  const email = await prisma.config.findUnique({
+    where: { key: "email" },
+  });
 
-  return NextResponse.json(email);
+  return NextResponse.json({ email: email?.value });
 }
 
 const EmailSchema = z.object({
@@ -23,8 +25,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  await prisma.messageEmail.deleteMany();
-  await prisma.messageEmail.create({ data: { email: parse.data.email } });
+  await prisma.config.upsert({
+    where: { key: "email" },
+    update: { value: parse.data.email },
+    create: { key: "email", value: parse.data.email },
+  });
 
   return NextResponse.json({ status: "ok" });
 }
