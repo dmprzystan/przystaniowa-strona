@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,10 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum crdb_internal_region {
+  aws_eu_central_1 @map("aws-eu-central-1")
+}
+
 model User {
   id       String @id @default(cuid())
   login    String @unique
   password String
+}
+
+model Config {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
 }
 
 model Schedule {
@@ -33,77 +37,72 @@ model Newspaper {
   url   String
 }
 
-model Trip {
-  id             String           @id @default(cuid())
-  title          String
-  description    String
-  dateStart      DateTime
-  dateEnd        DateTime
-  TripPhoto      TripPhoto[]
-  TripLink       TripLink[]
-  TripAttachment TripAttachment[]
-}
+// model Trip {
+//   id             String           @id @default(cuid())
+//   title          String
+//   description    String
+//   dateStart      DateTime
+//   dateEnd        DateTime
+//   TripPhoto      TripPhoto[]
+//   TripLink       TripLink[]
+//   TripAttachment TripAttachment[]
+// }
 
-model TripPhoto {
-  id     String @id @default(cuid())
-  url    String
-  tripId String
-  trip   Trip   @relation(fields: [tripId], references: [id])
-}
+// model TripPhoto {
+//   id     String @id @default(cuid())
+//   url    String
+//   tripId String
+//   trip   Trip   @relation(fields: [tripId], references: [id])
+// }
 
-model TripLink {
-  id     String @id @default(cuid())
-  name   String
-  url    String
-  tripId String
-  trip   Trip   @relation(fields: [tripId], references: [id])
-}
+// model TripLink {
+//   id     String @id @default(cuid())
+//   name   String
+//   url    String
+//   tripId String
+//   trip   Trip   @relation(fields: [tripId], references: [id])
+// }
 
-model TripAttachment {
-  id     String @id @default(cuid())
-  name   String
-  url    String
-  tripId String
-  trip   Trip   @relation(fields: [tripId], references: [id])
-}
+// model TripAttachment {
+//   id     String @id @default(cuid())
+//   name   String
+//   url    String
+//   tripId String
+//   trip   Trip   @relation(fields: [tripId], references: [id])
+// }
 
-model Album {
-  id          String       @id @default(cuid())
-  title       String
-  description String
-  date        DateTime     @default(now())
-  photos      AlbumPhoto[] @relation("Photos")
-  thumbnail   AlbumPhoto?  @relation("Thumbnail")
-}
+// model Album {
+//   id          String       @id @default(cuid())
+//   title       String
+//   description String
+//   date        DateTime     @default(now())
+//   photos      AlbumPhoto[] @relation("Photos")
+//   thumbnail   AlbumPhoto?  @relation("Thumbnail")
+// }
 
-enum AlbumPhotoSize {
-  NORMAL
-  WIDE
-  TALL
-  BIG
-}
+// enum AlbumPhotoSize {
+//   NORMAL
+//   WIDE
+//   TALL
+//   BIG
+// }
 
-model AlbumPhoto {
-  id      String         @id @default(cuid())
-  url     String
-  preview String
-  size    AlbumPhotoSize @default(NORMAL)
+// model AlbumPhoto {
+//   id      String         @id @default(cuid())
+//   url     String
+//   preview String
+//   size    AlbumPhotoSize @default(NORMAL)
 
-  albumId String
-  album   Album  @relation("Photos", fields: [albumId], references: [id])
+//   albumId String
+//   album   Album  @relation("Photos", fields: [albumId], references: [id])
 
-  thumbnailForAlbumId String? @unique
-  thumbnailForAlbum   Album?  @relation("Thumbnail", fields: [thumbnailForAlbumId], references: [id])
-}
+//   thumbnailForAlbumId String? @unique
+//   thumbnailForAlbum   Album?  @relation("Thumbnail", fields: [thumbnailForAlbumId], references: [id])
+// }
 
-model ConfirmationLink {
-  id        String   @id @default(cuid())
-  title     String
-  url       String
-  createdAt DateTime @default(now())
-}
-
-model MessageEmail {
-  id    String @id @default(cuid())
-  email String
-}
+// model ConfirmationLink {
+//   id        String   @id @default(cuid())
+//   title     String
+//   url       String
+//   createdAt DateTime @default(now())
+// }
