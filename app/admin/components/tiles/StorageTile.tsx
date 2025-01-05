@@ -8,17 +8,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { space } from "postcss/lib/list";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 
 const MAX_SPACE = 10 * 1024 * 1024 * 1024; // 10GB
 
 function StorageTile() {
   const [usedSpace, setUsedSpace] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUsedSpace().then((space) => {
       setUsedSpace(space);
+      setLoading(false);
     });
   });
 
@@ -41,7 +43,7 @@ function StorageTile() {
     if (bytes === 0) return "0 Bytes";
 
     const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    const sizes = ["B", "KB", "MB", "GB", "TB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
@@ -56,15 +58,21 @@ function StorageTile() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-2 items-center">
-          <Progress value={getUsedPercentage(usedSpace)} />
-          <span className="text-sm">{getUsedPercentage(usedSpace)}%</span>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">
-            {formatBytes(usedSpace)} z {formatBytes(MAX_SPACE)} wykorzystane
-          </p>
-        </div>
+        {loading ? (
+          <Skeleton className="w-full h-10" />
+        ) : (
+          <>
+            <div className="flex gap-2 items-center">
+              <Progress value={getUsedPercentage(usedSpace)} />
+              <span className="text-sm">{getUsedPercentage(usedSpace)}%</span>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">
+                {formatBytes(usedSpace)} z {formatBytes(MAX_SPACE)} wykorzystane
+              </p>
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
