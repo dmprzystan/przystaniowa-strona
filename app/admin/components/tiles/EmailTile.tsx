@@ -20,6 +20,7 @@ export default function EmailTile() {
   const [loading, setLoading] = useState(true);
 
   const [editing, setEditing] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
   const [editEmail, setEditEmail] = useState(email);
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function EmailTile() {
   }, []);
 
   const saveEmail = async () => {
-    setLoading(true);
+    setEditLoading(true);
 
     // Save email to the server
     try {
@@ -61,7 +62,7 @@ export default function EmailTile() {
     } finally {
       await fetchEmail();
 
-      setLoading(false);
+      setEditLoading(false);
       setEditing(false);
     }
   };
@@ -117,14 +118,14 @@ export default function EmailTile() {
             {editing ? (
               <div className="flex gap-2">
                 <Button size="icon" onClick={cancelEmail} disabled={loading}>
-                  {loading ? (
+                  {editLoading ? (
                     <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
                   ) : (
                     <Cross2Icon />
                   )}
                 </Button>
                 <Button size="icon" onClick={saveEmail} disabled={loading}>
-                  {loading ? (
+                  {editLoading ? (
                     <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
                   ) : (
                     <BookmarkIcon />
