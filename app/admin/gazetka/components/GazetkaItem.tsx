@@ -100,7 +100,7 @@ function GazetkaItem(props: GazetkaItemProps) {
               } ${newspaper.date.getFullYear()}`}</p>
             </div>
             <a
-              href={`/gazetka/${newspaper.url}`}
+              href={`/public/${newspaper.url}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500"

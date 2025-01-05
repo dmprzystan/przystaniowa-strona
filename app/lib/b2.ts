@@ -8,6 +8,8 @@ import {
   ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
 if (
   !process.env.B2_ENDPOINT ||
   !process.env.B2_REGION ||
@@ -42,6 +44,85 @@ if (process.env.NODE_ENV === "production") {
   }
   b2Client = global.b2Client;
 }
+
+type B2Authorization = {
+  authorizationToken: string;
+  apiUrl: string;
+};
+const authorizeAccount: () => Promise<B2Authorization> = async () => {
+  const cached = await prisma.config.findUnique({
+    where: {
+      key: "b2_authorization",
+    },
+  });
+
+  try {
+    if (cached) {
+      const { authorizationToken, applicationKeyExpirationTimestamp, apiUrl } =
+        JSON.parse(cached.value as string);
+
+      if (
+        !authorizationToken ||
+        !applicationKeyExpirationTimestamp ||
+        !apiUrl
+      ) {
+        throw new Error("Invalid cache data");
+      }
+
+      // Check the type of the cached data
+      if (
+        typeof authorizationToken !== "string" ||
+        typeof applicationKeyExpirationTimestamp !== "number" ||
+        typeof apiUrl !== "string"
+      ) {
+        throw new Error("Invalid cache data");
+      }
+
+      // Check if the token is still valid for at least 1 minute
+      if (applicationKeyExpirationTimestamp - Date.now() > 60000) {
+        return { authorizationToken, apiUrl };
+      }
+    }
+  } catch (error: any) {
+    console.error(error);
+  }
+
+  const response = await fetch(
+    "https://api.backblazeb2.com/b2api/v3/b2_authorize_account",
+    {
+      headers: {
+        Authorization: `Basic ${Buffer.from(
+          `${process.env.B2_APP_KEY}:${process.env.B2_APP_SECRET}`
+        ).toString("base64")}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+  const cacheData = {
+    authorizationToken: data.authorizationToken,
+    applicationKeyExpirationTimestamp: data.applicationKeyExpirationTimestamp,
+    apiUrl: data.apiInfo.storageApi.apiUrl,
+  };
+
+  await prisma.config.upsert({
+    where: {
+      key: "b2_authorization",
+    },
+    create: {
+      key: "b2_authorization",
+      value: JSON.stringify(cacheData),
+    },
+    update: {
+      value: JSON.stringify(cacheData),
+    },
+  });
+
+  return {
+    authorizationToken: cacheData.authorizationToken as string,
+    apiUrl: cacheData.apiUrl as string,
+  };
+};
 
 export const readFile = async (path: string) => {
   const getCommand = new GetObjectCommand({
@@ -107,6 +188,28 @@ export const getBucketSize = async () => {
   return response.Contents?.reduce((acc, file) => {
     return acc + (file.Size ? Number(file.Size) : 0);
   }, 0);
+};
+
+export const createPresignedUrl = async (path: string) => {
+  const command = new PutObjectCommand({
+    Bucket: process.env.B2_BUCKET,
+    Key: path,
+  });
+
+  const url = await getSignedUrl(b2Client, command, {
+    expiresIn: 15 * 60, // 15 minutes
+  });
+
+  return url;
+};
+
+export const getDownloadUrl = async (path: string) => {
+  const { authorizationToken, apiUrl } = await authorizeAccount();
+
+  return {
+    url: `${apiUrl}/file/${process.env.B2_BUCKET}/${path}`,
+    authorization: authorizationToken,
+  };
 };
 
 export default b2Client;
