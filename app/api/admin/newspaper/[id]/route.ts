@@ -1,6 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { deleteFile } from "@/app/lib/b2";
 
 const months = [
   "Styczeń",
@@ -30,7 +31,7 @@ export async function DELETE(
   });
 
   try {
-    // await deleteFile(`gazetki/${gazetka.url}`);
+    await deleteFile(gazetka.url);
   } catch (error) {
     console.error(error);
   }

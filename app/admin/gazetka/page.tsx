@@ -78,8 +78,7 @@ export default function Page() {
                 <GazetkaItem
                   newspaper={newspaper}
                   key={newspaper.id}
-                  handleDelete={() => {}}
-                  handleEdit={async () => {}}
+                  update={fetchNewspapers}
                 />
               ))}
             </>

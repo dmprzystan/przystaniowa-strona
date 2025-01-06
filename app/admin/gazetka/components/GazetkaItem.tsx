@@ -1,41 +1,51 @@
 import { Newspaper } from "@/app/lib/prisma";
+import { Card } from "@/components/ui/card";
 import { DeleteOutlineRounded, EditRounded } from "@mui/icons-material";
 import { useState } from "react";
 
+import dayjs from "dayjs";
+import "dayjs/locale/pl";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+dayjs.locale("pl");
+
 type GazetkaItemProps = {
   newspaper: Newspaper;
-  handleDelete: (id: string) => void;
-  handleEdit: (
-    e: React.FormEvent<HTMLFormElement>,
-    id: string
-  ) => Promise<void>;
+  update: () => Promise<void>;
 };
 
 function GazetkaItem(props: GazetkaItemProps) {
-  const { newspaper, handleDelete, handleEdit } = props;
+  const { newspaper, update } = props;
+  const [loading, setLoading] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
 
-  const months = [
-    "Styczeń",
-    "Luty",
-    "Marzec",
-    "Kwiecień",
-    "Maj",
-    "Czerwiec",
-    "Lipiec",
-    "Sierpień",
-    "Wrzesień",
-    "Październik",
-    "Listopad",
-    "Grudzień",
-  ];
+  const handleDelete = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(`/api/admin/newspaper/${newspaper.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const body = await response.json();
+        throw new Error(body.error);
+      }
+
+      toast.success("Pomyślnie usunięto gazetkę");
+    } catch (error) {
+      toast.error("Wystąpił błąd podczas usuwania gazetki");
+    } finally {
+      await update();
+      setLoading(false);
+    }
+
+    setLoading(false);
+  };
 
   return (
-    <div
-      key={newspaper.id}
-      className="bg-gray-100 p-4 rounded-2xl shadow-arround  hover:bg-gray-200 duration-200 transition-all"
-    >
+    <Card key={newspaper.id} className="p-4">
       {editMode ? (
         <form
           className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between"
@@ -95,9 +105,9 @@ function GazetkaItem(props: GazetkaItemProps) {
                 <p className="font-light">nr.</p>
                 <h3 className="text-2xl">{newspaper.title}</h3>
               </div>
-              <p className="text-gray-500 font-light text-sm sm:text-base">{`${
-                months[newspaper.date.getMonth()]
-              } ${newspaper.date.getFullYear()}`}</p>
+              <p className="text-gray-500 font-light capitalize text-sm sm:text-base">
+                {dayjs(newspaper.date).format("MMMM YYYY")}
+              </p>
             </div>
             <a
               href={`/public/${newspaper.url}`}
@@ -108,31 +118,31 @@ function GazetkaItem(props: GazetkaItemProps) {
               Otwórz
             </a>
           </div>
-          <div className="flex items-center gap-4">
-            <button
-              className="bg-blue-500 text-white rounded-full sm:rounded-lg p-3 sm:px-4 sm:py-2 shadow-lg sm:shadow-none hover:shadow-lg duration-300 transition-all"
+          <div className="flex items-center gap-2">
+            <Button
+              size="icon"
+              variant="outline"
               onClick={() => setEditMode(true)}
+              disabled={loading}
             >
-              <div className="hidden sm:block">Edytuj</div>
-              <div className="block sm:hidden">
-                <EditRounded />
-              </div>
-            </button>
-            <button
-              className="bg-red-500 text-white rounded-full sm:rounded-lg p-3 sm:px-4 sm:py-2 shadow-lg sm:shadow-none hover:shadow-lg duration-300 transition-all"
-              onClick={() => {
-                handleDelete(newspaper.id);
-              }}
+              <EditRounded />
+            </Button>
+            <Button
+              size="icon"
+              variant="default"
+              onClick={handleDelete}
+              disabled={loading}
             >
-              <div className="hidden sm:block">Usuń</div>
-              <div className="block sm:hidden">
+              {loading ? (
+                <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
+              ) : (
                 <DeleteOutlineRounded />
-              </div>
-            </button>
+              )}
+            </Button>
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 
