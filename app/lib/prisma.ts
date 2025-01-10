@@ -33,11 +33,7 @@ export type Trip = Prisma.TripGetPayload<{
     dateStart: true;
     dateEnd: true;
     description: true;
-    TripPhoto: {
-      select: {
-        url: true;
-      };
-    };
+    thumbnail: true;
     TripLink: {
       select: {
         url: true;
@@ -132,11 +128,7 @@ export const getTrips: () => Promise<Trip[]> = cache(async () => {
       dateStart: true,
       dateEnd: true,
       description: true,
-      TripPhoto: {
-        select: {
-          url: true,
-        },
-      },
+      thumbnail: true,
       TripLink: {
         select: {
           url: true,
@@ -168,11 +160,7 @@ export const getTrip: (id: string) => Promise<Trip> = cache(
         dateStart: true,
         dateEnd: true,
         description: true,
-        TripPhoto: {
-          select: {
-            url: true,
-          },
-        },
+        thumbnail: true,
         TripLink: {
           select: {
             url: true,

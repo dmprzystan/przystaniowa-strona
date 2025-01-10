@@ -1,8 +1,8 @@
 import prisma, { getTrips } from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createPAR, removeExpiredPARs } from "@/app/lib/oci";
 import { z } from "zod";
+import { createPresignedUrl } from "@/app/lib/b2";
 
 export async function GET(_req: NextRequest) {
   const trips = await getTrips();
@@ -15,9 +15,7 @@ const NewTripSchema = z.object({
   dateStart: z.coerce.date({ message: "Nieprawidłowa data rozpoczęcia" }),
   dateEnd: z.coerce.date({ message: "Nieprawidłowa data zakończenia" }),
   description: z.string(),
-  photoExt: z
-    .string()
-    .min(1, { message: "Rozszerzenie zdjęcia jest wymagane" }),
+  image: z.string(), // Image name
   attachments: z.array(
     z.object({
       name: z.string(),
@@ -42,15 +40,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message }, { status: 400 });
   }
 
-  const {
-    title,
-    dateStart,
-    dateEnd,
-    description,
-    photoExt,
-    attachments,
-    links,
-  } = parse.data;
+  const { title, dateStart, dateEnd, description, image, attachments, links } =
+    parse.data;
 
   if (dateStart > dateEnd) {
     return NextResponse.json(
@@ -62,6 +53,7 @@ export async function POST(req: NextRequest) {
   const trip = await prisma.trip.create({
     data: {
       title,
+      thumbnail: image,
       dateStart,
       dateEnd,
       description,
@@ -78,13 +70,6 @@ export async function POST(req: NextRequest) {
     }),
   });
 
-  const photoPromise = prisma.tripPhoto.create({
-    data: {
-      url: `zdjecie.${photoExt}`,
-      tripId: trip.id,
-    },
-  });
-
   const attachmentPromise = prisma.tripAttachment.createMany({
     data: attachments.map((attachment) => {
       return {
@@ -95,23 +80,30 @@ export async function POST(req: NextRequest) {
     }),
   });
 
-  await Promise.all([linkPromise, photoPromise, attachmentPromise]);
+  await Promise.all([linkPromise, attachmentPromise]);
 
-  // Create PARs for the photo and attachments
-  const photoPar = await createPAR(`wyjazdy/${trip.id}/zdjecie.${photoExt}`);
-  const attachmentPAR = await createPAR(
-    `wyjazdy/${trip.id}/attachments/`,
-    true
+  // Create the PARs
+  let imagePAR = image
+    ? await createPresignedUrl(`wyjazdy/${trip.id}/${image}`)
+    : null;
+
+  const attachmentPARs = await Promise.all(
+    attachments.map(async (attachment) => {
+      return {
+        name: attachment.name,
+        url: await createPresignedUrl(
+          `wyjazdy/${trip.id}/${attachment.name}.${attachment.ext}`
+        ),
+      };
+    })
   );
-
-  await removeExpiredPARs();
 
   revalidatePath("/wyjazdy");
 
   return NextResponse.json({
     message: "ok",
     id: trip.id,
-    photoPar,
-    attachmentPAR,
+    imagePAR,
+    attachmentPARs,
   });
 }

@@ -44,39 +44,32 @@ model ConfirmationLink {
   createdAt DateTime @default(now())
 }
 
-// model Trip {
-//   id             String           @id @default(cuid())
-//   title          String
-//   description    String
-//   dateStart      DateTime
-//   dateEnd        DateTime
-//   TripPhoto      TripPhoto[]
-//   TripLink       TripLink[]
-//   TripAttachment TripAttachment[]
-// }
+model Trip {
+  id             String           @id @default(cuid())
+  title          String
+  description    String // html
+  dateStart      DateTime
+  dateEnd        DateTime
+  thumbnail      String           @default("")
+  TripLink       TripLink[]
+  TripAttachment TripAttachment[]
+}
 
-// model TripPhoto {
-//   id     String @id @default(cuid())
-//   url    String
-//   tripId String
-//   trip   Trip   @relation(fields: [tripId], references: [id])
-// }
+model TripLink {
+  id     String @id @default(cuid())
+  name   String
+  url    String
+  tripId String
+  trip   Trip   @relation(fields: [tripId], references: [id])
+}
 
-// model TripLink {
-//   id     String @id @default(cuid())
-//   name   String
-//   url    String
-//   tripId String
-//   trip   Trip   @relation(fields: [tripId], references: [id])
-// }
-
-// model TripAttachment {
-//   id     String @id @default(cuid())
-//   name   String
-//   url    String
-//   tripId String
-//   trip   Trip   @relation(fields: [tripId], references: [id])
-// }
+model TripAttachment {
+  id     String @id @default(cuid())
+  name   String
+  url    String
+  tripId String
+  trip   Trip   @relation(fields: [tripId], references: [id])
+}
 
 // model Album {
 //   id          String       @id @default(cuid())
