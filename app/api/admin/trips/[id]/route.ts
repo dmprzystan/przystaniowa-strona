@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { deleteFile } from "@/app/lib/oci";
+import { deleteFile } from "@/app/lib/b2";
 import { z } from "zod";
 
 async function promiseEach(arr: any[], fn: (item: any) => Promise<void>) {
@@ -38,7 +38,6 @@ export async function GET(
       id: id as string,
     },
     include: {
-      TripPhoto: true,
       TripAttachment: true,
       TripLink: true,
     },
@@ -70,7 +69,6 @@ export async function PATCH(
       id: id as string,
     },
     include: {
-      TripPhoto: true,
       TripAttachment: true,
       TripLink: true,
     },
@@ -111,7 +109,6 @@ export async function PATCH(
       },
     },
     include: {
-      TripPhoto: true,
       TripAttachment: true,
       TripLink: true,
     },
@@ -133,7 +130,6 @@ export async function DELETE(
       id: id as string,
     },
     include: {
-      TripPhoto: true,
       TripAttachment: true,
       TripLink: true,
     },
@@ -144,11 +140,6 @@ export async function DELETE(
   }
 
   await prisma.$transaction([
-    prisma.tripPhoto.deleteMany({
-      where: {
-        tripId: id as string,
-      },
-    }),
     prisma.tripAttachment.deleteMany({
       where: {
         tripId: id as string,
@@ -168,12 +159,10 @@ export async function DELETE(
 
   try {
     const promises = [];
-    for (const photo of trip.TripPhoto) {
-      promises.push(deleteFile(`wyjazdy/${trip.id}/${photo.url}`));
-    }
+    promises.push(deleteFile(trip.thumbnail));
 
     for (const attachment of trip.TripAttachment) {
-      promises.push(deleteFile(`wyjazdy/${trip.id}/attachments/${attachment.url}`));
+      promises.push(deleteFile(attachment.url));
     }
 
     await promiseEach(promises, (promise) => promise);

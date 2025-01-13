@@ -53,12 +53,20 @@ export async function POST(req: NextRequest) {
   const trip = await prisma.trip.create({
     data: {
       title,
-      thumbnail: image,
       dateStart,
       dateEnd,
       description,
     },
   });
+
+  if (image) {
+    await prisma.trip.update({
+      where: { id: trip.id },
+      data: {
+        thumbnail: `wyjazdy/${trip.id}/${image}`,
+      },
+    });
+  }
 
   const linkPromise = prisma.tripLink.createMany({
     data: links.map((link) => {
@@ -75,7 +83,7 @@ export async function POST(req: NextRequest) {
       return {
         tripId: trip.id,
         name: attachment.name,
-        url: `${attachment.name}.${attachment.ext}`,
+        url: `wyjazdy/${trip.id}/attachments/${attachment.name}.${attachment.ext}`,
       };
     }),
   });
@@ -92,7 +100,7 @@ export async function POST(req: NextRequest) {
       return {
         name: attachment.name,
         url: await createPresignedUrl(
-          `wyjazdy/${trip.id}/${attachment.name}.${attachment.ext}`
+          `wyjazdy/${trip.id}/attachments/${attachment.name}.${attachment.ext}`
         ),
       };
     })

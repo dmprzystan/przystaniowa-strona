@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createPAR } from "@/app/lib/oci";
+import { createPresignedUrl } from "@/app/lib/b2";
 import { z } from "zod";
 
 const NewAttachmentSchema = z.object({
@@ -30,7 +30,6 @@ export async function POST(
       id: id as string,
     },
     include: {
-      TripPhoto: true,
       TripAttachment: true,
       TripLink: true,
     },
@@ -48,7 +47,9 @@ export async function POST(
     },
   });
 
-  const par = await createPAR(`wyjazdy/${id}/attachments/${name}.${ext}`);
+  const par = await createPresignedUrl(
+    `wyjazdy/${id}/attachments/${name}.${ext}`
+  );
 
   revalidatePath("/wyjazdy");
 
