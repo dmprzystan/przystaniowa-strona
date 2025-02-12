@@ -48,9 +48,10 @@ export default function NewNewspaper({
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isTouch = useMediaQuery("(hover: none)");
 
   const Component = isDesktop ? Dialog : Drawer;
-  const CalendarComponent = isDesktop ? Popover : Dialog;
+  const CalendarComponent = isDesktop && !isTouch ? Popover : Dialog;
 
   const form = useForm<z.infer<typeof NewNewspaperSchema>>({
     resolver: zodResolver(NewNewspaperSchema),
@@ -171,7 +172,11 @@ export default function NewNewspaper({
                             )}
                           </Button>
                         </CalendarComponent.Trigger>
-                        <CalendarComponent.Content className="w-auto rounded-xl pt-10 sm:p-0">
+                        <CalendarComponent.Content
+                          className={`w-auto rounded-xl pt-10 ${
+                            isDesktop && isTouch ? "sm:pt-10" : "sm:pt-0"
+                          }`}
+                        >
                           <Calendar
                             locale={pl}
                             mode="single"
