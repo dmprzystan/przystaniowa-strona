@@ -1,111 +1,193 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
-type NewAlbumProps = {
-  onClose: () => void;
-  onSubmit: () => void;
-};
+import Dialog from "@/components/ui/dialog";
+import Drawer from "@/components/ui/drawer";
+import Popover from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon, PlusIcon } from "@radix-ui/react-icons";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
-function NewAlbum({ onClose, onSubmit }: NewAlbumProps) {
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { FormControl, FormLabel } from "@mui/material";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Textarea } from "@/components/ui/textarea";
 
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+import { pl } from "date-fns/locale";
+import dayjs from "dayjs";
+import "dayjs/locale/pl";
+import { toast } from "sonner";
 
-    const title = formData.get("title") as string;
-    const date = formData.get("date") as string;
-    const description = formData.get("description") as string;
+dayjs.locale("pl");
 
-    if (!title || !date) {
-      alert("Tytuł i data są wymagane");
-      return;
-    }
+const NewAlbumSchema = z.object({
+  title: z.string(),
+  date: z.coerce.date(),
+  description: z.string().optional(),
+});
 
-    const body = JSON.stringify({ title, date, description });
+function NewAlbum({ refresh }: { refresh: () => Promise<void> }) {
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
-    const res = await fetch("/api/admin/gallery", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body,
-    });
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isTouch = useMediaQuery("(hover: none)");
 
-    if (res.ok) {
+  const Component = isDesktop ? Dialog : Drawer;
+  const CalendarComponent = isDesktop && !isTouch ? Popover : Dialog;
+
+  const form = useForm<z.infer<typeof NewAlbumSchema>>({
+    resolver: zodResolver(NewAlbumSchema),
+    defaultValues: {
+      title: "",
+      date: new Date(),
+      description: "",
+    },
+  });
+
+  useEffect(() => {
+    form.reset();
+  }, [open]);
+
+  async function handleSubmit(data: z.infer<typeof NewAlbumSchema>) {
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/admin/gallery", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message);
+      }
+
+      await refresh();
+      setOpen(false);
+      toast.success("Album został dodany");
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
       form.reset();
-      onSubmit();
-      onClose();
-    } else {
-      alert("Wystąpił błąd");
+      setLoading(false);
     }
   }
 
   return (
-    <div
-      className="fixed w-full h-full left-0 top-0 bg-white bg-opacity-30 backdrop-blur-md flex justify-center items-center z-50"
-      onClick={onClose}
-    >
-      <form
-        className="bg-white px-6 py-4 rounded-3xl w-full mx-4 sm:w-[500px]"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        onSubmit={handleSubmit}
-      >
-        <h2 className="text-2xl text-center">Nowy album</h2>
-        <div className="mt-4 flex flex-col gap-1">
-          <label htmlFor="title" className="text-gray-500 ml-2">
-            Tytuł
-          </label>
-          <input
-            className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg"
-            type="text"
-            name="title"
-            id="title"
-            required
-          />
-        </div>
-        <div className="mt-4 flex flex-col gap-1">
-          <label htmlFor="date" className="text-gray-500 ml-2">
-            Data
-          </label>
-          <input
-            className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg"
-            type="date"
-            name="date"
-            id="date"
-            defaultValue={new Date().toISOString().split("T")[0]} // today's date
-            required
-          />
-        </div>
-        <div className="mt-4 flex flex-col gap-1">
-          <label htmlFor="description" className="text-gray-500 ml-2">
-            Opis
-          </label>
-          <textarea
-            name="description"
-            id="description"
-            rows={4}
-            className="w-full shadow-arround focus:outline-none focus:bg-gray-100 transition duration-200 px-4 py-2 rounded-lg resize-none"
-          ></textarea>
-        </div>
-        <div className="mt-4 flex justify-between">
-          <button
-            type="button"
-            className="bg-red-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
-            onClick={onClose}
+    <Component repositionInputs={false} open={open} onOpenChange={setOpen}>
+      <Component.Trigger asChild>
+        <Button
+          className="absolute right-2 md:static md:right-auto"
+          size="icon"
+        >
+          <PlusIcon />
+        </Button>
+      </Component.Trigger>
+      <Component.Content>
+        <Component.Header className="sm:text-center">
+          <Component.Title>Nowy album</Component.Title>
+          <Component.Description>
+            Dodaj nowy album do galerii
+          </Component.Description>
+        </Component.Header>
+        <Form {...form}>
+          <form
+            className="flex gap-4 flex-col px-4 mt-4"
+            onSubmit={form.handleSubmit(handleSubmit)}
           >
-            Anuluj
-          </button>
-          <button
-            type="submit"
-            className="bg-green-500 text-white rounded-lg py-2 px-4 shadow-none hover:shadow-lg duration-300 transition-all"
-          >
-            Dodaj
-          </button>
-        </div>
-      </form>
-    </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col w-full">
+                    <FormLabel>Tytuł</FormLabel>
+                    <FormControl>
+                      <Input {...field} required />
+                    </FormControl>
+                  </FormItem>
+                )}
+              ></FormField>
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Data</FormLabel>
+                    <FormControl>
+                      <CalendarComponent>
+                        <CalendarComponent.Trigger asChild>
+                          <Button variant="outline">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dayjs(form.getValues("date")).format(
+                              "DD MMMM YYYY"
+                            )}
+                          </Button>
+                        </CalendarComponent.Trigger>
+                        <CalendarComponent.Content
+                          className={`w-auto rounded-xl pt-10 ${
+                            isDesktop && isTouch ? "sm:pt-10" : "sm:pt-0"
+                          }`}
+                        >
+                          <Calendar
+                            locale={pl}
+                            mode="single"
+                            selected={form.getValues("date")}
+                            onSelect={(date) =>
+                              form.setValue("date", date ?? new Date())
+                            }
+                            initialFocus
+                          />
+                        </CalendarComponent.Content>
+                      </CalendarComponent>
+                    </FormControl>
+                    <FormMessage>
+                      {form.formState.errors.date?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              ></FormField>
+            </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Opis</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={4}
+                      className="resize-none"
+                      {...field}
+                    ></Textarea>
+                  </FormControl>
+                </FormItem>
+              )}
+            ></FormField>
+            <Component.Footer className="flex !justify-between gap-4">
+              <Component.Close asChild>
+                <Button type="button" variant="secondary">
+                  Anuluj
+                </Button>
+              </Component.Close>
+              <Button type="submit" disabled={loading}>
+                {loading && (
+                  <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
+                )}
+                Dodaj
+              </Button>
+            </Component.Footer>
+          </form>
+        </Form>
+      </Component.Content>
+    </Component>
   );
 }
 

@@ -59,7 +59,6 @@ export type Album = Prisma.AlbumGetPayload<{
       select: {
         id: true;
         url: true;
-        preview: true;
         size: true;
         albumId: true;
         thumbnailForAlbumId: true;
@@ -69,7 +68,6 @@ export type Album = Prisma.AlbumGetPayload<{
       select: {
         id: true;
         url: true;
-        preview: true;
         size: true;
         albumId: true;
         thumbnailForAlbumId: true;
@@ -195,7 +193,6 @@ export const getGallery: () => Promise<Album[]> = cache(async () => {
         select: {
           id: true,
           url: true,
-          preview: true,
           size: true,
           albumId: true,
           thumbnailForAlbumId: true,
@@ -206,7 +203,6 @@ export const getGallery: () => Promise<Album[]> = cache(async () => {
         select: {
           id: true,
           url: true,
-          preview: true,
           size: true,
           albumId: true,
           thumbnailForAlbumId: true,
@@ -233,7 +229,6 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
           select: {
             id: true,
             url: true,
-            preview: true,
             size: true,
             albumId: true,
             thumbnailForAlbumId: true,
@@ -243,7 +238,6 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
           select: {
             id: true,
             url: true,
-            preview: true,
             size: true,
             albumId: true,
             thumbnailForAlbumId: true,
@@ -263,11 +257,6 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
 export const getConfirmationLinks = cache(async () => {
   const links = await prisma.confirmationLink.findMany();
   return links;
-});
-
-export const getEmail = cache(async () => {
-  const email = await prisma.messageEmail.findFirst();
-  return email;
 });
 
 export default prisma;

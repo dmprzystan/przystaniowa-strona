@@ -71,31 +71,30 @@ model TripAttachment {
   trip   Trip   @relation(fields: [tripId], references: [id])
 }
 
-// model Album {
-//   id          String       @id @default(cuid())
-//   title       String
-//   description String
-//   date        DateTime     @default(now())
-//   photos      AlbumPhoto[] @relation("Photos")
-//   thumbnail   AlbumPhoto?  @relation("Thumbnail")
-// }
+model Album {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  date        DateTime     @default(now())
+  photos      AlbumPhoto[] @relation("Photos")
+  thumbnail   AlbumPhoto?  @relation("Thumbnail")
+}
 
-// enum AlbumPhotoSize {
-//   NORMAL
-//   WIDE
-//   TALL
-//   BIG
-// }
+enum AlbumPhotoSize {
+  NORMAL
+  WIDE
+  TALL
+  BIG
+}
 
-// model AlbumPhoto {
-//   id      String         @id @default(cuid())
-//   url     String
-//   preview String
-//   size    AlbumPhotoSize @default(NORMAL)
+model AlbumPhoto {
+  id   String         @id @default(cuid())
+  url  String
+  size AlbumPhotoSize @default(NORMAL)
 
-//   albumId String
-//   album   Album  @relation("Photos", fields: [albumId], references: [id])
+  albumId String
+  album   Album  @relation("Photos", fields: [albumId], references: [id])
 
-//   thumbnailForAlbumId String? @unique
-//   thumbnailForAlbum   Album?  @relation("Thumbnail", fields: [thumbnailForAlbumId], references: [id])
-// }
+  thumbnailForAlbumId String? @unique
+  thumbnailForAlbum   Album?  @relation("Thumbnail", fields: [thumbnailForAlbumId], references: [id])
+}
