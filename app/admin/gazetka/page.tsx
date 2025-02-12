@@ -40,8 +40,6 @@ export default function Page() {
         }))
         .sort((a, b) => b.date.valueOf() - a.date.valueOf());
 
-      console.log(parsedData);
-
       setNewspapers(parsedData);
       window.localStorage.setItem(
         "cached-newspapers",
