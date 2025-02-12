@@ -9,6 +9,15 @@ import type { Album } from "@/app/lib/prisma";
 import { toast } from "sonner";
 import Link from "next/link";
 import { ImageNotSupportedRounded } from "@mui/icons-material";
+import { Card } from "@/components/ui/card";
+
+import "@/app/galeria/style.scss";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+
+import dayjs from "dayjs";
+import "dayjs/locale/pl";
+
+dayjs.locale("pl");
 
 export default function Page() {
   const [gallery, setGallery] = useState<Album[]>([]);
@@ -57,39 +66,38 @@ export default function Page() {
           {gallery.map((album) => (
             <Link
               key={album.id}
-              className="flex flex-col gap-4 px-2 py-2 hover:shadow-arround duration-300 transition-all rounded-3xl overflow-hidden justify-end"
+              className="col-span-1"
               href={`/admin/galeria/${album.id}`}
             >
-              <div className="w-full h-full rounded-3xl overflow-hidden">
-                {album.thumbnail ? (
-                  <img
-                    src={`/galeria/img/${album.thumbnail.url}`}
-                    alt=""
-                    className="block rounded-3xl object-cover shadow-xl h-full w-full"
-                  />
-                ) : album.photos.length === 0 ? (
-                  <div className="bg-gray-200 w-full h-full flex items-center justify-center flex-col gap-2">
-                    <ImageNotSupportedRounded className="text-gray-500" />
-                    <p className="text-lg text-gray-500">Brak zdjęć</p>
-                  </div>
-                ) : (
-                  <img
-                    src={`/galeria/img/${album.photos[0].url}`}
-                    alt=""
-                    className="block rounded-3xl object-cover shadow-xl h-full w-full"
-                  />
-                )}
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <h3 className="text-3xl font-extrabold text-center uppercase whitespace-nowrap text-ellipsis w-full overflow-hidden">
-                  {album.title}
-                </h3>
-                <p className="text-xl">
-                  <span className="font-bold">month</span>
-                  <span> </span>
-                  <span className="font-light">{album.date.getFullYear()}</span>
-                </p>
-              </div>
+              <Card className="h-full w-full relative overflow-hidden hover:shadow-arround transition-all duration-200">
+                <AspectRatio ratio={4 / 3}>
+                  {album.thumbnail || album.photos.length > 0 ? (
+                    <img
+                      src={`/public/${
+                        album.thumbnail
+                          ? album.thumbnail.url
+                          : album.photos[0].url
+                      }`}
+                      alt=""
+                      className="block object-cover h-full w-full"
+                    />
+                  ) : (
+                    <div className="bg-gray-200 w-full h-full flex items-center justify-center flex-col gap-2">
+                      <ImageNotSupportedRounded className="text-gray-500" />
+                      <p className="text-lg text-gray-500">Brak zdjęć</p>
+                    </div>
+                  )}
+                </AspectRatio>
+                <div className="absolute bottom-0 left-0 right-0 px-4 py-3 bg-white bg-opacity-40 backdrop-blur-md flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-center">
+                    {album.title}
+                  </h3>
+                  <div className="w-1 h-1 bg-muted-foreground rounded-full" />
+                  <p className="text-sm font-light">
+                    {dayjs(album.date).format("MMMM YYYY")}
+                  </p>
+                </div>
+              </Card>
             </Link>
           ))}
         </div>
