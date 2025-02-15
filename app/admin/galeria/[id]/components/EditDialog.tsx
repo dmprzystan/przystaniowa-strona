@@ -58,12 +58,20 @@ export default function EditDialog({
     }
 
     await refresh();
-
-    return "Zaktualizowano album";
   }
 
   return (
-    <AlbumForm form={form} handleForm={handleSubmit} saveMessage="Zapisz">
+    <AlbumForm
+      form={form}
+      handleForm={handleSubmit}
+      content={{
+        title: "Edytuj album",
+        description: "Edytuj album w galerii",
+        errorMessage: "Nie udało się zaktualizować albumu",
+        successMessage: "Zaktualizowano album",
+        saveLabel: "Zapisz",
+      }}
+    >
       <Button size="icon" variant="outline">
         <Pencil1Icon />
       </Button>

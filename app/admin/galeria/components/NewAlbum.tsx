@@ -41,12 +41,20 @@ function NewAlbum({ refresh }: { refresh: () => Promise<void> }) {
     }
 
     await refresh();
-
-    return "Dodano nowy album";
   }
 
   return (
-    <AlbumForm form={form} handleForm={handleSubmit}>
+    <AlbumForm
+      form={form}
+      handleForm={handleSubmit}
+      content={{
+        title: "Nowy album",
+        description: "Dodaj nowy album do galerii",
+        errorMessage: "Nie udało się utworzyć albumu",
+        successMessage: "Dodano nowy album",
+        saveLabel: "Dodaj",
+      }}
+    >
       <Button className="absolute right-2 md:static md:right-auto" size="icon">
         <PlusIcon />
       </Button>

@@ -35,17 +35,25 @@ type AlbumFormData = {
   description?: string | undefined;
 };
 
+type AlbumFormProps = {
+  children: React.ReactNode;
+  form: UseFormReturn<AlbumFormData>;
+  handleForm: (data: AlbumFormData) => Promise<void>;
+  content: {
+    title: string;
+    description: string;
+    errorMessage: string;
+    successMessage: string;
+    saveLabel: string;
+  };
+};
+
 export default function AlbumForm({
   children,
   form,
   handleForm,
-  saveMessage,
-}: {
-  children: React.ReactNode;
-  form: UseFormReturn<AlbumFormData>;
-  handleForm: (data: AlbumFormData) => Promise<string>;
-  saveMessage?: string;
-}) {
+  content,
+}: AlbumFormProps) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -63,9 +71,9 @@ export default function AlbumForm({
     setLoading(true);
 
     try {
-      const message = await handleForm(data);
+      await handleForm(data);
       setOpen(false);
-      toast.success(message);
+      toast.success(content.successMessage);
       form.reset();
       setOpen(false);
     } catch (error: any) {
@@ -81,10 +89,8 @@ export default function AlbumForm({
       <Component.Trigger asChild>{children}</Component.Trigger>
       <Component.Content>
         <Component.Header className="sm:text-center">
-          <Component.Title>Nowy album</Component.Title>
-          <Component.Description>
-            Dodaj nowy album do galerii
-          </Component.Description>
+          <Component.Title>{content.title}</Component.Title>
+          <Component.Description>{content.description}</Component.Description>
         </Component.Header>
         <Form {...form}>
           <form
@@ -170,7 +176,7 @@ export default function AlbumForm({
                 {loading && (
                   <div className="border-2 rounded-full border-s-transparent h-4 w-4 animate-spin" />
                 )}
-                {saveMessage ?? "Dodaj"}
+                {content.saveLabel ?? "Dodaj"}
               </Button>
             </Component.Footer>
           </form>
