@@ -2,8 +2,7 @@
     {
         "corsRuleName": "downloadFromAnyOriginWithUpload",
         "allowedOrigins": [
-            "http://localhost:3000",
-            "https://przystaniowa-strona-eight.vercel.app"
+            "*"
         ],
         "allowedHeaders": [
             "authorization",
