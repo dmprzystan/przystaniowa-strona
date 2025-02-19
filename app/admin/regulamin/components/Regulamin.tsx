@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Editor from "../../wyjazdy/add/components/Editor";
+import Editor from "../../wyjazdy/components/Editor";
 
 import "@/app/regulamin/style.scss";
 
@@ -74,7 +74,7 @@ function Regulamin(props: { statute: string }) {
           <Editor
             value={statute}
             setValue={setStatute}
-            classname="regulamin !text-black"
+            // classname="regulamin !text-black"
           />
         ) : (
           <div

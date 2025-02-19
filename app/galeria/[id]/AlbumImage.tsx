@@ -15,13 +15,12 @@ function AlbumImage({ photo }: { photo: AlbumPhoto }) {
   return (
     <div className={`${photo.size.toLowerCase()} relative`}>
       <Image
-        src={`/galeria/img/${photo.url}`}
+        src={`/public/${photo.url}`}
         width={photo.size === "BIG" || photo.size === "WIDE" ? 800 : 400}
         height={photo.size === "BIG" || photo.size === "TALL" ? 600 : 300}
         alt={photo.url}
         className={`w-full h-full object-cover rounded-lg`}
-        placeholder="blur"
-        blurDataURL={`/galeria/img/${photo.preview}`}
+        // placeholder="blur"
       />
     </div>
   );

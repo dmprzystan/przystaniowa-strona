@@ -157,28 +157,13 @@ export async function POST(
   const uniqueName = `${uuid}.${fileName.split(".").pop()}`;
   const path = `galeria/${id}/${uniqueName}`;
 
-  const photo = await prisma.albumPhoto.create({
+  await prisma.albumPhoto.create({
     data: {
       albumId: id,
       url: path,
       size,
     },
   });
-
-  if (album.thumbnail === null) {
-    await prisma.album.update({
-      where: {
-        id,
-      },
-      data: {
-        thumbnail: {
-          connect: {
-            id: photo.id,
-          },
-        },
-      },
-    });
-  }
 
   const presignedUrl = await createPresignedUrl(path);
 

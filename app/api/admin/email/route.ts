@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma";
+import prisma, { getConfig } from "@/app/lib/prisma";
 import { z } from "zod";
 
 export async function GET(_req: NextRequest) {
-  const email = await prisma.config.findUnique({
-    where: { key: "email" },
-  });
+  const email = await getConfig("email");
 
   return NextResponse.json({ email: email?.value });
 }

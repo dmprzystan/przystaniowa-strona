@@ -107,6 +107,18 @@ if (process.env.NODE_ENV === "production") {
   prisma = global.prisma;
 }
 
+export const getConfig = cache(async (key: string) => {
+  const config = await prisma.config.findUnique({
+    where: { key },
+  });
+
+  if (!config) {
+    throw new Error("Config not found");
+  }
+
+  return config;
+});
+
 export const getSchedule = cache(async () => {
   const schedule = await prisma.schedule.findMany();
   return schedule;

@@ -75,7 +75,10 @@ export default function Page() {
           {loading ? (
             <>
               {Array.from({ length: cachedNumber }).map((_, i) => (
-                <Card className="flex flex-row h-32 lg:h-56 p-2 lg:p-4 gap-2 lg:gap-4">
+                <Card
+                  className="flex flex-row h-32 lg:h-56 p-2 lg:p-4 gap-2 lg:gap-4"
+                  key={i}
+                >
                   <div
                     className="flex-shrink-0 h-full flex items-center justify-center object-fill overflow-hidden rounded-lg shadow-sm"
                     style={{

@@ -42,7 +42,7 @@ async function page() {
         >
           {albums.map(
             (album) =>
-              album.thumbnail && (
+              (album.thumbnail || album.photos[0]) && (
                 <Link
                   key={album.id}
                   className="flex flex-col gap-4 px-2 py-2 hover:shadow-arround duration-300 transition-all rounded-3xl overflow-hidden justify-end"
@@ -50,7 +50,11 @@ async function page() {
                 >
                   <div className="w-full h-full rounded-3xl overflow-hidden">
                     <img
-                      src={`/galeria/img/${album.thumbnail.url}`}
+                      src={`/public/${
+                        album.thumbnail
+                          ? album.thumbnail.url
+                          : album.photos[0].url
+                      }`}
                       alt=""
                       className="block rounded-3xl object-cover shadow-xl h-full w-full"
                     />

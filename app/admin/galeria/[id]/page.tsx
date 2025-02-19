@@ -90,8 +90,6 @@ export default function Page({ params }: { params: { id: string } }) {
         parsedData.photos.unshift(thumbnail);
       }
 
-      console.log(parsedData.photos);
-
       if (!parsedData) {
         router.push("/admin/galeria");
       }
