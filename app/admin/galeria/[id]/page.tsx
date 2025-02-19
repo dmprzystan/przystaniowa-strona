@@ -24,6 +24,9 @@ import EditDialog from "./components/EditDialog";
 import UploadDialog from "./components/UploadDialog";
 dayjs.locale("pl");
 
+import "@/app/galeria/style.scss";
+import Photo from "./components/Photo";
+
 export default function Page({ params }: { params: { id: string } }) {
   const [album, setAlbum] = useState<Album>();
   const [loading, setLoading] = useState(true);
@@ -67,10 +70,27 @@ export default function Page({ params }: { params: { id: string } }) {
       const res = await fetch(`/api/admin/gallery/${params.id}`);
       const data = await res.json();
 
-      const parsedData = {
+      const parsedData: Album = {
         ...data,
         date: new Date(data.date),
       };
+
+      parsedData.photos = parsedData.photos.toSorted(
+        (a, b) =>
+          new Date(b.createdAt).valueOf() - new Date(a.createdAt).valueOf()
+      );
+
+      const thumbnailIndex = parsedData.photos.findIndex(
+        (photo) => photo.thumbnailForAlbumId !== null
+      );
+
+      if (thumbnailIndex > 0) {
+        const thumbnail = parsedData.photos.splice(thumbnailIndex, 1)[0];
+
+        parsedData.photos.unshift(thumbnail);
+      }
+
+      console.log(parsedData.photos);
 
       if (!parsedData) {
         router.push("/admin/galeria");
@@ -153,6 +173,11 @@ export default function Page({ params }: { params: { id: string } }) {
               <p>{album?.description}</p>
             )}
           </div>
+        </div>
+        <div className="mt-8 masonry grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 px-4">
+          {album?.photos.map((photo) => (
+            <Photo key={photo.id} photo={photo} refresh={fetchAlbum} />
+          ))}
         </div>
       </div>
     </>

@@ -88,9 +88,10 @@ enum AlbumPhotoSize {
 }
 
 model AlbumPhoto {
-  id   String         @id @default(cuid())
-  url  String
-  size AlbumPhotoSize @default(NORMAL)
+  id        String         @id @default(cuid())
+  url       String
+  size      AlbumPhotoSize @default(NORMAL)
+  createdAt DateTime       @default(now())
 
   albumId String
   album   Album  @relation("Photos", fields: [albumId], references: [id])

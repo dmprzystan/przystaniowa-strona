@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getNamespace } from "@/app/lib/oci";
 import prisma, { type AlbumPhotoSize } from "@/app/lib/prisma";
-import { ObjectStorageClient } from "@/app/lib/oci";
+
+import { deleteFile } from "@/app/lib/b2";
 
 export async function PUT(
   req: NextRequest,
@@ -48,7 +48,7 @@ export async function DELETE(
 ) {
   const { id, photo_id } = params;
 
-  const photo = await prisma.albumPhoto.findUnique({
+  const photo = await prisma.albumPhoto.delete({
     where: {
       id: photo_id,
     },
@@ -58,29 +58,7 @@ export async function DELETE(
     return NextResponse.json({ message: "Photo not found" }, { status: 404 });
   }
 
-  const namespaceName = await getNamespace();
-  const objectPath = "gallery";
-  const objectName = `${objectPath}/${photo.url}`;
-
-  const deleteDB = prisma.albumPhoto.delete({
-    where: {
-      id: photo_id,
-    },
-  });
-
-  const deleteImage = ObjectStorageClient.deleteObject({
-    bucketName: "przystaniowa-strona",
-    namespaceName,
-    objectName,
-  });
-
-  const deletePrevew = ObjectStorageClient.deleteObject({
-    bucketName: "przystaniowa-strona",
-    namespaceName,
-    objectName: `${objectPath}/${photo.preview}`,
-  });
-
-  await Promise.all([deleteDB, deleteImage, deletePrevew]);
+  await deleteFile(photo.url);
 
   revalidatePath(`/galeria`);
   revalidatePath(`/galeria/${id}`);
