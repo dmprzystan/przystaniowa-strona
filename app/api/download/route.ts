@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDownloadUrl } from "@/app/lib/b2";
 
 export async function GET(req: NextRequest) {
-  console.log(req.nextUrl.searchParams.get("path"));
-
   const path = req.nextUrl.searchParams.get("path");
   const token = req.headers.get("authorization");
 

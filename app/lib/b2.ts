@@ -58,33 +58,30 @@ const authorizeAccount: () => Promise<B2Authorization> = async () => {
 
   try {
     if (cached) {
-      const { authorizationToken, applicationKeyExpirationTimestamp, apiUrl } =
-        JSON.parse(cached.value as string);
+      const { authorizationToken, expirationTimestamp, apiUrl } = JSON.parse(
+        cached.value as string
+      );
 
-      if (
-        !authorizationToken ||
-        !applicationKeyExpirationTimestamp ||
-        !apiUrl
-      ) {
+      if (!authorizationToken || !expirationTimestamp || !apiUrl) {
         throw new Error("Invalid cache data");
       }
 
       // Check the type of the cached data
       if (
         typeof authorizationToken !== "string" ||
-        typeof applicationKeyExpirationTimestamp !== "number" ||
+        typeof expirationTimestamp !== "number" ||
         typeof apiUrl !== "string"
       ) {
         throw new Error("Invalid cache data");
       }
 
-      // Check if the token is still valid for at least 1 minute
-      if (applicationKeyExpirationTimestamp - Date.now() > 60000) {
+      // Check if the token is still valid for at least 15 minutes
+      if (expirationTimestamp - Date.now() > 15 * 60 * 1000) {
         return { authorizationToken, apiUrl };
       }
     }
   } catch (error: any) {
-    console.error(error);
+    console.error(error.message);
   }
 
   const response = await fetch(
@@ -101,8 +98,8 @@ const authorizeAccount: () => Promise<B2Authorization> = async () => {
   const data = await response.json();
   const cacheData = {
     authorizationToken: data.authorizationToken,
-    applicationKeyExpirationTimestamp: data.applicationKeyExpirationTimestamp,
     apiUrl: data.apiInfo.storageApi.apiUrl,
+    expirationTimestamp: Date.now() + 24 * 60 * 60 * 1000,
   };
 
   await prisma.config.upsert({

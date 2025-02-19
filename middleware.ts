@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDownloadUrl } from "./app/lib/b2";
 
 export const middleware = async (request: NextRequest) => {
   const path = request.nextUrl.pathname;
