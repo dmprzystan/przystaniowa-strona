@@ -6,6 +6,7 @@ export const middleware = async (request: NextRequest) => {
 
   if (path.startsWith("/public")) {
     const downloadUrl = path.replace("/public/", "");
+    console.log(downloadUrl);
 
     const response = await fetch(`${origin}/api/download?path=${downloadUrl}`, {
       method: "GET",
