@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma, { getAlbum } from "@/app/lib/prisma";
-import { deleteFile } from "@/app/lib/b2";
+import { createPresignedUrl, deleteFile } from "@/app/lib/b2";
 import { z } from "zod";
+import { v7 } from "uuid";
 
 async function promiseEach(arr: any[], fn: (item: any) => Promise<void>) {
   for (const item of arr) await fn(item);
@@ -124,6 +125,67 @@ export async function PATCH(
   } catch (e) {
     return NextResponse.json({ message: "Error" }, { status: 500 });
   }
+}
+
+const PostSchema = z.object({
+  fileName: z.string().min(1),
+  size: z.custom((size) => ["NORMAL", "WIDE", "TALL", "BIG"].includes(size)),
+});
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  const data = PostSchema.safeParse(await req.json());
+
+  if (!data.success) {
+    return NextResponse.json(
+      { message: data.error.errors[0].message },
+      { status: 400 }
+    );
+  }
+
+  const { fileName, size } = data.data;
+
+  const album = await getAlbum(id);
+  if (!album) {
+    return NextResponse.json({ message: "Album not found" }, { status: 404 });
+  }
+
+  const uuid = v7();
+  const uniqueName = `${uuid}.${fileName.split(".").pop()}`;
+  const path = `galeria/${id}/${uniqueName}`;
+
+  const photo = await prisma.albumPhoto.create({
+    data: {
+      albumId: id,
+      url: path,
+      size,
+    },
+  });
+
+  if (album.thumbnail === null) {
+    await prisma.album.update({
+      where: {
+        id,
+      },
+      data: {
+        thumbnail: {
+          connect: {
+            id: photo.id,
+          },
+        },
+      },
+    });
+  }
+
+  const presignedUrl = await createPresignedUrl(path);
+
+  revalidatePath("/galeria");
+  revalidatePath(`/galeria/${id}`);
+
+  return NextResponse.json({ message: "ok", presignedUrl });
 }
 
 // export async function PUT(

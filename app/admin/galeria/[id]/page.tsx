@@ -19,10 +19,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import dayjs from "dayjs";
 import "dayjs/locale/pl";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Pencil1Icon, TrashIcon, UploadIcon } from "@radix-ui/react-icons";
 import DeleteDialog from "./components/DeleteDialog";
 import EditDialog from "./components/EditDialog";
+import UploadDialog from "./components/UploadDialog";
 dayjs.locale("pl");
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -119,10 +118,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 </>
               ) : (
                 <>
-                  <Button size="icon">
-                    <UploadIcon />
-                  </Button>
-
+                  <UploadDialog album={album!} refresh={fetchAlbum} />
                   <EditDialog album={album!} refresh={fetchAlbum} />
                   <DeleteDialog album={album} />
                 </>
