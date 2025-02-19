@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { deleteFile, renameFile, uploadFile } from "@/app/lib/oci";
+import { deleteFile } from "@/app/lib/b2";
 
 const months = [
   "Styczeń",
@@ -31,7 +31,7 @@ export async function DELETE(
   });
 
   try {
-    await deleteFile(`gazetki/${gazetka.url}`);
+    await deleteFile(gazetka.url);
   } catch (error) {
     console.error(error);
   }
@@ -75,12 +75,12 @@ export async function PUT(
 
   const name = `Gazetka 19tka nr. ${title} (${dateStr}).pdf`;
 
-  if (file.size > 0) {
-    await deleteFile(`gazetki/${oldGazetka.url}`);
-    await uploadFile(file, `gazetki/${name}`);
-  } else if (oldGazetka.url !== name) {
-    await renameFile(`gazetki/${oldGazetka.url}`, `gazetki/${name}`);
-  }
+  // if (file.size > 0) {
+  //   await deleteFile(`gazetki/${oldGazetka.url}`);
+  //   await uploadFile(file, `gazetki/${name}`);
+  // } else if (oldGazetka.url !== name) {
+  //   await renameFile(`gazetki/${oldGazetka.url}`, `gazetki/${name}`);
+  // }
 
   await prisma.newspaper.update({
     where: {

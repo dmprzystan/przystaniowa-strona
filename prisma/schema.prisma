@@ -1,22 +1,26 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "cockroachdb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum crdb_internal_region {
+  aws_eu_central_1 @map("aws-eu-central-1")
 }
 
 model User {
   id       String @id @default(cuid())
   login    String @unique
   password String
+}
+
+model Config {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
 }
 
 model Schedule {
@@ -33,22 +37,22 @@ model Newspaper {
   url   String
 }
 
+model ConfirmationLink {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  createdAt DateTime @default(now())
+}
+
 model Trip {
   id             String           @id @default(cuid())
   title          String
-  description    String
+  description    String // html
   dateStart      DateTime
   dateEnd        DateTime
-  TripPhoto      TripPhoto[]
+  thumbnail      String           @default("")
   TripLink       TripLink[]
   TripAttachment TripAttachment[]
-}
-
-model TripPhoto {
-  id     String @id @default(cuid())
-  url    String
-  tripId String
-  trip   Trip   @relation(fields: [tripId], references: [id])
 }
 
 model TripLink {
@@ -84,26 +88,14 @@ enum AlbumPhotoSize {
 }
 
 model AlbumPhoto {
-  id      String         @id @default(cuid())
-  url     String
-  preview String
-  size    AlbumPhotoSize @default(NORMAL)
+  id        String         @id @default(cuid())
+  url       String
+  size      AlbumPhotoSize @default(NORMAL)
+  createdAt DateTime       @default(now())
 
   albumId String
   album   Album  @relation("Photos", fields: [albumId], references: [id])
 
   thumbnailForAlbumId String? @unique
   thumbnailForAlbum   Album?  @relation("Thumbnail", fields: [thumbnailForAlbumId], references: [id])
-}
-
-model ConfirmationLink {
-  id        String   @id @default(cuid())
-  title     String
-  url       String
-  createdAt DateTime @default(now())
-}
-
-model MessageEmail {
-  id    String @id @default(cuid())
-  email String
 }

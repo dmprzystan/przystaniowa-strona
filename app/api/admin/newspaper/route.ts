@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createPAR, uploadFile } from "@/app/lib/oci";
+import { createPresignedUrl } from "@/app/lib/b2";
 
 const months = [
   "Styczeń",
@@ -36,14 +36,15 @@ export async function POST(req: NextRequest) {
   } ${parsedDate.getFullYear()}`;
 
   const name = `Gazetka 19tka nr. ${title} (${dateStr}).pdf`;
+  const path = `gazetki/${name}`;
 
-  const par = await createPAR(`gazetki/${name}`);
+  const par = await createPresignedUrl(path);
 
   const newspaper = await prisma.newspaper.create({
     data: {
       title: title.toString(),
       date: parsedDate,
-      url: name,
+      url: path,
     },
   });
 

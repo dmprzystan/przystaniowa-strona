@@ -1,7 +1,7 @@
 import prisma from "@/app/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createPAR, deleteFile } from "@/app/lib/oci";
+import { deleteFile } from "@/app/lib/b2";
 
 export async function DELETE(
   req: NextRequest,
@@ -14,7 +14,6 @@ export async function DELETE(
       id: id as string,
     },
     include: {
-      TripPhoto: true,
       TripAttachment: true,
       TripLink: true,
     },

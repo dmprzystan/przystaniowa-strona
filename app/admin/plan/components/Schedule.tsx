@@ -104,7 +104,7 @@ function ScheduleDay({
 }: {
   day: string;
   schedule: Schedule;
-  getNewSchedule: () => void;
+  getNewSchedule: () => Promise<void>;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -150,7 +150,7 @@ function ScheduleDay({
     } catch (error: any) {
       toast.error(error.message);
     } finally {
-      getNewSchedule();
+      await getNewSchedule();
       setLoading(false);
     }
   };
@@ -247,7 +247,7 @@ type ScheduleItemProps = {
   title: string;
   time: string;
   id: string;
-  getNewSchedule: () => void;
+  getNewSchedule: () => Promise<void>;
 };
 
 function ScheduleItem(props: ScheduleItemProps) {
@@ -270,7 +270,7 @@ function ScheduleItem(props: ScheduleItemProps) {
     } catch (error: any) {
       toast.error(error.message);
     } finally {
-      getNewSchedule();
+      await getNewSchedule();
       setLoading(false);
     }
   };

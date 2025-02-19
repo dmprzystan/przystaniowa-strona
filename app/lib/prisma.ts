@@ -33,11 +33,7 @@ export type Trip = Prisma.TripGetPayload<{
     dateStart: true;
     dateEnd: true;
     description: true;
-    TripPhoto: {
-      select: {
-        url: true;
-      };
-    };
+    thumbnail: true;
     TripLink: {
       select: {
         url: true;
@@ -63,19 +59,19 @@ export type Album = Prisma.AlbumGetPayload<{
       select: {
         id: true;
         url: true;
-        preview: true;
         size: true;
         albumId: true;
         thumbnailForAlbumId: true;
+        createdAt: true;
       };
     };
     thumbnail: {
       select: {
         id: true;
         url: true;
-        preview: true;
         size: true;
         albumId: true;
+        createdAt: true;
         thumbnailForAlbumId: true;
       };
     };
@@ -86,7 +82,6 @@ export type AlbumPhoto = Prisma.AlbumPhotoGetPayload<{
   select: {
     id: true;
     url: true;
-    preview: true;
     size: true;
     albumId: true;
     thumbnailForAlbumId: true;
@@ -112,6 +107,18 @@ if (process.env.NODE_ENV === "production") {
   prisma = global.prisma;
 }
 
+export const getConfig = cache(async (key: string) => {
+  const config = await prisma.config.findUnique({
+    where: { key },
+  });
+
+  if (!config) {
+    throw new Error("Config not found");
+  }
+
+  return config;
+});
+
 export const getSchedule = cache(async () => {
   const schedule = await prisma.schedule.findMany();
   return schedule;
@@ -132,11 +139,7 @@ export const getTrips: () => Promise<Trip[]> = cache(async () => {
       dateStart: true,
       dateEnd: true,
       description: true,
-      TripPhoto: {
-        select: {
-          url: true,
-        },
-      },
+      thumbnail: true,
       TripLink: {
         select: {
           url: true,
@@ -168,11 +171,7 @@ export const getTrip: (id: string) => Promise<Trip> = cache(
         dateStart: true,
         dateEnd: true,
         description: true,
-        TripPhoto: {
-          select: {
-            url: true,
-          },
-        },
+        thumbnail: true,
         TripLink: {
           select: {
             url: true,
@@ -207,9 +206,9 @@ export const getGallery: () => Promise<Album[]> = cache(async () => {
         select: {
           id: true,
           url: true,
-          preview: true,
           size: true,
           albumId: true,
+          createdAt: true,
           thumbnailForAlbumId: true,
         },
         take: 1,
@@ -218,9 +217,9 @@ export const getGallery: () => Promise<Album[]> = cache(async () => {
         select: {
           id: true,
           url: true,
-          preview: true,
           size: true,
           albumId: true,
+          createdAt: true,
           thumbnailForAlbumId: true,
         },
       },
@@ -245,9 +244,9 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
           select: {
             id: true,
             url: true,
-            preview: true,
             size: true,
             albumId: true,
+            createdAt: true,
             thumbnailForAlbumId: true,
           },
         },
@@ -255,9 +254,9 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
           select: {
             id: true,
             url: true,
-            preview: true,
             size: true,
             albumId: true,
+            createdAt: true,
             thumbnailForAlbumId: true,
           },
         },
@@ -275,11 +274,6 @@ export const getAlbum: (id: string) => Promise<Album> = cache(
 export const getConfirmationLinks = cache(async () => {
   const links = await prisma.confirmationLink.findMany();
   return links;
-});
-
-export const getEmail = cache(async () => {
-  const email = await prisma.messageEmail.findFirst();
-  return email;
 });
 
 export default prisma;

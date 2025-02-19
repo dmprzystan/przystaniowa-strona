@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { putStatute, getStatute } from "@/app/lib/oci";
+import { readFile, writeFile } from "@/app/lib/b2";
 import { revalidatePath } from "next/cache";
 
 export async function PATCH(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    await putStatute(statute);
+    await writeFile("regulamin/regulamin.html", statute);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: "Error" }, { status: 500 });
@@ -24,6 +24,6 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function GET(_req: NextRequest) {
-  const statute = await getStatute();
+  const statute = await readFile("regulamin/regulamin.html");
   return new NextResponse(statute);
 }

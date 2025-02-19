@@ -2,26 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const middleware = async (request: NextRequest) => {
   const path = request.nextUrl.pathname;
-  const url = request.nextUrl.origin;
+  const origin = request.nextUrl.origin;
 
-  if (path.startsWith("/gazetka")) {
-    const url = path.split("/").slice(2).join("/");
+  if (path.startsWith("/public")) {
+    const downloadUrl = path.replace("/public/", "");
 
-    return NextResponse.rewrite(
-      `${process.env.NEWSPAPER_ENDPOINT}/gazetki/${url}`
-    );
-  }
+    const response = await fetch(`${origin}/api/download?path=${downloadUrl}`, {
+      method: "GET",
+      headers: {
+        Authorization: process.env.B2_DOWNLOAD_SECRET || "",
+      },
+    });
 
-  if (path.startsWith("/wyjazdy")) {
-    const url = path.split("/").slice(2).join("/");
-    return NextResponse.rewrite(`${process.env.TRIPS_ENDPOINT}/wyjazdy/${url}`);
-  }
+    if (response.ok) {
+      const { url, authorization } = await response.json();
+      return NextResponse.rewrite(url, {
+        headers: {
+          Authorization: authorization,
+        },
+      });
+    }
 
-  if (path.startsWith("/galeria/img")) {
-    const url = path.split("/").slice(3).join("/");
-    return NextResponse.rewrite(
-      `${process.env.GALLERY_ENDPOINT}/gallery/${url}`
-    );
+    return NextResponse.error();
   }
 
   const token = request.cookies.get("token")?.value;
@@ -29,7 +31,7 @@ export const middleware = async (request: NextRequest) => {
   let loggedIn = false;
 
   if (token) {
-    const res = await fetch(`${url}/api/auth/verify`, {
+    const res = await fetch(`${origin}/api/auth/verify`, {
       method: "POST",
       body: JSON.stringify({ token }),
     });
@@ -59,11 +61,5 @@ export const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: [
-    "/(admin.*)",
-    "/(api/admin.*)",
-    "/(gazetka/.*)",
-    "/(wyjazdy/.*)",
-    "/(galeria/img/.*)",
-  ],
+  matcher: ["/(admin.*)", "/(api/admin.*)", "/(public/.*)"],
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import NewAlbum from "./NewAlbum";
 import { Album } from "@/app/lib/prisma";
 import Link from "next/link";
@@ -99,9 +99,6 @@ function Galeria(props: { gallery: Album[] }) {
           ))}
         </div>
       </div>
-      {newAlbum && (
-        <NewAlbum onClose={() => setNewAlbum(false)} onSubmit={fetchGallery} />
-      )}
     </>
   );
 }

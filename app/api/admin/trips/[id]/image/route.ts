@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { createPAR, deleteFile } from "@/app/lib/oci";
+import { createPresignedUrl, deleteFile } from "@/app/lib/b2";
 import { z } from "zod";
 import prisma from "@/app/lib/prisma";
 
@@ -11,29 +11,17 @@ export async function DELETE(
 ) {
   const { id } = params;
 
-  const trip = await prisma.trip.findUnique({
+  const trip = await prisma.trip.update({
     where: {
       id: id as string,
     },
-    include: {
-      TripPhoto: true,
-      TripAttachment: true,
-      TripLink: true,
+    data: {
+      thumbnail: "",
     },
   });
-
-  if (!trip) {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
-  }
 
   // Remove the photo from the OCI
-  await deleteFile(`wyjazdy/${id}/${trip.TripPhoto[0].url}`);
-
-  await prisma.tripPhoto.deleteMany({
-    where: {
-      tripId: id as string,
-    },
-  });
+  await deleteFile(trip.thumbnail);
 
   revalidatePath("/wyjazdy");
 
@@ -73,20 +61,18 @@ export async function POST(
 
   const { photoExt } = parse.data;
 
-  await prisma.tripPhoto.deleteMany({
+  await prisma.trip.update({
     where: {
-      tripId: id as string,
+      id: id as string,
     },
-  });
-
-  await prisma.tripPhoto.create({
     data: {
-      tripId: id as string,
-      url: `zdjecie.${photoExt}`,
+      thumbnail: `wyjazdy/${id}/zdjecie.${photoExt}`,
     },
   });
 
-  const photoPAR = await createPAR(`wyjazdy/${id}/zdjecie.${photoExt}`);
+  const photoPAR = await createPresignedUrl(
+    `wyjazdy/${id}/zdjecie.${photoExt}`
+  );
 
   revalidatePath("/wyjazdy");
 

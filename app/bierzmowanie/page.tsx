@@ -8,7 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 
 import "./style.scss";
-import { getConfirmation } from "../lib/oci";
+import { readFile } from "@/app/lib/b2";
 import { getConfirmationLinks } from "../lib/prisma";
 
 const inter = Inter({
@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export default async function Page() {
-  const confirmation = await getConfirmation();
+  const confirmation = await readFile("bierzmowanie/bierzmowanie.html");
   const links = await getConfirmationLinks();
 
   return (

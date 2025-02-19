@@ -46,7 +46,7 @@ type UnparsedTrip = {
   description: string;
   dateStart: string;
   dateEnd: string;
-  TripPhoto: { url: string }[];
+  thumbnail: string;
   TripAttachment: { url: string; name: string }[];
   TripLink: { url: string; name: string }[];
 };
@@ -144,7 +144,7 @@ function Wyjazd(props: { trip: Trip }) {
     <>
       <div className="px-4 sm:px-16 w-full mt-4">
         <div className="flex justify-center items-center">
-          <h2 className="text-2xl md:text-4xl text-center font-semibold max-w-[260px] overflow-x-hidden text-ellipsis whitespace-nowrap">
+          <h2 className="text-2xl md:text-4xl text-center font-semibold max-w-[260px] overflow-x-hidden py-1 text-ellipsis whitespace-nowrap">
             {trip.title}
           </h2>
           <Dialog>
@@ -364,8 +364,8 @@ function ImageEdit({ trip, fetchTrip }: IndependentEditProps) {
   const [changed, setChanged] = useState(false);
 
   useEffect(() => {
-    if (trip.TripPhoto[0]?.url) {
-      fetch(`/wyjazdy/${trip.id}/${trip.TripPhoto[0].url}`)
+    if (trip.thumbnail) {
+      fetch(`/public/${trip.thumbnail}`)
         .then((res) => {
           if (res.ok) {
             return res.blob();
@@ -373,7 +373,7 @@ function ImageEdit({ trip, fetchTrip }: IndependentEditProps) {
         })
         .then((blob) => {
           if (!blob) return;
-          const file = new File([blob], trip.TripPhoto[0].url);
+          const file = new File([blob], trip.thumbnail.split("/").pop() ?? "");
           setFile(file);
         });
     }
@@ -512,9 +512,9 @@ function ImageEdit({ trip, fetchTrip }: IndependentEditProps) {
           </label>
         ) : (
           <div className="h-full rounded-xl overflow-hidden">
-            {trip.TripPhoto[0]?.url ? (
+            {trip.thumbnail ? (
               <img
-                src={`/wyjazdy/${trip.id}/${trip.TripPhoto[0].url}`}
+                src={`/public/${trip.thumbnail}`}
                 alt="Zdjęcie"
                 className="object-cover w-full h-full"
               />

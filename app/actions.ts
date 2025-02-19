@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { Resend } from "resend";
 import { EmailTemplate } from "./email/EmailTemplate";
-import { getEmail } from "./lib/prisma";
+import { getConfig } from "./lib/prisma";
 
 const resend = new Resend(process.env.RESNED_API_KEY);
 
@@ -53,15 +53,15 @@ export async function submitMessage(
   }
 
   try {
-    const email = await getEmail();
+    const email = await getConfig("email§");
 
-    if (!email || email.email === "") {
+    if (!email || email.value === "") {
       throw new Error("Wystąpił błąd podczas wysyłania wiadomości");
     }
 
     const { data, error } = await resend.emails.send({
       from: "Przystan <no-reply@przystan.dkomeza.com>",
-      to: email.email,
+      to: email.value as string,
       subject: "Nowa wiadomość",
       react: EmailTemplate({ ...contactData }),
     });
