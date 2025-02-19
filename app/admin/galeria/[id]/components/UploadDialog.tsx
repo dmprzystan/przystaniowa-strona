@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Album } from "@/app/lib/prisma";
 import { CheckIcon, Cross2Icon, UploadIcon } from "@radix-ui/react-icons";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
 
 type UploadDialogProps = {
   album: Album;
@@ -21,6 +22,8 @@ type Upload = {
 function UploadDialog({ album, refresh }: UploadDialogProps) {
   const [uploads, setUploads] = useState<Upload[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const [open, setOpen] = useState(false);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -41,10 +44,26 @@ function UploadDialog({ album, refresh }: UploadDialogProps) {
 
   const removeUpload = (upload: Upload) => {
     setUploads((prev) => prev.filter((u) => u !== upload));
+
+    refresh();
+  };
+
+  const handleOpenChange = (newState: boolean) => {
+    if (newState) {
+      setOpen(true);
+      return;
+    }
+
+    if (uploads.length > 0) {
+      toast.error("Zdjęcia są w trakcie wysyłania");
+      return;
+    }
+
+    setOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
         <Button size="icon">
           <UploadIcon />
@@ -93,7 +112,7 @@ function UploadDialog({ album, refresh }: UploadDialogProps) {
         </form>
         {uploads.length > 0 && (
           <ScrollArea>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mb-2">
               {uploads.map((upload) => (
                 <ImageUpload
                   key={upload.file.name}
@@ -103,6 +122,7 @@ function UploadDialog({ album, refresh }: UploadDialogProps) {
                 />
               ))}
             </div>
+            <ScrollBar orientation="horizontal" className="h-1.5" />
           </ScrollArea>
         )}
       </Dialog.Content>
@@ -220,7 +240,7 @@ function ImageUpload({
     if (selfUpload.status === "done" || selfUpload.status === "error") {
       setTimeout(() => {
         removeUpload(upload);
-      }, 3000);
+      }, 2000);
     }
   }, [selfUpload]);
 
@@ -257,7 +277,7 @@ function ImageUpload({
         </div>
       </div>
       <img
-        className="object-cover"
+        className="object-cover w-full h-full"
         src={URL.createObjectURL(upload.file)}
         alt=""
       />
