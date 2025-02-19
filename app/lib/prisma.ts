@@ -8,6 +8,15 @@ declare global {
   var prisma: PrismaClient;
 }
 
+if (process.env.NODE_ENV === "production") {
+  prisma = new PrismaClient();
+} else {
+  if (global.prisma) {
+    global.prisma = new PrismaClient();
+  }
+  prisma = global.prisma;
+}
+
 export type Schedule = Prisma.ScheduleGetPayload<{
   select: {
     id: true;
@@ -97,15 +106,6 @@ export type ConfirmationLink = Prisma.ConfirmationLinkGetPayload<{
 }>;
 
 export type AlbumPhotoSize = "NORMAL" | "WIDE" | "TALL" | "BIG";
-
-if (process.env.NODE_ENV === "production") {
-  prisma = new PrismaClient();
-} else {
-  if (!(global as any).prisma) {
-    global.prisma = new PrismaClient();
-  }
-  prisma = global.prisma;
-}
 
 export const getConfig = cache(async (key: string) => {
   const config = await prisma.config.findUnique({
