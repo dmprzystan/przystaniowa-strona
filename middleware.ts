@@ -17,6 +17,7 @@ export const middleware = async (request: NextRequest) => {
 
     if (response.ok) {
       const { url, authorization } = await response.json();
+      console.log(url, authorization);
       return NextResponse.rewrite(url, {
         headers: {
           Authorization: authorization,
