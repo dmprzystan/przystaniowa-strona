@@ -6,8 +6,9 @@ import { deleteFile } from "@/app/lib/b2";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string; photo_id: string } }
+  props: { params: Promise<{ id: string; photo_id: string }> }
 ) {
+  const params = await props.params;
   const { id, photo_id } = params;
 
   const photo = await prisma.albumPhoto.findUnique({
@@ -44,8 +45,9 @@ export async function PUT(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string; photo_id: string } }
+  props: { params: Promise<{ id: string; photo_id: string }> }
 ) {
+  const params = await props.params;
   const { id, photo_id } = params;
 
   const photo = await prisma.albumPhoto.delete({

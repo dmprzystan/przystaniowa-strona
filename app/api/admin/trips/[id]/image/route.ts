@@ -5,10 +5,8 @@ import { z } from "zod";
 import prisma from "@/app/lib/prisma";
 
 // Delete the trip photo
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
 
   const trip = await prisma.trip.update({
@@ -34,10 +32,8 @@ const UpdatePhotoSchema = z.object({
     .min(1, { message: "Rozszerzenie zdjęcia jest wymagane" }),
 });
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
 
   const trip = await prisma.trip.findUnique({

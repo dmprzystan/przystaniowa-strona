@@ -9,10 +9,8 @@ const NewAttachmentSchema = z.object({
   ext: z.string(),
 });
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const data = await req.json();
 

@@ -9,10 +9,8 @@ async function promiseEach(arr: any[], fn: (item: any) => Promise<void>) {
   for (const item of arr) await fn(item);
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
 
   try {
@@ -28,10 +26,8 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
 
   const album = await prisma.album.findUnique({
@@ -89,10 +85,8 @@ const PatchSchema = z.object({
   description: z.string().optional(),
 });
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
 
   const data = PatchSchema.safeParse(await req.json());
@@ -132,10 +126,8 @@ const PostSchema = z.object({
   size: z.custom((size) => ["NORMAL", "WIDE", "TALL", "BIG"].includes(size)),
 });
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const { id } = params;
   const data = PostSchema.safeParse(await req.json());
 
