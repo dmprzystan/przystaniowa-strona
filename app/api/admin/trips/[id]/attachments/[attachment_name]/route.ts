@@ -5,9 +5,8 @@ import { deleteFile } from "@/app/lib/b2";
 
 export async function DELETE(
   req: NextRequest,
-  props: { params: Promise<{ id: string; attachment_name: string }> }
+  { params }: { params: { id: string; attachment_name: string } }
 ) {
-  const params = await props.params;
   const { id, attachment_name } = params;
 
   const trip = await prisma.trip.findUnique({

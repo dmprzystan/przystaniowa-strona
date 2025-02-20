@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useActionState } from "react";
-import { useFormStatus } from "react-dom";
+import { useEffect, useRef, useState } from "react";
+import { useFormStatus, useFormState } from "react-dom";
 import Input from "./Input";
 import TextArea from "./TextArea";
 
@@ -32,7 +32,7 @@ function Button({ mobile }: { mobile?: boolean }) {
 }
 
 function ContactForm() {
-  const [state, submitForm] = useActionState(submitMessage, initialState);
+  const [state, submitForm] = useFormState(submitMessage, initialState);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const captchaRef = useRef(null);

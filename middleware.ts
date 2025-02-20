@@ -17,13 +17,10 @@ export const middleware = async (request: NextRequest) => {
 
     if (response.ok) {
       const { url, authorization } = await response.json();
-
-      const headers = new Headers();
-      headers.set("Authorization", authorization);
-
+      console.log(url, authorization);
       return NextResponse.rewrite(url, {
-        request: {
-          headers,
+        headers: {
+          Authorization: authorization,
         },
       });
     }

@@ -27,8 +27,10 @@ const PatchSchema = z.object({
     .optional(),
 });
 
-export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const { id } = params;
 
   const trip = await prisma.trip.findUnique({
@@ -48,8 +50,10 @@ export async function GET(_req: NextRequest, props: { params: Promise<{ id: stri
   return NextResponse.json(trip);
 }
 
-export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const { id } = params;
   const data = await req.json();
 
@@ -115,8 +119,10 @@ export async function PATCH(req: NextRequest, props: { params: Promise<{ id: str
   return NextResponse.json(updatedTrip);
 }
 
-export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const { id } = params;
 
   const trip = await prisma.trip.findUnique({

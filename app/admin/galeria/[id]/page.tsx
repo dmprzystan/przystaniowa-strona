@@ -2,7 +2,7 @@
 
 import Navbar from "@/app/admin/components/Navbar";
 import { Album } from "@/app/lib/prisma";
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -27,8 +27,7 @@ dayjs.locale("pl");
 import "@/app/galeria/style.scss";
 import Photo from "./components/Photo";
 
-export default function Page(props: { params: Promise<{ id: string }> }) {
-  const params = use(props.params);
+export default function Page({ params }: { params: { id: string } }) {
   const [album, setAlbum] = useState<Album>();
   const [loading, setLoading] = useState(true);
 
