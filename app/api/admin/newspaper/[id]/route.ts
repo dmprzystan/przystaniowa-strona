@@ -18,8 +18,10 @@ const months = [
   "Grudzień",
 ];
 
-export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const { id } = params;
 
   const gazetka = await prisma.newspaper.delete({
@@ -39,8 +41,10 @@ export async function DELETE(_req: NextRequest, props: { params: Promise<{ id: s
   return NextResponse.json(gazetka);
 }
 
-export async function PUT(req: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const { id } = params;
 
   const data = await req.formData();

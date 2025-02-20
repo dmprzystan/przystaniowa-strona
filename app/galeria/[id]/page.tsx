@@ -31,8 +31,7 @@ const months = [
   "Grudzień",
 ];
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
+export default async function Page({ params }: { params: { id: string } }) {
   let album;
   try {
     album = await getAlbum(params.id);
