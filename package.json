@@ -47,7 +47,7 @@
     "framer-motion": "^11.3.8",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.453.0",
-    "next": "14.2.4",
+    "next": "^14.2.24",
     "next-themes": "^0.3.0",
     "oci-sdk": "^2.89.2",
     "react": "^18",
