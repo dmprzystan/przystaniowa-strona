@@ -8,22 +8,8 @@ import Navbar from "../components/Navbar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 
+import AlbumThumbnail from "./components/AlbumThumbnail";
 import "./style.scss";
-
-const months = [
-  "Styczeń",
-  "Luty",
-  "Marzec",
-  "Kwiecień",
-  "Maj",
-  "Czerwiec",
-  "Lipiec",
-  "Sierpień",
-  "Wrzesień",
-  "Październik",
-  "Listopad",
-  "Grudzień",
-];
 
 async function page() {
   const albums = await getGallery();
@@ -37,42 +23,16 @@ async function page() {
         <h2 className="text-3xl sm:text-4xl xl:text-5xl text-center">
           GALERIA
         </h2>
-        <div
-          className={`px-8 md:px-16 xl:px-32 gallery grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 mt-8 md:mt-16`}
-        >
+        <div className="gallery grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 mt-8 md:mt-16">
           {albums.map(
             (album) =>
               (album.thumbnail || album.photos[0]) && (
                 <Link
                   key={album.id}
-                  className="flex flex-col gap-4 px-2 py-2 hover:shadow-arround duration-300 transition-all rounded-3xl overflow-hidden justify-end"
+                  className="col-span-1"
                   href={`/galeria/${album.id}`}
                 >
-                  <div className="w-full h-full rounded-3xl overflow-hidden">
-                    <img
-                      src={`/public/${
-                        album.thumbnail
-                          ? album.thumbnail.url
-                          : album.photos[0].url
-                      }`}
-                      alt=""
-                      className="block rounded-3xl object-cover shadow-xl h-full w-full"
-                    />
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <h3 className="text-3xl font-extrabold text-center uppercase whitespace-nowrap text-ellipsis w-full overflow-hidden">
-                      {album.title}
-                    </h3>
-                    <p className="text-xl">
-                      <span className="font-bold">
-                        {months[album.date.getMonth()]}
-                      </span>
-                      <span> </span>
-                      <span className="font-light">
-                        {album.date.getFullYear()}
-                      </span>
-                    </p>
-                  </div>
+                  <AlbumThumbnail album={album} />
                 </Link>
               )
           )}

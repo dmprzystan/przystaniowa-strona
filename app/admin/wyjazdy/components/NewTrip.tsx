@@ -648,7 +648,6 @@ const AttachmentInput = ({ field }: { field: AttachmentInputField }) => {
               type="file"
               onChange={(e) => {
                 if (attachment.name === "") {
-                  console.log(e.target.files?.[0].name);
                   const name = e.target.files?.[0].name
                     .split(".")
                     .slice(0, -1)

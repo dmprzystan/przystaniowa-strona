@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
   const data = NewAlbumSchema.safeParse(await req.json());
 
   if (!data.success) {
-    console.log(data.error.errors);
     return NextResponse.json(
       { message: data.error.errors[0].message },
       { status: 400 }

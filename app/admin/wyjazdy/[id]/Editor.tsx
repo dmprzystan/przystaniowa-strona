@@ -45,9 +45,6 @@ export default function Editor({
       setValue(editor.getHTML());
     },
     editorProps: {
-      handleClick: () => {
-        console.log("TFTF");
-      },
       attributes: {
         class:
           "prose p-4 h-full max-h-[48vh] rounded-lg overflow-y-scroll bg-neutral-100 border-neutral-200 border focus:outline-none max-w-none",

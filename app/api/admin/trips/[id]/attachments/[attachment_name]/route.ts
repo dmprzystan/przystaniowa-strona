@@ -31,8 +31,6 @@ export async function DELETE(
     return NextResponse.json({ message: "Not found" }, { status: 404 });
   }
 
-  console.log(`Deleting attachment ${attachment.url}`);
-
   await deleteFile(`wyjazdy/${id}/attachments/${attachment.url}`);
   await prisma.tripAttachment.delete({
     where: {
