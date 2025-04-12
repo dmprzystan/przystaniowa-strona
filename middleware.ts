@@ -15,12 +15,16 @@ export const middleware = async (request: NextRequest) => {
     });
 
     if (response.ok) {
-      const { url, authorization } = await response.json();
+      const { url, authorization } = (await response.json()) as {
+        url: string;
+        authorization: string;
+      };
+      const encodedUrl = encodeURI(url.normalize("NFD"));
 
       const headers = new Headers();
       headers.set("Authorization", authorization);
 
-      return NextResponse.rewrite(url, {
+      return NextResponse.rewrite(encodedUrl, {
         request: {
           headers,
         },
@@ -32,7 +36,9 @@ export const middleware = async (request: NextRequest) => {
 
   const token = request.cookies.get("token")?.value;
 
-  let loggedIn = false;
+  let loggedIn =
+    false ||
+    request.headers.get("x-authorization") === process.env.ADMIN_SECRET;
 
   if (token) {
     const res = await fetch(`${origin}/api/auth/verify`, {
@@ -67,3 +73,6 @@ export const middleware = async (request: NextRequest) => {
 export const config = {
   matcher: ["/(admin.*)", "/(api/admin.*)", "/(public/.*)"],
 };
+
+// https://api003.backblazeb2.com/file/przystaniowa-strona/gazetki/Gazetka+19tka+nr.+136+(Kwiecien%CC%81+2013).pdf
+// https://f003.backblazeb2.com/file/przystaniowa-strona/gazetki/Gazetka+19tka+nr.+136+(Kwiecien%CC%81+2013).pdf
