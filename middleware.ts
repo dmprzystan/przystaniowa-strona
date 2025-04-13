@@ -19,12 +19,11 @@ export const middleware = async (request: NextRequest) => {
         url: string;
         authorization: string;
       };
-      const encodedUrl = encodeURI(url.normalize("NFD"));
 
       const headers = new Headers();
       headers.set("Authorization", authorization);
 
-      return NextResponse.rewrite(encodedUrl, {
+      return NextResponse.rewrite(url, {
         request: {
           headers,
         },
@@ -73,6 +72,3 @@ export const middleware = async (request: NextRequest) => {
 export const config = {
   matcher: ["/(admin.*)", "/(api/admin.*)", "/(public/.*)"],
 };
-
-// https://api003.backblazeb2.com/file/przystaniowa-strona/gazetki/Gazetka+19tka+nr.+136+(Kwiecien%CC%81+2013).pdf
-// https://f003.backblazeb2.com/file/przystaniowa-strona/gazetki/Gazetka+19tka+nr.+136+(Kwiecien%CC%81+2013).pdf

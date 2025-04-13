@@ -6,6 +6,7 @@ import {
   DeleteObjectCommand,
   CopyObjectCommand,
   ListObjectsV2Command,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -125,7 +126,7 @@ const authorizeAccount: () => Promise<B2Authorization> = async () => {
 export const readFile = async (path: string) => {
   const getCommand = new GetObjectCommand({
     Bucket: process.env.B2_BUCKET,
-    Key: path,
+    Key: path.normalize("NFC"),
   });
 
   try {
@@ -148,7 +149,7 @@ export const readFile = async (path: string) => {
 export const writeFile = async (path: string, content: string) => {
   const putCommand = new PutObjectCommand({
     Bucket: process.env.B2_BUCKET,
-    Key: path,
+    Key: path.normalize("NFC"),
     Body: content,
   });
 
@@ -158,7 +159,7 @@ export const writeFile = async (path: string, content: string) => {
 export const deleteFile = async (path: string) => {
   const deleteCommand = new DeleteObjectCommand({
     Bucket: process.env.B2_BUCKET,
-    Key: path,
+    Key: path.normalize("NFC"),
   });
 
   await b2Client.send(deleteCommand);
@@ -167,8 +168,10 @@ export const deleteFile = async (path: string) => {
 export const renameFile = async (oldPath: string, newPath: string) => {
   const content = new CopyObjectCommand({
     Bucket: process.env.B2_BUCKET,
-    Key: newPath,
-    CopySource: oldPath,
+    Key: newPath.normalize("NFC"),
+    CopySource: `${process.env.B2_BUCKET}/${encodeURIComponent(
+      oldPath.normalize("NFC")
+    )}`,
   });
 
   await b2Client.send(content);
@@ -191,7 +194,7 @@ export const getBucketSize = async () => {
 export const createPresignedUrl = async (path: string) => {
   const command = new PutObjectCommand({
     Bucket: process.env.B2_BUCKET,
-    Key: path,
+    Key: path.normalize("NFC"),
   });
 
   const url = await getSignedUrl(b2Client, command, {
